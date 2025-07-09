@@ -1,0 +1,226 @@
+import { ApiProperty, PartialType } from "@nestjs/swagger";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  ValidateNested,
+  IsBoolean,
+  IsDateString,
+} from "class-validator";
+
+import { Type } from "class-transformer";
+import { CreateNaissanceDto } from "./naissance.dto";
+import { CreateAdresseDto } from "./adresse.dto";
+import { CreatePaiementDto } from "./paiement.dto";
+import { CreateUrgenceDto } from "./urgence.dto";
+import { CreateJustificatifDto } from "./justificatif.dto";
+import { CreateContratDto } from "./contrat.dto";
+
+export class CreateUserDto {
+  // Données utilisateur de base (obligatoires)
+  @ApiProperty({ example: "employee" })
+  @IsString()
+  @IsNotEmpty()
+  role: string;
+
+  @ApiProperty({ example: "profile-completed" })
+  @IsString()
+  @IsNotEmpty()
+  statut: string;
+
+  @ApiProperty({ example: "M" })
+  @IsString()
+  @IsNotEmpty()
+  civilité: string;
+
+  @ApiProperty({ example: "Jean" })
+  @IsString()
+  @IsNotEmpty()
+  prenom: string;
+
+  @ApiProperty({ example: "Dupont" })
+  @IsString()
+  @IsNotEmpty()
+  nomDeNaissance: string;
+
+  @ApiProperty({ example: "Dupont" })
+  @IsString()
+  @IsNotEmpty()
+  nomUsuel: string;
+
+  @ApiProperty({ example: "Célibataire" })
+  @IsString()
+  @IsNotEmpty()
+  situationFamiliale: string;
+
+  @ApiProperty({ example: "9876543210" })
+  @IsString()
+  @IsNotEmpty()
+  numeroSecuriteSociale: string;
+
+  @ApiProperty({ example: "john.doe@example.com" })
+  @IsEmail()
+  @IsNotEmpty()
+  emailPersonnel: string;
+
+  @ApiProperty({ example: "john.doe@example.com" })
+  @IsEmail()
+  @IsNotEmpty()
+  emailProfessionnel: string;
+
+  @ApiProperty({ example: "33777777777" })
+  @IsString()
+  @IsNotEmpty()
+  telephonePersonnel: string;
+
+  @ApiProperty({ example: "33777777777" })
+  @IsString()
+  @IsNotEmpty()
+  telephoneProfessionnel: string;
+
+  // Données associées (optionnelles)
+  @ApiProperty({ required: false, type: CreateNaissanceDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateNaissanceDto)
+  naissance?: CreateNaissanceDto;
+
+  @ApiProperty({ required: false, type: CreateAdresseDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateAdresseDto)
+  adresse?: CreateAdresseDto;
+
+  @ApiProperty({ required: false, type: CreatePaiementDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreatePaiementDto)
+  paiement?: CreatePaiementDto;
+
+  @ApiProperty({ required: false, type: CreateUrgenceDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateUrgenceDto)
+  urgence?: CreateUrgenceDto;
+
+  @ApiProperty({ required: false, type: CreateJustificatifDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateJustificatifDto)
+  justificatif?: CreateJustificatifDto;
+
+  @ApiProperty({ required: false, type: CreateContratDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateContratDto)
+  contrat?: CreateContratDto;
+}
+export class UpdateUserDto {
+  @ApiProperty({ example: "employee", required: false })
+  @IsOptional()
+  @IsString()
+  role?: string;
+
+  @ApiProperty({ example: "profile-completed", required: false })
+  @IsOptional()
+  @IsString()
+  statut?: string;
+
+  @ApiProperty({ example: "M", required: false })
+  @IsOptional()
+  @IsString()
+  civilité?: string;
+
+  @ApiProperty({ example: "Jean", required: false })
+  @IsOptional()
+  @IsString()
+  prenom?: string;
+
+  @ApiProperty({ example: "Dupont", required: false })
+  @IsOptional()
+  @IsString()
+  nomDeNaissance?: string;
+
+  @ApiProperty({ example: "Dupont", required: false })
+  @IsOptional()
+  @IsString()
+  nomUsuel?: string;
+
+  @ApiProperty({ example: "Célibataire", required: false })
+  @IsOptional()
+  @IsString()
+  situationFamiliale?: string;
+
+  @ApiProperty({ example: "9876543210", required: false })
+  @IsOptional()
+  @IsString()
+  numeroSecuriteSociale?: string;
+
+  @ApiProperty({ example: "john.doe@example.com", required: false })
+  @IsOptional()
+  @IsEmail()
+  emailPersonnel?: string;
+
+  @ApiProperty({ example: "john.doe@example.com", required: false })
+  @IsOptional()
+  @IsEmail()
+  emailProfessionnel?: string;
+
+  @ApiProperty({ example: "33777777777", required: false })
+  @IsOptional()
+  @IsString()
+  telephonePersonnel?: string;
+
+  @ApiProperty({ example: "33777777777", required: false })
+  @IsOptional()
+  @IsString()
+  telephoneProfessionnel?: string;
+}
+
+export class UserResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  role: string;
+
+  @ApiProperty()
+  statut: string;
+
+  @ApiProperty()
+  civilité: string;
+
+  @ApiProperty()
+  prenom: string;
+
+  @ApiProperty()
+  nomDeNaissance: string;
+
+  @ApiProperty()
+  nomUsuel: string;
+
+  @ApiProperty()
+  situationFamiliale: string;
+
+  @ApiProperty()
+  numeroSecuriteSociale: string;
+
+  @ApiProperty()
+  emailPersonnel: string;
+
+  @ApiProperty()
+  emailProfessionnel: string;
+
+  @ApiProperty()
+  telephonePersonnel: string;
+
+  @ApiProperty()
+  telephoneProfessionnel: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+}
