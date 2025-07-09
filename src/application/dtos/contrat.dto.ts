@@ -7,6 +7,11 @@ import {
 } from "class-validator";
 
 export class CreateContratDto {
+  @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
+  @IsNotEmpty()
+  @IsString()
+  idUser: string;
+
   @ApiProperty({ example: "Développeur full-stack" })
   @IsString()
   @IsNotEmpty()
@@ -20,12 +25,12 @@ export class CreateContratDto {
   @ApiProperty({ example: "2025-01-01" })
   @IsDateString()
   @IsNotEmpty()
-  dateDebut: string;
+  dateDebut: Date;
 
   @ApiProperty({ example: "2026-01-01" })
   @IsDateString()
   @IsNotEmpty()
-  dateFin: string;
+  dateFin: Date;
 
   @ApiProperty({ example: "Etablissement de santé" })
   @IsString()
@@ -72,12 +77,12 @@ export class UpdateContratDto {
   @ApiProperty({ example: "2025-01-01", required: false })
   @IsDateString()
   @IsOptional()
-  dateDebut?: string;
+  dateDebut?: Date;
 
   @ApiProperty({ example: "2026-01-01", required: false })
   @IsDateString()
   @IsOptional()
-  dateFin?: string;
+  dateFin?: Date;
 
   @ApiProperty({ example: "Etablissement de santé", required: false })
   @IsString()
@@ -115,16 +120,19 @@ export class ContratResponseDto {
   id: string;
 
   @ApiProperty()
+  idUser: string;
+
+  @ApiProperty()
   poste: string;
 
   @ApiProperty()
   typeContrat: string;
 
   @ApiProperty()
-  dateDebut: string;
+  dateDebut: Date;
 
   @ApiProperty()
-  dateFin: string;
+  dateFin: Date;
 
   @ApiProperty()
   etablissementDeSante: string;

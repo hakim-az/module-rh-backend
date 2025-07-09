@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { ContratRepository } from "../../../domain/repositories/contrat.repository";
-import { Contrat } from "../../../domain/entities/contrat.entity";
-import { PrismaService } from "../../database/prisma.service";
+import { ContratRepository } from "@domain/repositories/contrat.repository";
+import { Contrat } from "@domain/entities/contrat.entity";
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class PrismaContratRepository implements ContratRepository {
@@ -12,51 +12,157 @@ export class PrismaContratRepository implements ContratRepository {
       where: { id },
     });
 
-    return contrat ? new Contrat(contrat) : null;
+    if (!contrat) return null;
+
+    return new Contrat(
+      contrat.id,
+      contrat.idUser,
+      contrat.poste,
+      contrat.typeContrat,
+      contrat.dateDebut,
+      contrat.dateFin,
+      contrat.etablissementDeSante,
+      contrat.serviceDeSante,
+      contrat.Salaire,
+      contrat.matricule,
+      contrat.fichierContratNonSignerPdf,
+      contrat.fichierContratSignerPdf,
+      contrat.createdAt,
+      contrat.updatedAt
+    );
   }
 
-  async findByUserId(userId: string): Promise<Contrat | null> {
-    const contrat = await this.prisma.contrat.findUnique({
+  async findByUserId(userId: string): Promise<Contrat[]> {
+    const contrats = await this.prisma.contrat.findMany({
       where: { idUser: userId },
     });
 
-    return contrat ? new Contrat(contrat) : null;
+    return contrats.map(
+      (contrat) =>
+        new Contrat(
+          contrat.id,
+          contrat.idUser,
+          contrat.poste,
+          contrat.typeContrat,
+          contrat.dateDebut,
+          contrat.dateFin,
+          contrat.etablissementDeSante,
+          contrat.serviceDeSante,
+          contrat.Salaire,
+          contrat.matricule,
+          contrat.fichierContratNonSignerPdf,
+          contrat.fichierContratSignerPdf,
+          contrat.createdAt,
+          contrat.updatedAt
+        )
+    );
   }
 
-  // async create(
-  //   contratData: Omit<Contrat, "id" | "createdAt" | "updatedAt">
-  // ): Promise<Contrat> {
-  //   const contrat = await this.prisma.contrat.create({
-  //     data: contratData,
-  //   });
+  async findAll(): Promise<Contrat[]> {
+    const contrats = await this.prisma.contrat.findMany();
 
-  //   return new Contrat(contrat);
-  // }
-
-  async update(
-    id: string,
-    contratData: Partial<Contrat>
-  ): Promise<Contrat | null> {
-    try {
-      const contrat = await this.prisma.contrat.update({
-        where: { id },
-        data: contratData,
-      });
-
-      return new Contrat(contrat);
-    } catch (error) {
-      return null;
-    }
+    return contrats.map(
+      (contrat) =>
+        new Contrat(
+          contrat.id,
+          contrat.idUser,
+          contrat.poste,
+          contrat.typeContrat,
+          contrat.dateDebut,
+          contrat.dateFin,
+          contrat.etablissementDeSante,
+          contrat.serviceDeSante,
+          contrat.Salaire,
+          contrat.matricule,
+          contrat.fichierContratNonSignerPdf,
+          contrat.fichierContratSignerPdf,
+          contrat.createdAt,
+          contrat.updatedAt
+        )
+    );
   }
 
-  async delete(id: string): Promise<boolean> {
-    try {
-      await this.prisma.contrat.delete({
-        where: { id },
-      });
-      return true;
-    } catch (error) {
-      return false;
-    }
+  async create(contrat: Contrat): Promise<Contrat> {
+    const createdContrat = await this.prisma.contrat.create({
+      data: {
+        idUser: contrat.idUser,
+        poste: contrat.poste,
+        typeContrat: contrat.typeContrat,
+        dateDebut: contrat.dateDebut,
+        dateFin: contrat.dateFin,
+        etablissementDeSante: contrat.etablissementDeSante,
+        serviceDeSante: contrat.serviceDeSante,
+        matricule: contrat.matricule,
+        Salaire: contrat.salaire,
+        fichierContratNonSignerPdf: contrat.fichierContratNonSignerPdf,
+        fichierContratSignerPdf: contrat.fichierContratSignerPdf,
+      },
+    });
+
+    return new Contrat(
+      createdContrat.id,
+      contrat.idUser,
+      contrat.poste,
+      contrat.typeContrat,
+      contrat.dateDebut,
+      contrat.dateFin,
+      contrat.etablissementDeSante,
+      contrat.serviceDeSante,
+      contrat.salaire,
+      contrat.matricule,
+      contrat.fichierContratNonSignerPdf,
+      contrat.fichierContratSignerPdf,
+      contrat.createdAt,
+      contrat.updatedAt
+    );
+  }
+
+  async update(id: string, contratData: Partial<Contrat>): Promise<Contrat> {
+    const updateData: any = {};
+
+    if (contratData.poste) updateData.poste = contratData.poste;
+    if (contratData.typeContrat)
+      updateData.typeContrat = contratData.typeContrat;
+    if (contratData.dateDebut) updateData.dateDebut = contratData.dateDebut;
+    if (contratData.dateFin) updateData.dateFin = contratData.dateFin;
+    if (contratData.etablissementDeSante)
+      updateData.etablissementDeSante = contratData.etablissementDeSante;
+    if (contratData.serviceDeSante)
+      updateData.serviceDeSante = contratData.serviceDeSante;
+    if (contratData.matricule) updateData.matricule = contratData.matricule;
+    if (contratData.salaire) updateData.Salaire = contratData.salaire;
+    if (contratData.fichierContratNonSignerPdf !== undefined)
+      updateData.fichierContratNonSignerPdf =
+        contratData.fichierContratNonSignerPdf;
+    if (contratData.fichierContratSignerPdf !== undefined)
+      updateData.fichierContratSignerPdf = contratData.fichierContratSignerPdf;
+
+    const updatedContrat = await this.prisma.contrat.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return new Contrat(
+      updatedContrat.id,
+      updatedContrat.idUser,
+      updatedContrat.poste,
+      updatedContrat.typeContrat,
+      updatedContrat.dateDebut,
+      updatedContrat.dateFin,
+      updatedContrat.etablissementDeSante,
+      updatedContrat.serviceDeSante,
+      updatedContrat.Salaire,
+      updatedContrat.matricule,
+      updatedContrat.fichierContratNonSignerPdf,
+      updatedContrat.fichierContratSignerPdf,
+      updatedContrat.createdAt,
+      updatedContrat.updatedAt
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.contrat.delete({
+      where: { id },
+    });
   }
 }
