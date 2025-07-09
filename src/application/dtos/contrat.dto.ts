@@ -61,42 +61,42 @@ export class CreateContratDto {
 export class UpdateContratDto {
   @ApiProperty({ example: "Développeur full-stack", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   poste?: string;
 
   @ApiProperty({ example: "Stage", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   typeContrat?: string;
 
   @ApiProperty({ example: "2025-01-01", required: false })
   @IsDateString()
-  @IsNotEmpty()
+  @IsOptional()
   dateDebut?: string;
 
   @ApiProperty({ example: "2026-01-01", required: false })
   @IsDateString()
-  @IsNotEmpty()
+  @IsOptional()
   dateFin?: string;
 
   @ApiProperty({ example: "Etablissement de santé", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   etablissementDeSante?: string;
 
   @ApiProperty({ example: "Service de santé", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   serviceDeSante?: string;
 
   @ApiProperty({ example: "1100", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   salaire?: string;
 
   @ApiProperty({ example: "FR1234567890", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   matricule?: string;
 
   @ApiProperty({ example: "http://example.com", required: false })

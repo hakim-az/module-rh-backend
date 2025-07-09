@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateJustificatifDto {
   @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
@@ -31,22 +31,22 @@ export class CreateJustificatifDto {
 export class UpdateJustificatifDto {
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   fichierCarteVitalePdf?: string;
 
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   fichierRibPdf?: string;
 
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   fichierPieceIdentitePdf?: string;
 
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   fichierJustificatifDomicilePdf?: string;
 }
 

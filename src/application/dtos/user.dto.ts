@@ -10,12 +10,15 @@ import {
 } from "class-validator";
 
 import { Type } from "class-transformer";
-import { CreateNaissanceDto } from "./naissance.dto";
-import { CreateAdresseDto } from "./adresse.dto";
-import { CreatePaiementDto } from "./paiement.dto";
-import { CreateUrgenceDto } from "./urgence.dto";
-import { CreateJustificatifDto } from "./justificatif.dto";
-import { CreateContratDto } from "./contrat.dto";
+import { CreateNaissanceDto, UpdateNaissanceDto } from "./naissance.dto";
+import { CreateAdresseDto, UpdateAdresseDto } from "./adresse.dto";
+import { CreatePaiementDto, UpdatePaiementDto } from "./paiement.dto";
+import { CreateUrgenceDto, UpdateUrgenceDto } from "./urgence.dto";
+import {
+  CreateJustificatifDto,
+  UpdateJustificatifDto,
+} from "./justificatif.dto";
+import { CreateContratDto, UpdateContratDto } from "./contrat.dto";
 
 export class CreateUserDto {
   // Données utilisateur de base (obligatoires)
@@ -176,6 +179,43 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   telephoneProfessionnel?: string;
+
+  // Données associées (optionnelles)
+  @ApiProperty({ required: false, type: UpdateNaissanceDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateNaissanceDto)
+  naissance?: UpdateNaissanceDto;
+
+  @ApiProperty({ required: false, type: UpdateAdresseDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateAdresseDto)
+  adresse?: UpdateAdresseDto;
+
+  @ApiProperty({ required: false, type: UpdatePaiementDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdatePaiementDto)
+  paiement?: UpdatePaiementDto;
+
+  @ApiProperty({ required: false, type: UpdateUrgenceDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateUrgenceDto)
+  urgence?: UpdateUrgenceDto;
+
+  @ApiProperty({ required: false, type: UpdateJustificatifDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateJustificatifDto)
+  justificatif?: UpdateJustificatifDto;
+
+  @ApiProperty({ required: false, type: UpdateContratDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateContratDto)
+  contrat?: UpdateContratDto;
 }
 
 export class UserResponseDto {

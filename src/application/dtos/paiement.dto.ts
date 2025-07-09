@@ -18,7 +18,7 @@ export class CreatePaiementDto {
   bic: string;
 }
 
-export class UpdatePeimentDto {
+export class UpdatePaiementDto {
   @ApiProperty({ example: "FR1234567890", required: false })
   @IsString()
   @IsOptional()
@@ -30,7 +30,7 @@ export class UpdatePeimentDto {
   bic?: string;
 }
 
-export class PeiementResponseDto {
+export class PaiementResponseDto {
   @ApiProperty()
   id: string;
 
