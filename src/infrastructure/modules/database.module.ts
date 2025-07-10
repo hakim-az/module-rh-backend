@@ -18,6 +18,8 @@ import { AbsenceRepository } from "@/domain/repositories/absence.repository";
 import { PrismaAbsenceRepository } from "../database/repositories/prisma-absence.repository";
 import { CoffreRepository } from "@/domain/repositories/coffre.repository";
 import { PrismaCoffreRepository } from "../database/repositories/prisma-coffre.repository";
+import { PrismaRestauRepository } from "../database/repositories/prisma-restau.repository";
+import { RestauRepository } from "@/domain/repositories/restau.repository";
 
 @Module({
   providers: [
@@ -58,6 +60,10 @@ import { PrismaCoffreRepository } from "../database/repositories/prisma-coffre.r
       provide: CoffreRepository,
       useClass: PrismaCoffreRepository,
     },
+    {
+      provide: RestauRepository,
+      useClass: PrismaRestauRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -70,6 +76,7 @@ import { PrismaCoffreRepository } from "../database/repositories/prisma-coffre.r
     ContratRepository,
     AbsenceRepository,
     CoffreRepository,
+    RestauRepository,
   ],
 })
 export class DatabaseModule {}

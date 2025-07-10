@@ -7,6 +7,6 @@ export interface CoffreRepository {
   findByUserId(userId: string): Promise<Coffre[]>;
   findAll(): Promise<Coffre[]>;
   create(coffre: Coffre): Promise<Coffre>;
-  update(id: string, absence: Partial<Coffre>): Promise<Coffre>;
+  update(id: string, coffre: Partial<Coffre>): Promise<Coffre>;
   delete(id: string): Promise<void>;
 }
