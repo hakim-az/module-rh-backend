@@ -31,6 +31,7 @@ model User {
   paiement               Paiement?
   urgence                Urgence?
   absence                Absence[]
+  coffre                 Coffre[]
 
   @@map("users")
 }
@@ -127,7 +128,7 @@ model Contrat {
 
 model Absence {
   id                         String   @id @default(cuid())
-  idUser                     String   @map("id_user")  // pas unique
+  idUser                     String   @map("id_user")  
   typeAbsence                String
   dateDebut                  DateTime @map("date_debut")
   dateFin                    DateTime @map("date_fin")
@@ -141,4 +142,21 @@ model Absence {
   user                       User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("absences")
+}
+
+model Coffre {
+  id                         String   @id @default(cuid())
+  idUser                     String   @map("id_user")  
+  typeBulletin               String
+  mois                       String
+  annee                      String
+
+  note                       String?
+  fichierJustificatifPdf     String?  @map("fichier_justificatif_pdf")
+
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  user                       User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
+
+  @@map("coffres")
 }

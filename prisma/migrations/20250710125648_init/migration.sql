@@ -135,6 +135,21 @@ CREATE TABLE `absences` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `coffres` (
+    `id` VARCHAR(191) NOT NULL,
+    `id_user` VARCHAR(191) NOT NULL,
+    `typeBulletin` VARCHAR(191) NOT NULL,
+    `mois` VARCHAR(191) NOT NULL,
+    `annee` VARCHAR(191) NOT NULL,
+    `note` VARCHAR(191) NULL,
+    `fichier_justificatif_pdf` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `naissances` ADD CONSTRAINT `naissances_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -155,3 +170,6 @@ ALTER TABLE `contrats` ADD CONSTRAINT `contrats_id_user_fkey` FOREIGN KEY (`id_u
 
 -- AddForeignKey
 ALTER TABLE `absences` ADD CONSTRAINT `absences_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `coffres` ADD CONSTRAINT `coffres_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
