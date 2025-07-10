@@ -35,7 +35,7 @@ export class CreateUserDto {
   @ApiProperty({ example: "M" })
   @IsString()
   @IsNotEmpty()
-  civilité: string;
+  civilite: string;
 
   @ApiProperty({ example: "Jean" })
   @IsString()
@@ -81,6 +81,11 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   telephoneProfessionnel: string;
+
+  @ApiProperty({ example: "https://avatar.com", required: false })
+  @IsString()
+  @IsOptional()
+  avatar?: string;
 
   // Données associées (optionnelles)
   @ApiProperty({ required: false, type: CreateNaissanceDto })
@@ -133,7 +138,7 @@ export class UpdateUserDto {
   @ApiProperty({ example: "M", required: false })
   @IsOptional()
   @IsString()
-  civilité?: string;
+  civilite?: string;
 
   @ApiProperty({ example: "Jean", required: false })
   @IsOptional()
@@ -179,6 +184,11 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   telephoneProfessionnel?: string;
+
+  @ApiProperty({ example: "https://avatar.com", required: false })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 
   // Données associées (optionnelles)
   @ApiProperty({ required: false, type: UpdateNaissanceDto })
@@ -229,7 +239,7 @@ export class UserResponseDto {
   statut: string;
 
   @ApiProperty()
-  civilité: string;
+  civilite: string;
 
   @ApiProperty()
   prenom: string;
@@ -257,6 +267,9 @@ export class UserResponseDto {
 
   @ApiProperty()
   telephoneProfessionnel: string;
+
+  @ApiProperty()
+  avatar: string;
 
   @ApiProperty()
   createdAt: Date;

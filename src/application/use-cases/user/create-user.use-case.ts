@@ -49,7 +49,7 @@ export class CreateUserUseCase {
       const userData = {
         role: createUserDto.role,
         statut: createUserDto.statut,
-        civilité: createUserDto.civilité,
+        civilite: createUserDto.civilite,
         prenom: createUserDto.prenom,
         nomDeNaissance: createUserDto.nomDeNaissance,
         nomUsuel: createUserDto.nomUsuel,
@@ -59,6 +59,7 @@ export class CreateUserUseCase {
         emailProfessionnel: createUserDto.emailProfessionnel,
         telephonePersonnel: createUserDto.telephonePersonnel,
         telephoneProfessionnel: createUserDto.telephoneProfessionnel,
+        avatar: createUserDto.avatar,
       };
 
       const user = await this.userRepository.create(userData);
@@ -116,22 +117,6 @@ export class CreateUserUseCase {
             createUserDto.justificatif.fichierJustificatifDomicilePdf,
         });
       }
-
-      // if (createUserDto.contrat) {
-      //   await this.contratRepository.create({
-      //     idUser: user.id,
-      //     poste: createUserDto.contrat.poste,
-      //     typeContrat: createUserDto.contrat.typeContrat,
-      //     dateDebut: new Date(createUserDto.contrat.dateDebut),
-      //     dateFin: new Date(createUserDto.contrat.dateFin),
-      //     etablissementDeSante: createUserDto.contrat.etablissementDeSante,
-      //     serviceDeSante: createUserDto.contrat.serviceDeSante,
-      //     fichierContratNonSignerPdf:
-      //       createUserDto.contrat.fichierContratNonSignerPdf,
-      //     fichierContratSignerPdf:
-      //       createUserDto.contrat.fichierContratSignerPdf,
-      //   });
-      // }
 
       return this.userRepository.findById(user.id);
     });

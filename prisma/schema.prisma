@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,134 +8,137 @@ datasource db {
 }
 
 model User {
-  id                      String     @id @default(cuid())
-  role                    String
-  statut                  String
-  civilité                String
-  prenom                  String
-  nomDeNaissance          String
-  nomUsuel                String
-  situationFamiliale      String
-  numeroSecuriteSociale   String
-
-  emailPersonnel          String     @unique
-  emailProfessionnel      String     @unique
-  telephonePersonnel      String
-  telephoneProfessionnel  String
-
-  naissance               Naissance?
-  adresse                 Adresse?
-  paiement                Paiement?
-  urgence                 Urgence?
-  justificatif            Justificatif?
-  contrat                 Contrat?
-
-  createdAt               DateTime   @default(now())
-  updatedAt               DateTime   @updatedAt
+  id                     String        @id @default(cuid())
+  role                   String
+  statut                 String
+  civilite               String        
+  prenom                 String
+  nomDeNaissance         String
+  nomUsuel               String
+  situationFamiliale     String
+  numeroSecuriteSociale  String
+  emailPersonnel         String        @unique
+  emailProfessionnel     String        @unique
+  telephonePersonnel     String
+  telephoneProfessionnel String
+  avatar                 String   @map("avatar")
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  adresse                Adresse?
+  contrat                Contrat?
+  justificatif           Justificatif?
+  naissance              Naissance?
+  paiement               Paiement?
+  urgence                Urgence?
+  absence                Absence[]
 
   @@map("users")
 }
 
-
 model Naissance {
-  id                       String   @id @default(cuid())
-  idUser                   String   @unique @map("id_user")
-  dateDeNaissance          DateTime @map("date_de_naissance")
-  paysDeNaissance          String
-  departementDeNaissance   String
-  communeDeNaissance       String
-  paysDeNationalite        String
-
-  user                     User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
-
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  idUser                 String   @unique @map("id_user")
+  dateDeNaissance        DateTime @map("date_de_naissance")
+  paysDeNaissance        String
+  departementDeNaissance String
+  communeDeNaissance     String
+  paysDeNationalite      String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("naissances")
 }
 
 model Adresse {
-  id                       String   @id @default(cuid())
-  idUser                   String   @unique @map("id_user")
-  pays                     String
-  codePostal               String
-  ville                    String
-  adresse                  String
-  complementAdresse        String
-  domiciliteHorsLaFrance   Boolean
-
-  user                     User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
-
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  idUser                 String   @unique @map("id_user")
+  pays                   String
+  codePostal             String
+  ville                  String
+  adresse                String
+  complementAdresse      String
+  domiciliteHorsLaFrance Boolean
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("adresses")
 }
 
 model Paiement {
-  id                       String   @id @default(cuid())
-  idUser                   String   @unique @map("id_user")
-  iban                     String
-  bic                      String
-
-  user                     User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
-
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  id        String   @id @default(cuid())
+  idUser    String   @unique @map("id_user")
+  iban      String
+  bic       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("paiements")
 }
 
 model Urgence {
-  id                       String   @id @default(cuid())
-  idUser                   String   @unique @map("id_user")
-  nomComplet               String
-  lienAvecLeSalarie        String
-  telephone                String
-
-  user                     User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
-
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  id                String   @id @default(cuid())
+  idUser            String   @unique @map("id_user")
+  nomComplet        String
+  lienAvecLeSalarie String
+  telephone         String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("urgences")
 }
 
 model Justificatif {
-  id                                String   @id @default(cuid())
-  idUser                            String   @unique @map("id_user")
-  fichierCarteVitalePdf             String  @map("fichier_carte_vitale_pdf")
-  fichierRibPdf                     String  @map("fichier_rib_pdf")
-  fichierPieceIdentitePdf           String  @map("fichier_piece_identite_pdf")
-  fichierJustificatifDomicilePdf    String  @map("fichier_justificatif_domicile_pdf")
-
-  user                              User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
-
-  createdAt                         DateTime @default(now())
-  updatedAt                         DateTime @updatedAt
+  id                             String   @id @default(cuid())
+  idUser                         String   @unique @map("id_user")
+  fichierCarteVitalePdf          String   @map("fichier_carte_vitale_pdf")
+  fichierRibPdf                  String   @map("fichier_rib_pdf")
+  fichierPieceIdentitePdf        String   @map("fichier_piece_identite_pdf")
+  fichierJustificatifDomicilePdf String   @map("fichier_justificatif_domicile_pdf")
+  createdAt                      DateTime @default(now())
+  updatedAt                      DateTime @updatedAt
+  user                           User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("justificatifs")
 }
 
 model Contrat {
-  id                            String   @id @default(cuid())
-  idUser                        String   @unique @map("id_user")
-  poste                         String
-  typeContrat                   String
-  dateDebut                     DateTime @map("date_debut")
-  dateFin                       DateTime @map("date_fin")
-  etablissementDeSante          String
-  serviceDeSante                String
-  matricule                     String
-  Salaire                       String
-
-  fichierContratNonSignerPdf    String?  @map("fichier_contrat_non_signer_pdf")
-  fichierContratSignerPdf       String?  @map("fichier_contrat_signer_pdf")
-
-  user                          User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
-
-  createdAt                    DateTime @default(now())
-  updatedAt                    DateTime @updatedAt
+  id                         String   @id @default(cuid())
+  idUser                     String   @unique @map("id_user")
+  poste                      String
+  typeContrat                String
+  dateDebut                  DateTime @map("date_debut")
+  dateFin                    DateTime @map("date_fin")
+  etablissementDeSante       String
+  serviceDeSante             String
+  matricule                  String
+  salaire                    String
+  fichierContratNonSignerPdf String?  @map("fichier_contrat_non_signer_pdf")
+  fichierContratSignerPdf    String?  @map("fichier_contrat_signer_pdf")
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  user                       User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("contrats")
+}
+
+model Absence {
+  id                         String   @id @default(cuid())
+  idUser                     String   @map("id_user")  // pas unique
+  typeAbsence                String
+  dateDebut                  DateTime @map("date_debut")
+  dateFin                    DateTime @map("date_fin")
+  note                       String?
+  statut                     String?
+  motifDeRefus               String?
+  fichierJustificatifPdf     String?  @map("fichier_justificatif_pdf")
+
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  user                       User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
+
+  @@map("absences")
 }

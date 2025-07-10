@@ -3,7 +3,7 @@ CREATE TABLE `users` (
     `id` VARCHAR(191) NOT NULL,
     `role` VARCHAR(191) NOT NULL,
     `statut` VARCHAR(191) NOT NULL,
-    `civilité` VARCHAR(191) NOT NULL,
+    `civilite` VARCHAR(191) NOT NULL,
     `prenom` VARCHAR(191) NOT NULL,
     `nomDeNaissance` VARCHAR(191) NOT NULL,
     `nomUsuel` VARCHAR(191) NOT NULL,
@@ -13,6 +13,7 @@ CREATE TABLE `users` (
     `emailProfessionnel` VARCHAR(191) NOT NULL,
     `telephonePersonnel` VARCHAR(191) NOT NULL,
     `telephoneProfessionnel` VARCHAR(191) NOT NULL,
+    `avatar` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -107,13 +108,30 @@ CREATE TABLE `contrats` (
     `etablissementDeSante` VARCHAR(191) NOT NULL,
     `serviceDeSante` VARCHAR(191) NOT NULL,
     `matricule` VARCHAR(191) NOT NULL,
-    `Salaire` VARCHAR(191) NOT NULL,
+    `salaire` VARCHAR(191) NOT NULL,
     `fichier_contrat_non_signer_pdf` VARCHAR(191) NULL,
     `fichier_contrat_signer_pdf` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `contrats_id_user_key`(`id_user`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `absences` (
+    `id` VARCHAR(191) NOT NULL,
+    `id_user` VARCHAR(191) NOT NULL,
+    `typeAbsence` VARCHAR(191) NOT NULL,
+    `date_debut` DATETIME(3) NOT NULL,
+    `date_fin` DATETIME(3) NOT NULL,
+    `note` VARCHAR(191) NULL,
+    `statut` VARCHAR(191) NULL,
+    `motifDeRefus` VARCHAR(191) NULL,
+    `fichier_justificatif_pdf` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -134,3 +152,6 @@ ALTER TABLE `justificatifs` ADD CONSTRAINT `justificatifs_id_user_fkey` FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE `contrats` ADD CONSTRAINT `contrats_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `absences` ADD CONSTRAINT `absences_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

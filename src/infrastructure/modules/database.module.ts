@@ -14,6 +14,8 @@ import { PrismaJustificatifRepository } from "../database/repositories/prisma-ju
 import { ContratRepository } from "@/domain/repositories/contrat.repository";
 import { PrismaContratRepository } from "../database/repositories/prisma-contrat.repository";
 import { PrismaAdresseRepository } from "../database/repositories/prisma-adresse.repository";
+import { AbsenceRepository } from "@/domain/repositories/absence.repository";
+import { PrismaAbsenceRepository } from "../database/repositories/prisma-absence.repository";
 
 @Module({
   providers: [
@@ -46,6 +48,10 @@ import { PrismaAdresseRepository } from "../database/repositories/prisma-adresse
       provide: ContratRepository,
       useClass: PrismaContratRepository,
     },
+    {
+      provide: AbsenceRepository,
+      useClass: PrismaAbsenceRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -56,6 +62,7 @@ import { PrismaAdresseRepository } from "../database/repositories/prisma-adresse
     UrgenceRepository,
     JustificatifRepository,
     ContratRepository,
+    AbsenceRepository,
   ],
 })
 export class DatabaseModule {}
