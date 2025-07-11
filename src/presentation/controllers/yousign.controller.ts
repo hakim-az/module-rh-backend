@@ -1,12 +1,16 @@
 import { Controller, Post, Body, HttpStatus } from "@nestjs/common";
 import { YousignService } from "../../application/use-cases/yousign/signature.use-case";
+import { UpdateUserUseCase } from "../../application/use-cases/user/update-user.use-case";
 import * as fs from "fs";
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from "@nestjs/swagger";
 
 @ApiTags("Signature")
 @Controller("signature")
 export class YousignController {
-  constructor(private readonly yousignService: YousignService) {}
+  constructor(
+    private readonly yousignService: YousignService,
+    private readonly updateUserUseCase: UpdateUserUseCase
+  ) {}
 
   @Post()
   @ApiOperation({ summary: "Create and activate a signature request" })
@@ -14,6 +18,7 @@ export class YousignController {
     schema: {
       type: "object",
       properties: {
+        userId: { type: "string", example: "cmcqkvo0000015x2ahuewe6bx" },
         firstName: { type: "string", example: "John" },
         lastName: { type: "string", example: "Doe" },
         email: { type: "string", format: "email", example: "john@example.com" },
@@ -23,7 +28,7 @@ export class YousignController {
           example: "https://example.com/contract.pdf",
         },
       },
-      required: ["firstName", "lastName", "email", "pdfUrl"],
+      required: ["userId", "firstName", "lastName", "email", "pdfUrl"],
     },
   })
   @ApiResponse({
@@ -33,13 +38,14 @@ export class YousignController {
   async createSignature(
     @Body()
     body: {
+      userId: string;
       firstName: string;
       lastName: string;
       email: string;
       pdfUrl: string;
     }
   ) {
-    const { firstName, lastName, email, pdfUrl } = body;
+    const { userId, firstName, lastName, email, pdfUrl } = body;
 
     const filePath = await this.yousignService.downloadFile(pdfUrl);
     const signatureRequest = await this.yousignService.createSignatureRequest();
@@ -56,6 +62,10 @@ export class YousignController {
     );
     await this.yousignService.activateSignatureRequest(signatureRequest.id);
 
+    // Update user status to 'contrat-signer' after successful signature request
+    await this.updateUserUseCase.execute(userId, {
+      statut: 'contrat-signer'
+    });
     fs.unlink(filePath, () => {});
 
     return {
@@ -64,6 +74,7 @@ export class YousignController {
       signatureRequestId: signatureRequest.id,
       documentId: document.id,
       signerEmail: email,
+      userStatus: 'contrat-signer'
     };
   }
 }
