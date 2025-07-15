@@ -6,7 +6,7 @@ export class Adresse {
   public readonly ville: string;
   public readonly adresse: string;
   public readonly complementAdresse: string;
-  public readonly domiciliteHorsLaFrance: boolean;
+  public readonly domiciliteHorsLaFrance: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -18,7 +18,7 @@ export class Adresse {
     ville: string;
     adresse: string;
     complementAdresse: string;
-    domiciliteHorsLaFrance: boolean;
+    domiciliteHorsLaFrance: string;
     createdAt: Date;
     updatedAt: Date;
   }) {

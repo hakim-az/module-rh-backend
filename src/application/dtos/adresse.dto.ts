@@ -32,10 +32,10 @@ export class CreateAdresseDto {
   @IsNotEmpty()
   complementAdresse: string;
 
-  @ApiProperty({ example: false })
-  @IsBoolean()
-  @IsNotEmpty()
-  domiciliteHorsLaFrance: boolean;
+  @ApiProperty({ example: "false", required: false })
+  @IsString()
+  @IsOptional()
+  domiciliteHorsLaFrance?: string;
 }
 
 export class UpdateAdresseDto {
@@ -64,10 +64,10 @@ export class UpdateAdresseDto {
   @IsOptional()
   complementAdresse?: string;
 
-  @ApiProperty({ example: false, required: false })
-  @IsBoolean()
+  @ApiProperty({ example: "false", required: false })
+  @IsString()
   @IsOptional()
-  domiciliteHorsLaFrance?: boolean;
+  domiciliteHorsLaFrance?: string;
 }
 
 export class AdresseResponseDto {
@@ -93,7 +93,7 @@ export class AdresseResponseDto {
   complementAdresse: string;
 
   @ApiProperty()
-  domiciliteHorsLaFrance: boolean;
+  domiciliteHorsLaFrance: string;
 
   @ApiProperty()
   createdAt: Date;

@@ -47,7 +47,7 @@ CREATE TABLE `adresses` (
     `ville` VARCHAR(191) NOT NULL,
     `adresse` VARCHAR(191) NOT NULL,
     `complementAdresse` VARCHAR(191) NOT NULL,
-    `domiciliteHorsLaFrance` BOOLEAN NOT NULL,
+    `domiciliteHorsLaFrance` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
