@@ -87,7 +87,7 @@ export class UserController {
         )) {
           // Initialize justificatif object if it doesn't exist
           if (!createUserDto.justificatif) {
-            createUserDto.justificatif = {};
+            createUserDto.justificatif = {} as any;
           }
 
           if (fileMap["justificatif[fichierCarteVitalePdf]"] || fileMap["fichierCarteVitalePdf"]) {
@@ -146,7 +146,7 @@ export class UserController {
         )) {
           // Initialize contrat object if it doesn't exist
           if (!createUserDto.contrat) {
-            createUserDto.contrat = {};
+            createUserDto.contrat = {} as any;
           }
 
           if (fileMap["contrat[fichierContratNonSignerPdf]"] || fileMap["fichierContratNonSignerPdf"]) {
@@ -300,7 +300,7 @@ export class UserController {
         ) {
           // Initialize justificatif object if it doesn't exist
           if (!updateUserDto.justificatif) {
-            updateUserDto.justificatif = {};
+            updateUserDto.justificatif = {} as any;
           }
 
           if (fileMap["justificatif[fichierCarteVitalePdf]"] || fileMap["fichierCarteVitalePdf"]) {
@@ -375,7 +375,7 @@ export class UserController {
         ) {
           // Initialize contrat object if it doesn't exist
           if (!updateUserDto.contrat) {
-            updateUserDto.contrat = {};
+            updateUserDto.contrat = {} as any;
           }
 
           if (fileMap["contrat[fichierContratNonSignerPdf]"] || fileMap["fichierContratNonSignerPdf"]) {
