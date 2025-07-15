@@ -63,6 +63,14 @@ export class AbsenceController {
         fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
         createdAt: absence.createdAt?.toISOString(),
         updatedAt: absence.updatedAt?.toISOString(),
+        user: absence.user
+          ? {
+              nomDeNaissance: absence.user.nomDeNaissance,
+              prenom: absence.user.prenom,
+              emailProfessionnel: absence.user.emailProfessionnel,
+              avatar: absence.user.avatar,
+            }
+          : undefined,
       }));
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -94,6 +102,14 @@ export class AbsenceController {
         fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
         createdAt: absence.createdAt?.toISOString(),
         updatedAt: absence.updatedAt?.toISOString(),
+        user: absence.user
+          ? {
+              nomDeNaissance: absence.user.nomDeNaissance,
+              prenom: absence.user.prenom,
+              emailProfessionnel: absence.user.emailProfessionnel,
+              avatar: absence.user.avatar,
+            }
+          : undefined,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -153,6 +169,14 @@ export class AbsenceController {
       fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
       createdAt: absence.createdAt?.toISOString(),
       updatedAt: absence.updatedAt?.toISOString(),
+      user: absence.user
+        ? {
+            nomDeNaissance: absence.user.nomDeNaissance,
+            prenom: absence.user.prenom,
+            emailProfessionnel: absence.user.emailProfessionnel,
+            avatar: absence.user.avatar,
+          }
+        : undefined,
     };
   }
 
@@ -175,6 +199,14 @@ export class AbsenceController {
       fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
       createdAt: absence.createdAt?.toISOString(),
       updatedAt: absence.updatedAt?.toISOString(),
+      user: absence.user
+        ? {
+            nomDeNaissance: absence.user.nomDeNaissance,
+            prenom: absence.user.prenom,
+            emailProfessionnel: absence.user.emailProfessionnel,
+            avatar: absence.user.avatar,
+          }
+        : undefined,
     }));
   }
 
@@ -233,6 +265,14 @@ export class AbsenceController {
       fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
       createdAt: absence.createdAt?.toISOString(),
       updatedAt: absence.updatedAt?.toISOString(),
+      user: absence.user
+        ? {
+            nomDeNaissance: absence.user.nomDeNaissance,
+            prenom: absence.user.prenom,
+            emailProfessionnel: absence.user.emailProfessionnel,
+            avatar: absence.user.avatar,
+          }
+        : undefined,
     };
   }
 

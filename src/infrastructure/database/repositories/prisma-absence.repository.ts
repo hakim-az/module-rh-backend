@@ -53,7 +53,9 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
   }
 
   async findAll(): Promise<Absence[]> {
-    const absences = await this.prisma.absence.findMany();
+    const absences = await this.prisma.absence.findMany({
+      include: { user: true }, // 👈 includes user relation
+    });
 
     return absences.map(
       (absence) =>
@@ -68,7 +70,15 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
           absence.motifDeRefus,
           absence.fichierJustificatifPdf,
           absence.createdAt,
-          absence.updatedAt
+          absence.updatedAt,
+          absence.user
+            ? {
+                prenom: absence.user.prenom,
+                nomDeNaissance: absence.user.nomDeNaissance,
+                emailProfessionnel: absence.user.emailProfessionnel,
+                avatar: absence.user.avatar,
+              }
+            : undefined
         )
     );
   }

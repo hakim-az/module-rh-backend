@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
 } from "class-validator";
+import { UserResponseDto } from "./user.dto";
 
 export class CreateAbsenceDto {
   @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
@@ -86,6 +87,20 @@ export class UpdateAbsenceDto {
   fichierJustificatifPdf?: string;
 }
 
+class UserResponse {
+  @ApiProperty()
+  prenom: string;
+
+  @ApiProperty()
+  nomDeNaissance: string;
+
+  @ApiProperty()
+  emailProfessionnel: string;
+
+  @ApiProperty()
+  avatar: string;
+}
+
 export class AbsenceResponseDto {
   @ApiProperty()
   id: string;
@@ -119,4 +134,7 @@ export class AbsenceResponseDto {
 
   @ApiProperty()
   updatedAt: String;
+
+  @ApiProperty()
+  user: UserResponse;
 }
