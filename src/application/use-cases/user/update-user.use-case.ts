@@ -240,13 +240,20 @@ export class UpdateUserUseCase {
           if (hasAllJustificatifFields) {
             await this.justificatifRepository.create({
               idUser: id,
-              fichierCarteVitalePdf,
-              fichierRibPdf,
-              fichierPieceIdentitePdf,
-              fichierJustificatifDomicilePdf,
+              fichierCarteVitalePdf: fichierCarteVitalePdf || "",
+              fichierRibPdf: fichierRibPdf || "",
+              fichierPieceIdentitePdf: fichierPieceIdentitePdf || "",
+              fichierJustificatifDomicilePdf: fichierJustificatifDomicilePdf || "",
             });
           } else {
-            throw new Error("Champs requis manquants pour créer justificatif");
+            // Create justificatif with available fields, empty strings for missing ones
+            await this.justificatifRepository.create({
+              idUser: id,
+              fichierCarteVitalePdf: fichierCarteVitalePdf || "",
+              fichierRibPdf: fichierRibPdf || "",
+              fichierPieceIdentitePdf: fichierPieceIdentitePdf || "",
+              fichierJustificatifDomicilePdf: fichierJustificatifDomicilePdf || "",
+            });
           }
         }
       }

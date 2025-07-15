@@ -109,12 +109,12 @@ export class CreateUserUseCase {
         await this.justificatifRepository.create({
           idUser: user.id,
           fichierCarteVitalePdf:
-            createUserDto.justificatif.fichierCarteVitalePdf,
-          fichierRibPdf: createUserDto.justificatif.fichierRibPdf,
+            createUserDto.justificatif.fichierCarteVitalePdf || "",
+          fichierRibPdf: createUserDto.justificatif.fichierRibPdf || "",
           fichierPieceIdentitePdf:
-            createUserDto.justificatif.fichierPieceIdentitePdf,
+            createUserDto.justificatif.fichierPieceIdentitePdf || "",
           fichierJustificatifDomicilePdf:
-            createUserDto.justificatif.fichierJustificatifDomicilePdf,
+            createUserDto.justificatif.fichierJustificatifDomicilePdf || "",
         });
       }
 
