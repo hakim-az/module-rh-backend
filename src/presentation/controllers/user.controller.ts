@@ -41,10 +41,12 @@ export class UserController {
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
-        if (file.mimetype !== "application/pdf") {
+        // Allow PDF files for justificatif documents and images for avatar
+        const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
+        if (!allowedTypes.includes(file.mimetype)) {
           return cb(
             new HttpException(
-              "Only PDF files are allowed",
+              "Only PDF files and images are allowed",
               HttpStatus.BAD_REQUEST
             ),
             false
@@ -68,70 +70,123 @@ export class UserController {
     @Body() createUserDto: CreateUserDto
   ) {
     try {
+      console.log("Files received:", files?.map(f => ({ fieldname: f.fieldname, originalname: f.originalname })));
+      console.log("CreateUserDto before processing:", JSON.stringify(createUserDto, null, 2));
+
       // Handle file uploads
       if (files && Array.isArray(files)) {
         const fileMap = Object.fromEntries(files.map((f) => [f.fieldname, f]));
+        console.log("File map keys:", Object.keys(fileMap));
 
         // Upload justificatif files if provided
-        if (createUserDto.justificatif) {
-          if (fileMap["fichierCarteVitalePdf"]) {
+        if (createUserDto.justificatif || Object.keys(fileMap).some(key => 
+          key.includes('fichierCarteVitalePdf') || 
+          key.includes('fichierRibPdf') || 
+          key.includes('fichierPieceIdentitePdf') || 
+          key.includes('fichierJustificatifDomicilePdf')
+        )) {
+          // Initialize justificatif object if it doesn't exist
+          if (!createUserDto.justificatif) {
+            createUserDto.justificatif = {};
+          }
+
+          if (fileMap["justificatif[fichierCarteVitalePdf]"] || fileMap["fichierCarteVitalePdf"]) {
+            const file = fileMap["justificatif[fichierCarteVitalePdf]"] || fileMap["fichierCarteVitalePdf"];
+            console.log("Uploading fichierCarteVitalePdf...");
             createUserDto.justificatif.fichierCarteVitalePdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierCarteVitalePdf"].buffer,
-                fileMap["fichierCarteVitalePdf"].originalname,
-                fileMap["fichierCarteVitalePdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
+            console.log("Uploaded fichierCarteVitalePdf:", createUserDto.justificatif.fichierCarteVitalePdf);
           }
 
-          if (fileMap["fichierRibPdf"]) {
+          if (fileMap["justificatif[fichierRibPdf]"] || fileMap["fichierRibPdf"]) {
+            const file = fileMap["justificatif[fichierRibPdf]"] || fileMap["fichierRibPdf"];
+            console.log("Uploading fichierRibPdf...");
             createUserDto.justificatif.fichierRibPdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierRibPdf"].buffer,
-                fileMap["fichierRibPdf"].originalname,
-                fileMap["fichierRibPdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
+            console.log("Uploaded fichierRibPdf:", createUserDto.justificatif.fichierRibPdf);
           }
 
-          if (fileMap["fichierPieceIdentitePdf"]) {
+          if (fileMap["justificatif[fichierPieceIdentitePdf]"] || fileMap["fichierPieceIdentitePdf"]) {
+            const file = fileMap["justificatif[fichierPieceIdentitePdf]"] || fileMap["fichierPieceIdentitePdf"];
+            console.log("Uploading fichierPieceIdentitePdf...");
             createUserDto.justificatif.fichierPieceIdentitePdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierPieceIdentitePdf"].buffer,
-                fileMap["fichierPieceIdentitePdf"].originalname,
-                fileMap["fichierPieceIdentitePdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
+            console.log("Uploaded fichierPieceIdentitePdf:", createUserDto.justificatif.fichierPieceIdentitePdf);
           }
 
-          if (fileMap["fichierJustificatifDomicilePdf"]) {
+          if (fileMap["justificatif[fichierJustificatifDomicilePdf]"] || fileMap["fichierJustificatifDomicilePdf"]) {
+            const file = fileMap["justificatif[fichierJustificatifDomicilePdf]"] || fileMap["fichierJustificatifDomicilePdf"];
+            console.log("Uploading fichierJustificatifDomicilePdf...");
             createUserDto.justificatif.fichierJustificatifDomicilePdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierJustificatifDomicilePdf"].buffer,
-                fileMap["fichierJustificatifDomicilePdf"].originalname,
-                fileMap["fichierJustificatifDomicilePdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
+            console.log("Uploaded fichierJustificatifDomicilePdf:", createUserDto.justificatif.fichierJustificatifDomicilePdf);
           }
         }
 
         // Upload contrat files if provided
-        if (createUserDto.contrat) {
-          if (fileMap["fichierContratNonSignerPdf"]) {
-            createUserDto.contrat.fichierContratNonSignerPdf =
-              await this.uploadFileUseCase.execute(
-                fileMap["fichierContratNonSignerPdf"].buffer,
-                fileMap["fichierContratNonSignerPdf"].originalname,
-                fileMap["fichierContratNonSignerPdf"].mimetype
-              );
+        if (createUserDto.contrat || Object.keys(fileMap).some(key => 
+          key.includes('fichierContratNonSignerPdf') || 
+          key.includes('fichierContratSignerPdf')
+        )) {
+          // Initialize contrat object if it doesn't exist
+          if (!createUserDto.contrat) {
+            createUserDto.contrat = {};
           }
 
-          if (fileMap["fichierContratSignerPdf"]) {
+          if (fileMap["contrat[fichierContratNonSignerPdf]"] || fileMap["fichierContratNonSignerPdf"]) {
+            const file = fileMap["contrat[fichierContratNonSignerPdf]"] || fileMap["fichierContratNonSignerPdf"];
+            console.log("Uploading fichierContratNonSignerPdf...");
+            createUserDto.contrat.fichierContratNonSignerPdf =
+              await this.uploadFileUseCase.execute(
+                file.buffer,
+                file.originalname,
+                file.mimetype
+              );
+            console.log("Uploaded fichierContratNonSignerPdf:", createUserDto.contrat.fichierContratNonSignerPdf);
+          }
+
+          if (fileMap["contrat[fichierContratSignerPdf]"] || fileMap["fichierContratSignerPdf"]) {
+            const file = fileMap["contrat[fichierContratSignerPdf]"] || fileMap["fichierContratSignerPdf"];
+            console.log("Uploading fichierContratSignerPdf...");
             createUserDto.contrat.fichierContratSignerPdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierContratSignerPdf"].buffer,
-                fileMap["fichierContratSignerPdf"].originalname,
-                fileMap["fichierContratSignerPdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
+            console.log("Uploaded fichierContratSignerPdf:", createUserDto.contrat.fichierContratSignerPdf);
           }
         }
+
+        // Handle avatar upload
+        if (fileMap["avatar"]) {
+          console.log("Uploading avatar...");
+          createUserDto.avatar = await this.uploadFileUseCase.execute(
+            fileMap["avatar"].buffer,
+            fileMap["avatar"].originalname,
+            fileMap["avatar"].mimetype
+          );
+          console.log("Uploaded avatar:", createUserDto.avatar);
+        }
       }
+
+      console.log("CreateUserDto after file processing:", JSON.stringify(createUserDto, null, 2));
 
       const user = await this.createUserUseCase.execute(createUserDto);
       return {
@@ -141,6 +196,7 @@ export class UserController {
         data: user,
       };
     } catch (error) {
+      console.error("Error creating user:", error);
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -236,10 +292,10 @@ export class UserController {
           updateUserDto.justificatif ||
           Object.keys(fileMap).some(
             (key) =>
-              key.startsWith("fichierCarteVitalePdf") ||
-              key.startsWith("fichierRibPdf") ||
-              key.startsWith("fichierPieceIdentitePdf") ||
-              key.startsWith("fichierJustificatifDomicilePdf")
+              key.includes("fichierCarteVitalePdf") ||
+              key.includes("fichierRibPdf") ||
+              key.includes("fichierPieceIdentitePdf") ||
+              key.includes("fichierJustificatifDomicilePdf")
           )
         ) {
           // Initialize justificatif object if it doesn't exist
@@ -247,13 +303,14 @@ export class UserController {
             updateUserDto.justificatif = {};
           }
 
-          if (fileMap["fichierCarteVitalePdf"]) {
+          if (fileMap["justificatif[fichierCarteVitalePdf]"] || fileMap["fichierCarteVitalePdf"]) {
+            const file = fileMap["justificatif[fichierCarteVitalePdf]"] || fileMap["fichierCarteVitalePdf"];
             console.log("Uploading fichierCarteVitalePdf...");
             updateUserDto.justificatif.fichierCarteVitalePdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierCarteVitalePdf"].buffer,
-                fileMap["fichierCarteVitalePdf"].originalname,
-                fileMap["fichierCarteVitalePdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
             console.log(
               "Uploaded fichierCarteVitalePdf:",
@@ -261,13 +318,14 @@ export class UserController {
             );
           }
 
-          if (fileMap["fichierRibPdf"]) {
+          if (fileMap["justificatif[fichierRibPdf]"] || fileMap["fichierRibPdf"]) {
+            const file = fileMap["justificatif[fichierRibPdf]"] || fileMap["fichierRibPdf"];
             console.log("Uploading fichierRibPdf...");
             updateUserDto.justificatif.fichierRibPdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierRibPdf"].buffer,
-                fileMap["fichierRibPdf"].originalname,
-                fileMap["fichierRibPdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
             console.log(
               "Uploaded fichierRibPdf:",
@@ -275,13 +333,14 @@ export class UserController {
             );
           }
 
-          if (fileMap["fichierPieceIdentitePdf"]) {
+          if (fileMap["justificatif[fichierPieceIdentitePdf]"] || fileMap["fichierPieceIdentitePdf"]) {
+            const file = fileMap["justificatif[fichierPieceIdentitePdf]"] || fileMap["fichierPieceIdentitePdf"];
             console.log("Uploading fichierPieceIdentitePdf...");
             updateUserDto.justificatif.fichierPieceIdentitePdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierPieceIdentitePdf"].buffer,
-                fileMap["fichierPieceIdentitePdf"].originalname,
-                fileMap["fichierPieceIdentitePdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
             console.log(
               "Uploaded fichierPieceIdentitePdf:",
@@ -289,13 +348,14 @@ export class UserController {
             );
           }
 
-          if (fileMap["fichierJustificatifDomicilePdf"]) {
+          if (fileMap["justificatif[fichierJustificatifDomicilePdf]"] || fileMap["fichierJustificatifDomicilePdf"]) {
+            const file = fileMap["justificatif[fichierJustificatifDomicilePdf]"] || fileMap["fichierJustificatifDomicilePdf"];
             console.log("Uploading fichierJustificatifDomicilePdf...");
             updateUserDto.justificatif.fichierJustificatifDomicilePdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierJustificatifDomicilePdf"].buffer,
-                fileMap["fichierJustificatifDomicilePdf"].originalname,
-                fileMap["fichierJustificatifDomicilePdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
             console.log(
               "Uploaded fichierJustificatifDomicilePdf:",
@@ -309,8 +369,8 @@ export class UserController {
           updateUserDto.contrat ||
           Object.keys(fileMap).some(
             (key) =>
-              key.startsWith("fichierContratNonSignerPdf") ||
-              key.startsWith("fichierContratSignerPdf")
+              key.includes("fichierContratNonSignerPdf") ||
+              key.includes("fichierContratSignerPdf")
           )
         ) {
           // Initialize contrat object if it doesn't exist
@@ -318,13 +378,14 @@ export class UserController {
             updateUserDto.contrat = {};
           }
 
-          if (fileMap["fichierContratNonSignerPdf"]) {
+          if (fileMap["contrat[fichierContratNonSignerPdf]"] || fileMap["fichierContratNonSignerPdf"]) {
+            const file = fileMap["contrat[fichierContratNonSignerPdf]"] || fileMap["fichierContratNonSignerPdf"];
             console.log("Uploading fichierContratNonSignerPdf...");
             updateUserDto.contrat.fichierContratNonSignerPdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierContratNonSignerPdf"].buffer,
-                fileMap["fichierContratNonSignerPdf"].originalname,
-                fileMap["fichierContratNonSignerPdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
             console.log(
               "Uploaded fichierContratNonSignerPdf:",
@@ -332,19 +393,31 @@ export class UserController {
             );
           }
 
-          if (fileMap["fichierContratSignerPdf"]) {
+          if (fileMap["contrat[fichierContratSignerPdf]"] || fileMap["fichierContratSignerPdf"]) {
+            const file = fileMap["contrat[fichierContratSignerPdf]"] || fileMap["fichierContratSignerPdf"];
             console.log("Uploading fichierContratSignerPdf...");
             updateUserDto.contrat.fichierContratSignerPdf =
               await this.uploadFileUseCase.execute(
-                fileMap["fichierContratSignerPdf"].buffer,
-                fileMap["fichierContratSignerPdf"].originalname,
-                fileMap["fichierContratSignerPdf"].mimetype
+                file.buffer,
+                file.originalname,
+                file.mimetype
               );
             console.log(
               "Uploaded fichierContratSignerPdf:",
               updateUserDto.contrat.fichierContratSignerPdf
             );
           }
+        }
+
+        // Handle avatar upload
+        if (fileMap["avatar"]) {
+          console.log("Uploading avatar...");
+          updateUserDto.avatar = await this.uploadFileUseCase.execute(
+            fileMap["avatar"].buffer,
+            fileMap["avatar"].originalname,
+            fileMap["avatar"].mimetype
+          );
+          console.log("Uploaded avatar:", updateUserDto.avatar);
         }
       }
 
