@@ -7,25 +7,25 @@ export class CreateJustificatifDto {
   @IsString()
   idUser: string;
 
-  @ApiProperty({ example: "https://example.com/pdf" })
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
-  fichierCarteVitalePdf: string;
+  @IsOptional()
+  fichierCarteVitalePdf?: string;
 
-  @ApiProperty({ example: "https://example.com/pdf" })
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
-  fichierRibPdf: string;
+  @IsOptional()
+  fichierRibPdf?: string;
 
-  @ApiProperty({ example: "https://example.com/pdf" })
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
-  fichierPieceIdentitePdf: string;
+  @IsOptional()
+  fichierPieceIdentitePdf?: string;
 
-  @ApiProperty({ example: "https://example.com/pdf" })
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
-  @IsNotEmpty()
-  fichierJustificatifDomicilePdf: string;
+  @IsOptional()
+  fichierJustificatifDomicilePdf?: string;
 }
 
 export class UpdateJustificatifDto {
