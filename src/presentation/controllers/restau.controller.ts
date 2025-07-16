@@ -62,6 +62,14 @@ export class RestauController {
         fichierJustificatifPdf: restau.fichierJustificatifPdf ?? "",
         createdAt: restau.createdAt?.toISOString(),
         updatedAt: restau.updatedAt?.toISOString(),
+        user: restau.user
+          ? {
+              nomDeNaissance: restau.user.nomDeNaissance,
+              prenom: restau.user.prenom,
+              emailProfessionnel: restau.user.emailProfessionnel,
+              avatar: restau.user.avatar,
+            }
+          : undefined,
       }));
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -91,6 +99,14 @@ export class RestauController {
         fichierJustificatifPdf: restau.fichierJustificatifPdf ?? "",
         createdAt: restau.createdAt?.toISOString(),
         updatedAt: restau.updatedAt?.toISOString(),
+        user: restau.user
+          ? {
+              nomDeNaissance: restau.user.nomDeNaissance,
+              prenom: restau.user.prenom,
+              emailProfessionnel: restau.user.emailProfessionnel,
+              avatar: restau.user.avatar,
+            }
+          : undefined,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -146,6 +162,14 @@ export class RestauController {
       fichierJustificatifPdf: restau.fichierJustificatifPdf ?? "",
       createdAt: restau.createdAt?.toISOString(),
       updatedAt: restau.updatedAt?.toISOString(),
+      user: restau.user
+        ? {
+            nomDeNaissance: restau.user.nomDeNaissance,
+            prenom: restau.user.prenom,
+            emailProfessionnel: restau.user.emailProfessionnel,
+            avatar: restau.user.avatar,
+          }
+        : undefined,
     };
   }
 
@@ -166,6 +190,14 @@ export class RestauController {
       fichierJustificatifPdf: restau.fichierJustificatifPdf ?? "",
       createdAt: restau.createdAt?.toISOString(),
       updatedAt: restau.updatedAt?.toISOString(),
+      user: restau.user
+        ? {
+            nomDeNaissance: restau.user.nomDeNaissance,
+            prenom: restau.user.prenom,
+            emailProfessionnel: restau.user.emailProfessionnel,
+            avatar: restau.user.avatar,
+          }
+        : undefined,
     }));
   }
 
@@ -219,6 +251,14 @@ export class RestauController {
       fichierJustificatifPdf: restau.fichierJustificatifPdf ?? "",
       createdAt: restau.createdAt?.toISOString(),
       updatedAt: restau.updatedAt?.toISOString(),
+      user: restau.user
+        ? {
+            nomDeNaissance: restau.user.nomDeNaissance,
+            prenom: restau.user.prenom,
+            emailProfessionnel: restau.user.emailProfessionnel,
+            avatar: restau.user.avatar,
+          }
+        : undefined,
     };
   }
 

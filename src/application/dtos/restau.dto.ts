@@ -60,6 +60,20 @@ export class UpdateRestauDto {
   fichierJustificatifPdf?: string;
 }
 
+class UserResponse {
+  @ApiProperty()
+  prenom: string;
+
+  @ApiProperty()
+  nomDeNaissance: string;
+
+  @ApiProperty()
+  emailProfessionnel: string;
+
+  @ApiProperty()
+  avatar: string;
+}
+
 export class RestauResponseDto {
   @ApiProperty()
   id: string;
@@ -87,4 +101,7 @@ export class RestauResponseDto {
 
   @ApiProperty()
   updatedAt: string;
+
+  @ApiProperty()
+  user: UserResponse;
 }

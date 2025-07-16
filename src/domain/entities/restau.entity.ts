@@ -8,7 +8,13 @@ export class Restau {
     public readonly note?: string,
     public readonly fichierJustificatifPdf?: string,
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly user?: {
+      prenom: string;
+      nomDeNaissance: string;
+      emailProfessionnel: string;
+      avatar: string;
+    }
   ) {}
 
   public static create(

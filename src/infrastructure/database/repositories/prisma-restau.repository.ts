@@ -10,6 +10,7 @@ export class PrismaRestauRepository implements RestauRepository {
   async findById(id: string): Promise<Restau | null> {
     const restau = await this.prisma.restau.findUnique({
       where: { id },
+      include: { user: true },
     });
 
     if (!restau) return null;
@@ -23,7 +24,15 @@ export class PrismaRestauRepository implements RestauRepository {
       restau.note,
       restau.fichierJustificatifPdf,
       restau.createdAt,
-      restau.updatedAt
+      restau.updatedAt,
+      restau.user
+        ? {
+            prenom: restau.user.prenom,
+            nomDeNaissance: restau.user.nomDeNaissance,
+            emailProfessionnel: restau.user.emailProfessionnel,
+            avatar: restau.user.avatar,
+          }
+        : undefined
     );
   }
 
@@ -49,7 +58,9 @@ export class PrismaRestauRepository implements RestauRepository {
   }
 
   async findAll(): Promise<Restau[]> {
-    const restaux = await this.prisma.restau.findMany();
+    const restaux = await this.prisma.restau.findMany({
+      include: { user: true },
+    });
 
     return restaux.map(
       (restau) =>
@@ -62,7 +73,15 @@ export class PrismaRestauRepository implements RestauRepository {
           restau.note,
           restau.fichierJustificatifPdf,
           restau.createdAt,
-          restau.updatedAt
+          restau.updatedAt,
+          restau.user
+            ? {
+                prenom: restau.user.prenom,
+                nomDeNaissance: restau.user.nomDeNaissance,
+                emailProfessionnel: restau.user.emailProfessionnel,
+                avatar: restau.user.avatar,
+              }
+            : undefined
         )
     );
   }
