@@ -29,8 +29,8 @@ export class CreateContratUseCase {
       new Date(createContratDto.dateFin),
       createContratDto.etablissementDeSante,
       createContratDto.serviceDeSante,
-      createContratDto.matricule,
       createContratDto.salaire,
+      createContratDto.matricule,
       createContratDto.fichierContratSignerPdf,
       createContratDto.fichierContratSignerPdf
     );

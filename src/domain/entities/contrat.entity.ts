@@ -8,8 +8,8 @@ export class Contrat {
     public readonly dateFin: Date,
     public readonly etablissementDeSante: string,
     public readonly serviceDeSante: string,
-    public readonly matricule: string,
     public readonly salaire: string,
+    public readonly matricule: string,
     public readonly fichierContratNonSignerPdf?: string,
     public readonly fichierContratSignerPdf?: string,
     public readonly createdAt?: Date,
@@ -23,9 +23,9 @@ export class Contrat {
     dateDebut: Date,
     dateFin: Date,
     etablissementDeSante: string,
+    serviceDeSante: string,
     salaire: string,
     matricule: string,
-    serviceDeSante: string,
     fichierContratNonSignerPdf?: string,
     fichierContratSignerPdf?: string
   ): Contrat {
