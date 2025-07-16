@@ -10,6 +10,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
   async findById(id: string): Promise<Coffre | null> {
     const coffre = await this.prisma.coffre.findUnique({
       where: { id },
+      include: { user: true },
     });
 
     if (!coffre) return null;
@@ -23,33 +24,23 @@ export class PrismaCoffreRepository implements CoffreRepository {
       coffre.note,
       coffre.fichierJustificatifPdf,
       coffre.createdAt,
-      coffre.updatedAt
+      coffre.updatedAt,
+      coffre.user
+        ? {
+            prenom: coffre.user.prenom,
+            nomDeNaissance: coffre.user.nomDeNaissance,
+            emailProfessionnel: coffre.user.emailProfessionnel,
+            avatar: coffre.user.avatar,
+          }
+        : undefined
     );
   }
 
   async findByUserId(userId: string): Promise<Coffre[]> {
     const coffres = await this.prisma.coffre.findMany({
       where: { idUser: userId },
+      include: { user: true },
     });
-
-    return coffres.map(
-      (absence) =>
-        new Coffre(
-          absence.id,
-          absence.idUser,
-          absence.typeBulletin,
-          absence.mois,
-          absence.annee,
-          absence.note,
-          absence.fichierJustificatifPdf,
-          absence.createdAt,
-          absence.updatedAt
-        )
-    );
-  }
-
-  async findAll(): Promise<Coffre[]> {
-    const coffres = await this.prisma.coffre.findMany();
 
     return coffres.map(
       (coffre) =>
@@ -62,7 +53,44 @@ export class PrismaCoffreRepository implements CoffreRepository {
           coffre.note,
           coffre.fichierJustificatifPdf,
           coffre.createdAt,
-          coffre.updatedAt
+          coffre.updatedAt,
+          coffre.user
+            ? {
+                prenom: coffre.user.prenom,
+                nomDeNaissance: coffre.user.nomDeNaissance,
+                emailProfessionnel: coffre.user.emailProfessionnel,
+                avatar: coffre.user.avatar,
+              }
+            : undefined
+        )
+    );
+  }
+
+  async findAll(): Promise<Coffre[]> {
+    const coffres = await this.prisma.coffre.findMany({
+      include: { user: true }, // 👈 includes user relation
+    });
+
+    return coffres.map(
+      (coffre) =>
+        new Coffre(
+          coffre.id,
+          coffre.idUser,
+          coffre.typeBulletin,
+          coffre.mois,
+          coffre.annee,
+          coffre.note,
+          coffre.fichierJustificatifPdf,
+          coffre.createdAt,
+          coffre.updatedAt,
+          coffre.user
+            ? {
+                prenom: coffre.user.prenom,
+                nomDeNaissance: coffre.user.nomDeNaissance,
+                emailProfessionnel: coffre.user.emailProfessionnel,
+                avatar: coffre.user.avatar,
+              }
+            : undefined
         )
     );
   }

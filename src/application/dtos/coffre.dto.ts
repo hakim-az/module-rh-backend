@@ -65,6 +65,20 @@ export class UpdateCoffreDto {
   fichierJustificatifPdf?: string;
 }
 
+class UserResponse {
+  @ApiProperty()
+  prenom: string;
+
+  @ApiProperty()
+  nomDeNaissance: string;
+
+  @ApiProperty()
+  emailProfessionnel: string;
+
+  @ApiProperty()
+  avatar: string;
+}
+
 export class CoffreResponseDto {
   @ApiProperty()
   id: string;
@@ -92,4 +106,7 @@ export class CoffreResponseDto {
 
   @ApiProperty()
   updatedAt: string;
+
+  @ApiProperty()
+  user: UserResponse;
 }

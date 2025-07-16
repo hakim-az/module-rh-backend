@@ -60,6 +60,14 @@ export class CoffreController {
         fichierJustificatifPdf: coffre.fichierJustificatifPdf ?? "",
         createdAt: coffre.createdAt?.toISOString(),
         updatedAt: coffre.updatedAt?.toISOString(),
+        user: coffre.user
+          ? {
+              nomDeNaissance: coffre.user.nomDeNaissance,
+              prenom: coffre.user.prenom,
+              emailProfessionnel: coffre.user.emailProfessionnel,
+              avatar: coffre.user.avatar,
+            }
+          : undefined,
       }));
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -89,6 +97,14 @@ export class CoffreController {
         fichierJustificatifPdf: coffre.fichierJustificatifPdf ?? "",
         createdAt: coffre.createdAt?.toISOString(),
         updatedAt: coffre.updatedAt?.toISOString(),
+        user: coffre.user
+          ? {
+              nomDeNaissance: coffre.user.nomDeNaissance,
+              prenom: coffre.user.prenom,
+              emailProfessionnel: coffre.user.emailProfessionnel,
+              avatar: coffre.user.avatar,
+            }
+          : undefined,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -146,6 +162,14 @@ export class CoffreController {
       fichierJustificatifPdf: coffre.fichierJustificatifPdf ?? "",
       createdAt: coffre.createdAt?.toISOString(),
       updatedAt: coffre.updatedAt?.toISOString(),
+      user: coffre.user
+        ? {
+            nomDeNaissance: coffre.user.nomDeNaissance,
+            prenom: coffre.user.prenom,
+            emailProfessionnel: coffre.user.emailProfessionnel,
+            avatar: coffre.user.avatar,
+          }
+        : undefined,
     };
   }
 
@@ -166,6 +190,14 @@ export class CoffreController {
       fichierJustificatifPdf: coffre.fichierJustificatifPdf ?? "",
       createdAt: coffre.createdAt?.toISOString(),
       updatedAt: coffre.updatedAt?.toISOString(),
+      user: coffre.user
+        ? {
+            nomDeNaissance: coffre.user.nomDeNaissance,
+            prenom: coffre.user.prenom,
+            emailProfessionnel: coffre.user.emailProfessionnel,
+            avatar: coffre.user.avatar,
+          }
+        : undefined,
     }));
   }
 
@@ -219,6 +251,14 @@ export class CoffreController {
       fichierJustificatifPdf: coffre.fichierJustificatifPdf ?? "",
       createdAt: coffre.createdAt?.toISOString(),
       updatedAt: coffre.updatedAt?.toISOString(),
+      user: coffre.user
+        ? {
+            nomDeNaissance: coffre.user.nomDeNaissance,
+            prenom: coffre.user.prenom,
+            emailProfessionnel: coffre.user.emailProfessionnel,
+            avatar: coffre.user.avatar,
+          }
+        : undefined,
     };
   }
 
