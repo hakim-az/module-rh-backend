@@ -130,7 +130,7 @@ export class PrismaContratRepository implements ContratRepository {
     if (contratData.serviceDeSante)
       updateData.serviceDeSante = contratData.serviceDeSante;
     if (contratData.matricule) updateData.matricule = contratData.matricule;
-    if (contratData.salaire) updateData.Salaire = contratData.salaire;
+    if (contratData.salaire) updateData.salaire = contratData.salaire;
     if (contratData.fichierContratNonSignerPdf !== undefined)
       updateData.fichierContratNonSignerPdf =
         contratData.fichierContratNonSignerPdf;

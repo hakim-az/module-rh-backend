@@ -31,7 +31,7 @@ export class CreateContratUseCase {
       createContratDto.serviceDeSante,
       createContratDto.salaire,
       createContratDto.matricule,
-      createContratDto.fichierContratSignerPdf,
+      createContratDto.fichierContratNonSignerPdf,
       createContratDto.fichierContratSignerPdf
     );
 
