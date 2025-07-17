@@ -62,9 +62,9 @@ export class YousignController {
     );
     await this.yousignService.activateSignatureRequest(signatureRequest.id);
 
-    // Update user status to 'contrat-signer' after successful signature request
+    // Update user status to 'email-sent' after successful signature request
     await this.updateUserUseCase.execute(userId, {
-      statut: 'contrat-signer'
+      statut: 'email-sent'
     });
     fs.unlink(filePath, () => {});
 
@@ -74,7 +74,7 @@ export class YousignController {
       signatureRequestId: signatureRequest.id,
       documentId: document.id,
       signerEmail: email,
-      userStatus: 'contrat-signer'
+      userStatus: 'email-sent'
     };
   }
 }

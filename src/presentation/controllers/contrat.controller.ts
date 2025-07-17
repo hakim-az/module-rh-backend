@@ -26,7 +26,9 @@ import { GetContratsByUserUseCase } from "@application/use-cases/contrat/get-con
 import { UpdateContratUseCase } from "@application/use-cases/contrat/update-contrat.use-case";
 import { DeleteContratUseCase } from "@application/use-cases/contrat/delete-contrat.use-case";
 import { UploadFileUseCase } from "@/application/use-cases/file/upload-file.use-case";
+import { UploadSignedContractUseCase } from "@/application/use-cases/contrat/upload-signed-contract.use-case";
 import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
+import { UploadSignedContractDto } from "@/application/dtos/contrat.dto";
 
 @ApiTags("contrats")
 @Controller("contrats")
@@ -38,7 +40,8 @@ export class ContratController {
     private readonly getContratsByUserUseCase: GetContratsByUserUseCase,
     private readonly updateContratUseCase: UpdateContratUseCase,
     private readonly deleteContratUseCase: DeleteContratUseCase,
-    private readonly uploadFileUseCase: UploadFileUseCase
+    private readonly uploadFileUseCase: UploadFileUseCase,
+    private readonly uploadSignedContractUseCase: UploadSignedContractUseCase
   ) {}
 
   @Post()
@@ -293,6 +296,71 @@ export class ContratController {
       return { message: "Contract deleted successfully" };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @Patch("user/:userId/upload-signed")
+  @UseInterceptors(
+    FileInterceptor("fichierContratSignerPdf", {
+      limits: { fileSize: 50 * 1024 * 1024 },
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype !== "application/pdf") {
+          return cb(
+            new HttpException(
+              "Only PDF files are allowed",
+              HttpStatus.BAD_REQUEST
+            ),
+            false
+          );
+        }
+        cb(null, true);
+      },
+    })
+  )
+  @ApiOperation({ summary: "Upload signed contract for a user" })
+  @ApiResponse({
+    status: 200,
+    description: "Signed contract uploaded successfully and user status updated to 'contract-signed'",
+    type: ContratResponseDto,
+  })
+  async uploadSignedContract(
+    @Param("userId") userId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() uploadSignedContractDto: UploadSignedContractDto
+  ): Promise<ContratResponseDto> {
+    try {
+      let fichierContratSignerPdf = uploadSignedContractDto.fichierContratSignerPdf ?? "";
+
+      if (file) {
+        fichierContratSignerPdf = await this.uploadFileUseCase.execute(
+          file.buffer,
+          file.originalname,
+          file.mimetype
+        );
+      }
+
+      const contrat = await this.uploadSignedContractUseCase.execute(userId, {
+        fichierContratSignerPdf,
+      });
+
+      return {
+        id: contrat.id,
+        idUser: contrat.idUser,
+        poste: contrat.poste,
+        typeContrat: contrat.typeContrat,
+        dateDebut: contrat.dateDebut,
+        dateFin: contrat.dateFin,
+        etablissementDeSante: contrat.etablissementDeSante,
+        serviceDeSante: contrat.serviceDeSante,
+        salaire: contrat.salaire,
+        matricule: contrat.matricule,
+        fichierContratNonSignerPdf: contrat.fichierContratNonSignerPdf ?? "",
+        fichierContratSignerPdf: contrat.fichierContratSignerPdf ?? "",
+        createdAt: contrat.createdAt,
+        updatedAt: contrat.updatedAt,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

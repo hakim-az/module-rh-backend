@@ -115,6 +115,13 @@ export class UpdateContratDto {
   fichierContratSignerPdf?: string;
 }
 
+export class UploadSignedContractDto {
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  fichierContratSignerPdf?: string;
+}
+
 export class ContratResponseDto {
   @ApiProperty()
   id: string;

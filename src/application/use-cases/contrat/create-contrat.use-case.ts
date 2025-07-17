@@ -35,6 +35,13 @@ export class CreateContratUseCase {
       createContratDto.fichierContratSignerPdf
     );
 
-    return this.contratRepository.create(contrat);
+    const createdContrat = await this.contratRepository.create(contrat);
+    
+    // Update user status to 'contract-uploaded' after successful contract creation
+    await this.userRepository.update(createContratDto.idUser, {
+      statut: 'contract-uploaded'
+    });
+    
+    return createdContrat;
   }
 }
