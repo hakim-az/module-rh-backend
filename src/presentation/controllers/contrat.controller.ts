@@ -29,6 +29,7 @@ import { UploadFileUseCase } from "@/application/use-cases/file/upload-file.use-
 import { UploadSignedContractUseCase } from "@/application/use-cases/contrat/upload-signed-contract.use-case";
 import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { UploadSignedContractDto } from "@/application/dtos/contrat.dto";
+import { UpdateUserUseCase } from "@/application/use-cases/user/update-user.use-case";
 
 @ApiTags("contrats")
 @Controller("contrats")
@@ -41,7 +42,8 @@ export class ContratController {
     private readonly updateContratUseCase: UpdateContratUseCase,
     private readonly deleteContratUseCase: DeleteContratUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
-    private readonly uploadSignedContractUseCase: UploadSignedContractUseCase
+    private readonly uploadSignedContractUseCase: UploadSignedContractUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase
   ) {}
 
   @Post()
@@ -320,7 +322,8 @@ export class ContratController {
   @ApiOperation({ summary: "Upload signed contract for a user" })
   @ApiResponse({
     status: 200,
-    description: "Signed contract uploaded successfully and user status updated to 'contract-signed'",
+    description:
+      "Signed contract uploaded successfully and user status updated to 'contract-signed'",
     type: ContratResponseDto,
   })
   async uploadSignedContract(
@@ -329,7 +332,8 @@ export class ContratController {
     @Body() uploadSignedContractDto: UploadSignedContractDto
   ): Promise<ContratResponseDto> {
     try {
-      let fichierContratSignerPdf = uploadSignedContractDto.fichierContratSignerPdf ?? "";
+      let fichierContratSignerPdf =
+        uploadSignedContractDto.fichierContratSignerPdf ?? "";
 
       if (file) {
         fichierContratSignerPdf = await this.uploadFileUseCase.execute(
@@ -341,6 +345,11 @@ export class ContratController {
 
       const contrat = await this.uploadSignedContractUseCase.execute(userId, {
         fichierContratSignerPdf,
+      });
+
+      // ✅ Mettre à jour le statut de l'utilisateur
+      await this.updateUserUseCase.execute(userId, {
+        statut: "contract-signed",
       });
 
       return {
