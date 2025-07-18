@@ -18,7 +18,7 @@ export class YousignController {
     schema: {
       type: "object",
       properties: {
-        userId: { type: "string", example: "cmcqkvo0000015x2ahuewe6bx" },
+        idUser: { type: "string", example: "cmcqkvo0000015x2ahuewe6bx" },
         firstName: { type: "string", example: "John" },
         lastName: { type: "string", example: "Doe" },
         email: { type: "string", format: "email", example: "john@example.com" },
@@ -28,7 +28,7 @@ export class YousignController {
           example: "https://example.com/contract.pdf",
         },
       },
-      required: ["userId", "firstName", "lastName", "email", "pdfUrl"],
+      required: ["idUser", "firstName", "lastName", "email", "pdfUrl"],
     },
   })
   @ApiResponse({
@@ -38,14 +38,14 @@ export class YousignController {
   async createSignature(
     @Body()
     body: {
-      userId: string;
+      idUser: string;
       firstName: string;
       lastName: string;
       email: string;
       pdfUrl: string;
     }
   ) {
-    const { userId, firstName, lastName, email, pdfUrl } = body;
+    const { idUser, firstName, lastName, email, pdfUrl } = body;
 
     const filePath = await this.yousignService.downloadFile(pdfUrl);
     const signatureRequest = await this.yousignService.createSignatureRequest();
@@ -63,8 +63,8 @@ export class YousignController {
     await this.yousignService.activateSignatureRequest(signatureRequest.id);
 
     // Update user status to 'email-sent' after successful signature request
-    await this.updateUserUseCase.execute(userId, {
-      statut: 'email-sent'
+    await this.updateUserUseCase.execute(idUser, {
+      statut: "email-sent",
     });
     fs.unlink(filePath, () => {});
 
@@ -74,7 +74,7 @@ export class YousignController {
       signatureRequestId: signatureRequest.id,
       documentId: document.id,
       signerEmail: email,
-      userStatus: 'email-sent'
+      userStatus: "email-sent",
     };
   }
 }
