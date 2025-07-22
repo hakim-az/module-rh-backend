@@ -110,6 +110,29 @@ export class S3FileStorageService {
     this.bucketName = this.configService.get("AWS_S3_BUCKET_NAME");
   }
 
+  // async uploadFile(
+  //   file: Buffer,
+  //   fileName: string,
+  //   mimeType: string
+  // ): Promise<string> {
+  //   const key = `uploads/${Date.now()}-${fileName}`;
+
+  //   const command = new PutObjectCommand({
+  //     Bucket: this.bucketName,
+  //     Key: key,
+  //     Body: file,
+  //     ContentType: mimeType,
+  //     ACL: "private",
+  //   });
+
+  //   try {
+  //     await this.s3Client.send(command);
+  //     return key;
+  //   } catch (error: any) {
+  //     throw new Error(`Failed to upload file: ${error.message}`);
+  //   }
+  // }
+
   async uploadFile(
     file: Buffer,
     fileName: string,
@@ -122,12 +145,14 @@ export class S3FileStorageService {
       Key: key,
       Body: file,
       ContentType: mimeType,
-      ACL: "private",
+      // ACL: "public-read",
     });
 
     try {
       await this.s3Client.send(command);
-      return key;
+
+      const url = `https://${this.bucketName}.s3.${this.configService.get("AWS_S3_REGION")}.amazonaws.com/${key}`;
+      return url; // ✅ This is a permanent public URL
     } catch (error: any) {
       throw new Error(`Failed to upload file: ${error.message}`);
     }
