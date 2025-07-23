@@ -214,6 +214,7 @@ export class UpdateUserUseCase {
           fichierRibPdf,
           fichierPieceIdentitePdf,
           fichierJustificatifDomicilePdf,
+          fichierAmeli,
         } = updateUserDto.justificatif;
 
         const justificatifData = {
@@ -223,6 +224,7 @@ export class UpdateUserUseCase {
           ...(fichierJustificatifDomicilePdf
             ? { fichierJustificatifDomicilePdf }
             : {}),
+          ...(fichierAmeli ? { fichierAmeli } : {}),
         };
 
         if (justificatifExist) {
@@ -235,7 +237,8 @@ export class UpdateUserUseCase {
             fichierCarteVitalePdf &&
             fichierRibPdf &&
             fichierPieceIdentitePdf &&
-            fichierJustificatifDomicilePdf;
+            fichierJustificatifDomicilePdf &&
+            fichierAmeli;
 
           if (hasAllJustificatifFields) {
             await this.justificatifRepository.create({
@@ -243,7 +246,9 @@ export class UpdateUserUseCase {
               fichierCarteVitalePdf: fichierCarteVitalePdf || "",
               fichierRibPdf: fichierRibPdf || "",
               fichierPieceIdentitePdf: fichierPieceIdentitePdf || "",
-              fichierJustificatifDomicilePdf: fichierJustificatifDomicilePdf || "",
+              fichierJustificatifDomicilePdf:
+                fichierJustificatifDomicilePdf || "",
+              fichierAmeli: fichierAmeli || "",
             });
           } else {
             // Create justificatif with available fields, empty strings for missing ones
@@ -252,7 +257,9 @@ export class UpdateUserUseCase {
               fichierCarteVitalePdf: fichierCarteVitalePdf || "",
               fichierRibPdf: fichierRibPdf || "",
               fichierPieceIdentitePdf: fichierPieceIdentitePdf || "",
-              fichierJustificatifDomicilePdf: fichierJustificatifDomicilePdf || "",
+              fichierJustificatifDomicilePdf:
+                fichierJustificatifDomicilePdf || "",
+              fichierAmeli: fichierAmeli || "",
             });
           }
         }

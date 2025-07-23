@@ -26,6 +26,11 @@ export class CreateJustificatifDto {
   @IsString()
   @IsOptional()
   fichierJustificatifDomicilePdf?: string;
+
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
+  @IsString()
+  @IsOptional()
+  fichierAmeli?: string;
 }
 
 export class UpdateJustificatifDto {
@@ -48,6 +53,11 @@ export class UpdateJustificatifDto {
   @IsString()
   @IsOptional()
   fichierJustificatifDomicilePdf?: string;
+
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
+  @IsString()
+  @IsOptional()
+  fichierAmeli?: string;
 }
 
 export class JustificatifResponseDto {
@@ -65,6 +75,9 @@ export class JustificatifResponseDto {
 
   @ApiProperty()
   fichierJustificatifDomicilePdf: string;
+
+  @ApiProperty()
+  fichierAmeli: string;
 
   @ApiProperty()
   createdAt: Date;

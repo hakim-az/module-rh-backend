@@ -115,6 +115,7 @@ export class CreateUserUseCase {
             createUserDto.justificatif.fichierPieceIdentitePdf || "",
           fichierJustificatifDomicilePdf:
             createUserDto.justificatif.fichierJustificatifDomicilePdf || "",
+          fichierAmeli: createUserDto.justificatif.fichierAmeli || "",
         });
       }
 

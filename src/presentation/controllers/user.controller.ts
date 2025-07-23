@@ -100,7 +100,8 @@ export class UserController {
               key.includes("fichierCarteVitalePdf") ||
               key.includes("fichierRibPdf") ||
               key.includes("fichierPieceIdentitePdf") ||
-              key.includes("fichierJustificatifDomicilePdf")
+              key.includes("fichierJustificatifDomicilePdf") ||
+              key.includes("fichierAmeli")
           )
         ) {
           // Initialize justificatif object if it doesn't exist
@@ -185,6 +186,25 @@ export class UserController {
             console.log(
               "Uploaded fichierJustificatifDomicilePdf:",
               createUserDto.justificatif.fichierJustificatifDomicilePdf
+            );
+          }
+
+          if (
+            fileMap["justificatif[fichierAmeli]"] ||
+            fileMap["fichierAmeli"]
+          ) {
+            const file =
+              fileMap["justificatif[fichierAmeli]"] || fileMap["fichierAmeli"];
+            console.log("Uploading fichierAmeli...");
+            createUserDto.justificatif.fichierAmeli =
+              await this.uploadFileUseCase.execute(
+                file.buffer,
+                file.originalname,
+                file.mimetype
+              );
+            console.log(
+              "Uploaded fichierAmeli:",
+              createUserDto.justificatif.fichierAmeli
             );
           }
         }
@@ -390,7 +410,8 @@ export class UserController {
               key.includes("fichierCarteVitalePdf") ||
               key.includes("fichierRibPdf") ||
               key.includes("fichierPieceIdentitePdf") ||
-              key.includes("fichierJustificatifDomicilePdf")
+              key.includes("fichierJustificatifDomicilePdf") ||
+              key.includes("fichierAmeli")
           )
         ) {
           // Initialize justificatif object if it doesn't exist
@@ -475,6 +496,25 @@ export class UserController {
             console.log(
               "Uploaded fichierJustificatifDomicilePdf:",
               updateUserDto.justificatif.fichierJustificatifDomicilePdf
+            );
+          }
+
+          if (
+            fileMap["justificatif[fichierAmeli]"] ||
+            fileMap["fichierAmeli"]
+          ) {
+            const file =
+              fileMap["justificatif[fichierAmeli]"] || fileMap["fichierAmeli"];
+            console.log("Uploading fichierAmeli...");
+            updateUserDto.justificatif.fichierAmeli =
+              await this.uploadFileUseCase.execute(
+                file.buffer,
+                file.originalname,
+                file.mimetype
+              );
+            console.log(
+              "Uploaded fichierAmeli:",
+              updateUserDto.justificatif.fichierAmeli
             );
           }
         }

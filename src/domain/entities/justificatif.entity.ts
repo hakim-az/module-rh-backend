@@ -5,6 +5,7 @@ export class Justificatif {
   public readonly fichierRibPdf: string;
   public readonly fichierPieceIdentitePdf: string;
   public readonly fichierJustificatifDomicilePdf: string;
+  public readonly fichierAmeli: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -15,6 +16,7 @@ export class Justificatif {
     fichierRibPdf: string;
     fichierPieceIdentitePdf: string;
     fichierJustificatifDomicilePdf: string;
+    fichierAmeli: string;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -24,6 +26,7 @@ export class Justificatif {
     this.fichierRibPdf = props.fichierRibPdf;
     this.fichierPieceIdentitePdf = props.fichierPieceIdentitePdf;
     this.fichierJustificatifDomicilePdf = props.fichierJustificatifDomicilePdf;
+    this.fichierAmeli = props.fichierAmeli;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
