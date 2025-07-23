@@ -34,7 +34,13 @@ export class YousignService {
         ...options,
       });
       return res.data;
-    } catch (e) {
+    } catch (e: any) {
+      console.error("YouSign API call failed:", {
+        endpoint,
+        status: e.response?.status,
+        data: e.response?.data,
+        message: e.message,
+      });
       throw new HttpException(
         "Error on YouSign API call",
         HttpStatus.BAD_GATEWAY
@@ -102,7 +108,7 @@ export class YousignService {
         {
           document_id: documentId,
           type: "signature",
-          page: 4,
+          page: 1,
           x: 345,
           y: 592,
           width: 150,
