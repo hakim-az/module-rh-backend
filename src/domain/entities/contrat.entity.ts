@@ -18,8 +18,8 @@ export class Contrat {
 
   public static create(
     idUser: string,
-    typeContrat: string,
     poste: string,
+    typeContrat: string,
     dateDebut: Date,
     dateFin: Date,
     etablissementDeSante: string,
