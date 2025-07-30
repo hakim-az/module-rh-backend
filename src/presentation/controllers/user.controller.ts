@@ -312,6 +312,51 @@ export class UserController {
     };
   }
 
+  @Get("totals-by-status")
+  @ApiOperation({ summary: "Get user totals grouped by status" })
+  @ApiResponse({
+    status: 200,
+    description: "User status totals retrieved successfully",
+    schema: {
+      example: {
+        "user-created": 5,
+        "profile-completed": 3,
+        "contract-uploaded": 4,
+        "email-sent": 2,
+        "contract-signed": 6,
+        "user-approuved": 1,
+      },
+    },
+  })
+  async getUserTotalsByStatus(): Promise<Record<string, number>> {
+    try {
+      const users = await this.getAllUsersUseCase.execute();
+
+      const statusTotals: Record<string, number> = {
+        "user-created": 0,
+        "profile-completed": 0,
+        "contract-uploaded": 0,
+        "email-sent": 0,
+        "contract-signed": 0,
+        "user-approuved": 0,
+      };
+
+      for (const user of users) {
+        const status = user.statut; // assuming `statut` is the field name
+        if (status && statusTotals.hasOwnProperty(status)) {
+          statusTotals[status]++;
+        }
+      }
+
+      return statusTotals;
+    } catch (error) {
+      throw new HttpException(
+        "Failed to retrieve user status totals",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @Get("light")
   @ApiOperation({
     summary:

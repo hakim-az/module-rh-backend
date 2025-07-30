@@ -117,6 +117,47 @@ export class AbsenceController {
     }
   }
 
+  @Get("user/:userId/totals-by-status")
+  @ApiOperation({ summary: "Get total absences by status for a specific user" })
+  @ApiResponse({
+    status: 200,
+    description: "Absence totals by status retrieved successfully",
+    schema: {
+      example: {
+        approuver: 3,
+        "en-attente": 1,
+        refuser: 0,
+      },
+    },
+  })
+  async getAbsenceTotalsByStatusForUser(
+    @Param("userId") userId: string
+  ): Promise<Record<string, number>> {
+    try {
+      const absences = await this.getAbsencesByUserUseCase.execute(userId);
+
+      const statusTotals: Record<string, number> = {
+        approuver: 0,
+        "en-attente": 0,
+        refuser: 0,
+      };
+
+      for (const absence of absences) {
+        const status = absence.statut;
+        if (status && statusTotals.hasOwnProperty(status)) {
+          statusTotals[status]++;
+        }
+      }
+
+      return statusTotals;
+    } catch (error) {
+      throw new HttpException(
+        "Failed to retrieve absence totals for user",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "Get a single absence by ID" })
   @ApiResponse({
