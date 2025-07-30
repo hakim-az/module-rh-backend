@@ -51,7 +51,16 @@ export class AbsenceController {
   async findAll(): Promise<AbsenceResponseDto[]> {
     try {
       const absences = await this.getAllAbsencesUseCase.execute();
-      return absences.map((absence) => ({
+
+      // Sort absences by createdAt descending (recent first)
+      const sortedAbsences = absences.sort((a, b) => {
+        // Convert to timestamps for comparison
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      return sortedAbsences.map((absence) => ({
         id: absence.id,
         idUser: absence.idUser,
         typeAbsence: absence.typeAbsence,
@@ -268,7 +277,15 @@ export class AbsenceController {
     @Param("userId") userId: string
   ): Promise<AbsenceResponseDto[]> {
     const absences = await this.getAbsencesByUserUseCase.execute(userId);
-    return absences.map((absence) => ({
+
+    // Sort absences by createdAt descending (recent first)
+    const sortedAbsences = absences.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    return sortedAbsences.map((absence) => ({
       id: absence.id,
       idUser: absence.idUser,
       typeAbsence: absence.typeAbsence,

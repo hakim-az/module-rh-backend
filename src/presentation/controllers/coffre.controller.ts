@@ -50,7 +50,15 @@ export class CoffreController {
   async findAll(): Promise<CoffreResponseDto[]> {
     try {
       const coffres = await this.getAllCoffresUseCase.execute();
-      return coffres.map((coffre) => ({
+
+      // Sort by createdAt descending
+      const sortedCoffres = coffres.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      return sortedCoffres.map((coffre) => ({
         id: coffre.id,
         idUser: coffre.idUser,
         typeBulletin: coffre.typeBulletin,
@@ -180,7 +188,15 @@ export class CoffreController {
     @Param("userId") userId: string
   ): Promise<CoffreResponseDto[]> {
     const coffres = await this.getCoffresByUserUseCase.execute(userId);
-    return coffres.map((coffre) => ({
+
+    // Sort coffres by createdAt descending (most recent first)
+    const sortedCoffres = coffres.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    return sortedCoffres.map((coffre) => ({
       id: coffre.id,
       idUser: coffre.idUser,
       typeBulletin: coffre.typeBulletin,

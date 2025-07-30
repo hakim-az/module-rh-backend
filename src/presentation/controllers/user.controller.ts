@@ -305,10 +305,11 @@ export class UserController {
   @ApiResponse({ status: 200, description: "Liste des utilisateurs" })
   async getAllUsers() {
     const users = await this.getAllUsersUseCase.execute();
+    const reversedUsers = users.slice().reverse(); // clone and reverse the array
     return {
       statusCode: HttpStatus.OK,
       message: "Utilisateurs récupérés avec succès",
-      data: users,
+      data: reversedUsers,
     };
   }
 

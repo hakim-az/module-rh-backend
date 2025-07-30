@@ -52,7 +52,15 @@ export class RestauController {
   async findAll(): Promise<RestauResponseDto[]> {
     try {
       const restaus = await this.getAllRestauxUseCase.execute();
-      return restaus.map((restau) => ({
+
+      // Sort restaus by createdAt descending (recent first)
+      const sortedRestaus = restaus.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      return sortedRestaus.map((restau) => ({
         id: restau.id,
         idUser: restau.idUser,
         nbrJours: restau.nbrJours,
@@ -180,7 +188,15 @@ export class RestauController {
     @Param("userId") userId: string
   ): Promise<RestauResponseDto[]> {
     const restaus = await this.getRestauxByUserUseCase.execute(userId);
-    return restaus.map((restau) => ({
+
+    // Sort restaus by createdAt descending (most recent first)
+    const sortedRestaus = restaus.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    return sortedRestaus.map((restau) => ({
       id: restau.id,
       idUser: restau.idUser,
       nbrJours: restau.nbrJours,
