@@ -7,6 +7,7 @@ import {
   ValidateNested,
   IsBoolean,
   IsDateString,
+  MinLength,
 } from "class-validator";
 
 import { Type } from "class-transformer";
@@ -34,8 +35,8 @@ export class CreateUserDto {
 
   @ApiProperty({ example: "M" })
   @IsString()
-  @IsNotEmpty()
-  civilite: string;
+  @IsOptional()
+  civilite?: string;
 
   @ApiProperty({ example: "Jean" })
   @IsString()
@@ -49,18 +50,18 @@ export class CreateUserDto {
 
   @ApiProperty({ example: "Dupont" })
   @IsString()
-  @IsNotEmpty()
-  nomUsuel: string;
+  @IsOptional()
+  nomUsuel?: string;
 
   @ApiProperty({ example: "Célibataire" })
   @IsString()
-  @IsNotEmpty()
-  situationFamiliale: string;
+  @IsOptional()
+  situationFamiliale?: string;
 
   @ApiProperty({ example: "9876543210" })
   @IsString()
-  @IsNotEmpty()
-  numeroSecuriteSociale: string;
+  @IsOptional()
+  numeroSecuriteSociale?: string;
 
   @ApiProperty({ example: "john.doe@example.com" })
   @IsEmail()
@@ -69,23 +70,28 @@ export class CreateUserDto {
 
   @ApiProperty({ example: "john.doe@example.com" })
   @IsEmail()
-  @IsNotEmpty()
-  emailProfessionnel: string;
+  @IsOptional()
+  emailProfessionnel?: string;
 
-  @ApiProperty({ example: "33777777777" })
+  @ApiProperty({ example: "0777777777" })
   @IsString()
   @IsNotEmpty()
   telephonePersonnel: string;
 
-  @ApiProperty({ example: "33777777777" })
+  @ApiProperty({ example: "0777777777" })
   @IsString()
-  @IsNotEmpty()
-  telephoneProfessionnel: string;
+  @IsOptional()
+  telephoneProfessionnel?: string;
 
   @ApiProperty({ example: "https://avatar.com", required: false })
   @IsString()
   @IsOptional()
   avatar?: string;
+
+  @ApiProperty({ example: "12345678" })
+  @IsNotEmpty()
+  @MinLength(8)
+  password: string;
 
   // Données associées (optionnelles)
   @ApiProperty({ required: false, type: CreateNaissanceDto })

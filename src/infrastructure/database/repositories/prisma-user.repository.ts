@@ -56,11 +56,58 @@ export class PrismaUserRepository implements UserRepository {
     return new User(user);
   }
 
+  // async update(id: string, userData: Partial<User>): Promise<User | null> {
+  //   try {
+  //     const user = await this.prisma.user.update({
+  //       where: { id },
+  //       data: userData,
+  //       include: {
+  //         naissance: true,
+  //         adresse: true,
+  //         contrat: true,
+  //         paiement: true,
+  //         urgence: true,
+  //         justificatif: true,
+  //       },
+  //     });
+
+  //     return new User(user);
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // }
+
   async update(id: string, userData: Partial<User>): Promise<User | null> {
     try {
+      // Pick only the user table fields to update
+      const allowedFields = [
+        "role",
+        "statut",
+        "civilite",
+        "prenom",
+        "nomDeNaissance",
+        "nomUsuel",
+        "situationFamiliale",
+        "numeroSecuriteSociale",
+        "emailPersonnel",
+        "emailProfessionnel",
+        "telephonePersonnel",
+        "telephoneProfessionnel",
+        "avatar",
+        // add other user fields here if any
+      ];
+
+      // Filter userData to keep only allowed fields
+      const filteredData: Partial<User> = {};
+      for (const key of allowedFields) {
+        if (userData[key] !== undefined) {
+          filteredData[key] = userData[key];
+        }
+      }
+
       const user = await this.prisma.user.update({
         where: { id },
-        data: userData,
+        data: filteredData,
         include: {
           naissance: true,
           adresse: true,

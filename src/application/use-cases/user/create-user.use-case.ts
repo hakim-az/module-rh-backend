@@ -5,10 +5,10 @@ import { AdresseRepository } from "../../../domain/repositories/adresse.reposito
 import { PaiementRepository } from "../../../domain/repositories/paiement.repository";
 import { UrgenceRepository } from "../../../domain/repositories/urgence.repository";
 import { JustificatifRepository } from "../../../domain/repositories/justificatif.repository";
-import { ContratRepository } from "../../../domain/repositories/contrat.repository";
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { User } from "../../../domain/entities/user.entity";
 import { CreateUserDto } from "../../dtos/user.dto";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class CreateUserUseCase {
@@ -31,9 +31,6 @@ export class CreateUserUseCase {
     @Inject(JustificatifRepository)
     private readonly justificatifRepository: JustificatifRepository,
 
-    @Inject(ContratRepository)
-    private readonly contratRepository: ContratRepository,
-
     private readonly prisma: PrismaService
   ) {}
 
@@ -44,6 +41,8 @@ export class CreateUserUseCase {
     if (existingUser) {
       throw new Error("Un utilisateur avec cet email existe déjà");
     }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     return await this.prisma.$transaction(async () => {
       const userData = {
@@ -60,6 +59,7 @@ export class CreateUserUseCase {
         telephonePersonnel: createUserDto.telephonePersonnel,
         telephoneProfessionnel: createUserDto.telephoneProfessionnel,
         avatar: createUserDto.avatar,
+        password: hashedPassword,
       };
 
       const user = await this.userRepository.create(userData);

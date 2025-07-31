@@ -11,17 +11,18 @@ model User {
   id                     String        @id @default(cuid())
   role                   String
   statut                 String
-  civilite               String        
+  civilite               String?        
   prenom                 String
   nomDeNaissance         String
-  nomUsuel               String
-  situationFamiliale     String
-  numeroSecuriteSociale  String
+  nomUsuel               String?
+  situationFamiliale     String?
+  numeroSecuriteSociale  String?
   emailPersonnel         String        @unique
-  emailProfessionnel     String        @unique
+  emailProfessionnel     String?        @unique
   telephonePersonnel     String
-  telephoneProfessionnel String
+  telephoneProfessionnel String?
   avatar                 String   @map("avatar")
+  password               String
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
   adresse                Adresse?

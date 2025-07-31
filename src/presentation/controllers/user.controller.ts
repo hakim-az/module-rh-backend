@@ -12,6 +12,7 @@ import {
   UploadedFiles,
   UploadedFile,
   Req,
+  Patch,
 } from "@nestjs/common";
 import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
@@ -320,7 +321,7 @@ export class UserController {
     description: "User status totals retrieved successfully",
     schema: {
       example: {
-        "user-created": 5,
+        "user-registred": 5,
         "profile-completed": 3,
         "contract-uploaded": 4,
         "email-sent": 2,
@@ -334,7 +335,7 @@ export class UserController {
       const users = await this.getAllUsersUseCase.execute();
 
       const statusTotals: Record<string, number> = {
-        "user-created": 0,
+        "user-registred": 0,
         "profile-completed": 0,
         "contract-uploaded": 0,
         "email-sent": 0,
@@ -370,7 +371,7 @@ export class UserController {
     const lightUsers = users.map((user: any) => ({
       id: user.id,
       prenom: user.prenom,
-      nomComplet: user.nomUsuel || `${user.prenom} ${user.nomDeNaissance}`, // fallback logic
+      nomComplet: user.nomDeNaissance,
     }));
 
     return {
@@ -404,7 +405,7 @@ export class UserController {
     };
   }
 
-  @Put(":id")
+  @Patch(":id")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
