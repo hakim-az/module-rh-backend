@@ -29,7 +29,10 @@ export class PrismaUrgenceRepository
     urgenceData: Omit<Urgence, "id" | "createdAt" | "updatedAt">
   ): Promise<Urgence> {
     const urgence = await this.prisma.urgence.create({
-      data: urgenceData,
+      data: {
+        ...urgenceData,
+        idUser: Number(urgenceData.idUser),
+      },
     });
 
     return new Urgence(urgence);

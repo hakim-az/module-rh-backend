@@ -27,7 +27,10 @@ export class PrismaPaiementRepository implements PaiementRepository {
     paiementData: Omit<Paiement, "id" | "createdAt" | "updatedAt">
   ): Promise<Paiement> {
     const paiement = await this.prisma.paiement.create({
-      data: paiementData,
+      data: {
+        ...paiementData,
+        idUser: Number(paiementData.idUser),
+      },
     });
 
     return new Paiement(paiement);

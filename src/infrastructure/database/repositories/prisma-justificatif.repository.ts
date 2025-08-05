@@ -27,7 +27,10 @@ export class PrismaJustificatifRepository implements JustificatifRepository {
     justificatifData: Omit<Justificatif, "id" | "createdAt" | "updatedAt">
   ): Promise<Justificatif> {
     const justificatif = await this.prisma.justificatif.create({
-      data: justificatifData,
+      data: {
+        ...justificatifData,
+        idUser: Number(justificatifData.idUser),
+      },
     });
 
     return new Justificatif(justificatif);

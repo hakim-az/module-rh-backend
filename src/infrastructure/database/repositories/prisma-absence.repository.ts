@@ -86,7 +86,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
   async create(absence: Absence): Promise<Absence> {
     const createdAbsence = await this.prisma.absence.create({
       data: {
-        idUser: absence.idUser,
+        idUser: Number(absence.idUser),
         typeAbsence: absence.typeAbsence,
         dateDebut: absence.dateDebut,
         dateFin: absence.dateFin,

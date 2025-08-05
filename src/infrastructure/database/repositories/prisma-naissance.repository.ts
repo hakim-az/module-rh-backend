@@ -27,7 +27,10 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
     naissanceData: Omit<Naissance, "id" | "createdAt" | "updatedAt">
   ): Promise<Naissance> {
     const naissance = await this.prisma.naissance.create({
-      data: naissanceData,
+      data: {
+        ...naissanceData,
+        idUser: Number(naissanceData.idUser),
+      },
     });
 
     return new Naissance(naissance);

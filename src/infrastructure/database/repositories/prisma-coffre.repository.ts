@@ -98,7 +98,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
   async create(coffre: Coffre): Promise<Coffre> {
     const createdCoffre = await this.prisma.coffre.create({
       data: {
-        idUser: coffre.idUser,
+        idUser: Number(coffre.idUser),
         typeBulletin: coffre.typeBulletin,
         mois: coffre.mois,
         annee: coffre.annee,

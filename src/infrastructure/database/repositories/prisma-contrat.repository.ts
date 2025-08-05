@@ -85,7 +85,7 @@ export class PrismaContratRepository implements ContratRepository {
   async create(contrat: Contrat): Promise<Contrat> {
     const createdContrat = await this.prisma.contrat.create({
       data: {
-        idUser: contrat.idUser,
+        idUser: Number(contrat.idUser),
         poste: contrat.poste,
         typeContrat: contrat.typeContrat,
         dateDebut: contrat.dateDebut,

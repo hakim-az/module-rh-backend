@@ -27,7 +27,10 @@ export class PrismaAdresseRepository implements AdresseRepository {
     adresseData: Omit<Adresse, "id" | "createdAt" | "updatedAt">
   ): Promise<Adresse> {
     const adresse = await this.prisma.adresse.create({
-      data: adresseData,
+      data: {
+        ...adresseData,
+        idUser: Number(adresseData.idUser),
+      },
     });
 
     return new Adresse(adresse);

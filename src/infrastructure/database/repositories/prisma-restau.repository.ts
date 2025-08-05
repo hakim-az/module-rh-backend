@@ -89,7 +89,7 @@ export class PrismaRestauRepository implements RestauRepository {
   async create(restau: Restau): Promise<Restau> {
     const createdRestau = await this.prisma.restau.create({
       data: {
-        idUser: restau.idUser,
+        idUser: Number(restau.idUser),
         nbrJours: restau.nbrJours,
         mois: restau.mois,
         annee: restau.annee,
