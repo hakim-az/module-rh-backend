@@ -7,7 +7,7 @@ import { PrismaService } from "../prisma.service";
 export class PrismaContratRepository implements ContratRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Contrat | null> {
+  async findById(id: number): Promise<Contrat | null> {
     const contrat = await this.prisma.contrat.findUnique({
       where: { id },
     });
@@ -32,7 +32,7 @@ export class PrismaContratRepository implements ContratRepository {
     );
   }
 
-  async findByUserId(userId: string): Promise<Contrat[]> {
+  async findByUserId(userId: number): Promise<Contrat[]> {
     const contrats = await this.prisma.contrat.findMany({
       where: { idUser: userId },
     });
@@ -117,7 +117,7 @@ export class PrismaContratRepository implements ContratRepository {
     );
   }
 
-  async update(id: string, contratData: Partial<Contrat>): Promise<Contrat> {
+  async update(id: number, contratData: Partial<Contrat>): Promise<Contrat> {
     const updateData: any = {};
 
     if (contratData.poste) updateData.poste = contratData.poste;
@@ -160,7 +160,7 @@ export class PrismaContratRepository implements ContratRepository {
     );
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await this.prisma.contrat.delete({
       where: { id },
     });

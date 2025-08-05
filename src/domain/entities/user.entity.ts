@@ -1,5 +1,5 @@
 export class User {
-  public readonly id: string;
+  public readonly id: number;
   public readonly role: string;
   public readonly statut: string;
   public readonly civilite: string;
@@ -26,7 +26,7 @@ export class User {
   public readonly contrat?: any;
 
   constructor(props: {
-    id: string;
+    id: number;
     role: string;
     statut: string;
     civilite: string;

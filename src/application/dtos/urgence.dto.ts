@@ -1,11 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateUrgenceDto {
-  @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
+  @ApiProperty({ example: 1, type: Number })
+  @IsInt()
   @IsNotEmpty()
-  @IsString()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty({ example: "John Doe" })
   @IsString()
@@ -42,7 +42,10 @@ export class UpdateUrgenceDto {
 
 export class UrgenceResponseDto {
   @ApiProperty()
-  id: string;
+  id: number;
+
+  @ApiProperty()
+  idUser: number;
 
   @ApiProperty()
   nomComplet: string;

@@ -10,7 +10,7 @@ export class UpdateRestauUseCase {
     private readonly restauRepository: RestauRepository
   ) {}
 
-  async execute(id: string, updateRestauDto: UpdateRestauDto): Promise<Restau> {
+  async execute(id: number, updateRestauDto: UpdateRestauDto): Promise<Restau> {
     const existingRestau = await this.restauRepository.findById(id);
     if (!existingRestau) {
       throw new Error("Coffre not found");

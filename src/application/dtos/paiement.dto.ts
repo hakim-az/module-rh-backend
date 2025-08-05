@@ -1,11 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreatePaiementDto {
-  @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
-  @IsString()
+  @ApiProperty({ example: 1, type: Number })
+  @IsInt()
   @IsNotEmpty()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty({ example: "FR1234567890" })
   @IsString()
@@ -32,7 +32,10 @@ export class UpdatePaiementDto {
 
 export class PaiementResponseDto {
   @ApiProperty()
-  id: string;
+  id: number;
+
+  @ApiProperty()
+  idUser: number;
 
   @ApiProperty()
   iban: string;

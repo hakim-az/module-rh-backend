@@ -385,7 +385,7 @@ export class UserController {
   @ApiOperation({ summary: "Récupérer un utilisateur par ID" })
   @ApiResponse({ status: 200, description: "Utilisateur trouvé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
-  async getUserById(@Param("id") id: string) {
+  async getUserById(@Param("id") id: number) {
     const user = await this.getUserUseCase.execute(id);
 
     if (!user) {
@@ -427,7 +427,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "Utilisateur mis à jour" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
   async updateUser(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @UploadedFiles() files: Express.Multer.File[] | undefined,
     @Body() updateUserDto: UpdateUserDto
   ) {
@@ -679,7 +679,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "Avatar mis à jour avec succès" })
   @ApiResponse({ status: 400, description: "Fichier invalide" })
   async uploadAvatar(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @UploadedFile() file: Express.Multer.File
   ) {
     if (!file) {
@@ -719,7 +719,7 @@ export class UserController {
   @ApiOperation({ summary: "Supprimer un utilisateur" })
   @ApiResponse({ status: 200, description: "Utilisateur supprimé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
-  async deleteUser(@Param("id") id: string) {
+  async deleteUser(@Param("id") id: number) {
     try {
       const success = await this.deleteUserUseCase.execute(id);
       return {

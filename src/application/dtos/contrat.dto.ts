@@ -1,16 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from "class-validator";
 
 export class CreateContratDto {
-  @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
+  @ApiProperty({ example: 1, type: Number })
+  @IsInt()
   @IsNotEmpty()
-  @IsString()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty({ example: "Développeur full-stack" })
   @IsString()
@@ -124,10 +125,10 @@ export class UploadSignedContractDto {
 
 export class ContratResponseDto {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty()
   poste: string;

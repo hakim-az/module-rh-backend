@@ -7,7 +7,7 @@ import { PrismaService } from "../prisma.service";
 export class PrismaCoffreRepository implements CoffreRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Coffre | null> {
+  async findById(id: number): Promise<Coffre | null> {
     const coffre = await this.prisma.coffre.findUnique({
       where: { id },
       include: { user: true },
@@ -36,7 +36,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
     );
   }
 
-  async findByUserId(userId: string): Promise<Coffre[]> {
+  async findByUserId(userId: number): Promise<Coffre[]> {
     const coffres = await this.prisma.coffre.findMany({
       where: { idUser: userId },
       include: { user: true },
@@ -120,7 +120,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
     );
   }
 
-  async update(id: string, coffreData: Partial<Coffre>): Promise<Coffre> {
+  async update(id: number, coffreData: Partial<Coffre>): Promise<Coffre> {
     const updateData: any = {};
 
     if (coffreData.typeBulletin !== undefined)
@@ -149,7 +149,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
     );
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await this.prisma.coffre.delete({
       where: { id },
     });

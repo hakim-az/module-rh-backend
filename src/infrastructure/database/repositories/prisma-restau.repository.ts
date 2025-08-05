@@ -7,7 +7,7 @@ import { PrismaService } from "../prisma.service";
 export class PrismaRestauRepository implements RestauRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Restau | null> {
+  async findById(id: number): Promise<Restau | null> {
     const restau = await this.prisma.restau.findUnique({
       where: { id },
       include: { user: true },
@@ -36,7 +36,7 @@ export class PrismaRestauRepository implements RestauRepository {
     );
   }
 
-  async findByUserId(userId: string): Promise<Restau[]> {
+  async findByUserId(userId: number): Promise<Restau[]> {
     const restaux = await this.prisma.restau.findMany({
       where: { idUser: userId },
     });
@@ -111,7 +111,7 @@ export class PrismaRestauRepository implements RestauRepository {
     );
   }
 
-  async update(id: string, restauData: Partial<Restau>): Promise<Restau> {
+  async update(id: number, restauData: Partial<Restau>): Promise<Restau> {
     const updateData: any = {};
 
     if (restauData.nbrJours !== undefined)
@@ -140,7 +140,7 @@ export class PrismaRestauRepository implements RestauRepository {
     );
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await this.prisma.restau.delete({
       where: { id },
     });

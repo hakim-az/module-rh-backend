@@ -7,7 +7,7 @@ import { PrismaService } from "../../database/prisma.service";
 export class PrismaJustificatifRepository implements JustificatifRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Justificatif | null> {
+  async findById(id: number): Promise<Justificatif | null> {
     const justificatif = await this.prisma.justificatif.findUnique({
       where: { id },
     });
@@ -15,7 +15,7 @@ export class PrismaJustificatifRepository implements JustificatifRepository {
     return justificatif ? new Justificatif(justificatif) : null;
   }
 
-  async findByUserId(userId: string): Promise<Justificatif | null> {
+  async findByUserId(userId: number): Promise<Justificatif | null> {
     const justificatif = await this.prisma.justificatif.findUnique({
       where: { idUser: userId },
     });
@@ -34,7 +34,7 @@ export class PrismaJustificatifRepository implements JustificatifRepository {
   }
 
   async update(
-    id: string,
+    id: number,
     justificatifData: Partial<Justificatif>
   ): Promise<Justificatif | null> {
     try {
@@ -49,7 +49,7 @@ export class PrismaJustificatifRepository implements JustificatifRepository {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     try {
       await this.prisma.justificatif.delete({
         where: { id },

@@ -146,7 +146,7 @@ export class DashboardController {
     status: 200,
     description: "User-specific dashboard data retrieved successfully",
   })
-  async getDashboardByUser(@Param("userId") userId: string) {
+  async getDashboardByUser(@Param("userId") userId: number) {
     try {
       const [users, absences, coffres, restaus] = await Promise.all([
         this.getAllUsersUseCase.execute(),

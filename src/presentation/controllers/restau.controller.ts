@@ -91,7 +91,7 @@ export class RestauController {
     description: "Restau retrieved successfully",
     type: RestauResponseDto,
   })
-  async findOne(@Param("id") id: string): Promise<RestauResponseDto> {
+  async findOne(@Param("id") id: number): Promise<RestauResponseDto> {
     try {
       const restau = await this.getRestauUseCase.execute(id);
       if (!restau) {
@@ -185,7 +185,7 @@ export class RestauController {
   @ApiOperation({ summary: "Get restaus by user ID" })
   @ApiResponse({ status: 200, description: "Restaus retrieved successfully" })
   async findByUser(
-    @Param("userId") userId: string
+    @Param("userId") userId: number
   ): Promise<RestauResponseDto[]> {
     const restaus = await this.getRestauxByUserUseCase.execute(userId);
 
@@ -238,7 +238,7 @@ export class RestauController {
   @ApiOperation({ summary: "Update a restau" })
   @ApiResponse({ status: 200, description: "Restau updated successfully" })
   async update(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @UploadedFiles() files: Express.Multer.File[] | undefined,
     @Body() updateRestauDto: UpdateRestauDto
   ): Promise<RestauResponseDto> {
@@ -281,7 +281,7 @@ export class RestauController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete a restau" })
   @ApiResponse({ status: 200, description: "Restau deleted successfully" })
-  async remove(@Param("id") id: string): Promise<{ message: string }> {
+  async remove(@Param("id") id: number): Promise<{ message: string }> {
     await this.deleteRestauUseCase.execute(id);
     return { message: "Restau deleted successfully" };
   }

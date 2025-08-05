@@ -14,7 +14,7 @@ export class UploadSignedContractUseCase {
   ) {}
 
   async execute(
-    userId: string,
+    userId: number,
     uploadSignedContractDto: UploadSignedContractDto
   ): Promise<Contrat> {
     // Find the user's contract
@@ -33,7 +33,7 @@ export class UploadSignedContractUseCase {
 
     // Update user status to 'contract-signed' after successful upload
     await this.userRepository.update(userId, {
-      statut: 'contract-signed'
+      statut: "contract-signed",
     });
 
     return updatedContract;

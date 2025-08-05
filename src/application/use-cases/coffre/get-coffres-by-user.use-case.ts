@@ -9,7 +9,7 @@ export class GetCoffresByUserUseCase {
     private readonly coffreRepository: CoffreRepository
   ) {}
 
-  async execute(userId: string): Promise<Coffre[]> {
+  async execute(userId: number): Promise<Coffre[]> {
     return this.coffreRepository.findByUserId(userId);
   }
 }

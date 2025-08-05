@@ -9,7 +9,7 @@ export class PrismaUrgenceRepository
 {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Urgence | null> {
+  async findById(id: number): Promise<Urgence | null> {
     const urgence = await this.prisma.urgence.findUnique({
       where: { id },
     });
@@ -17,7 +17,7 @@ export class PrismaUrgenceRepository
     return urgence ? new Urgence(urgence) : null;
   }
 
-  async findByUserId(userId: string): Promise<Urgence | null> {
+  async findByUserId(userId: number): Promise<Urgence | null> {
     const urgence = await this.prisma.urgence.findUnique({
       where: { idUser: userId },
     });
@@ -36,7 +36,7 @@ export class PrismaUrgenceRepository
   }
 
   async update(
-    id: string,
+    id: number,
     urgenceData: Partial<Urgence>
   ): Promise<Urgence | null> {
     try {
@@ -51,7 +51,7 @@ export class PrismaUrgenceRepository
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     try {
       await this.prisma.urgence.delete({
         where: { id },

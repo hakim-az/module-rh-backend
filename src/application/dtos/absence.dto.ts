@@ -1,18 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
-  IsBoolean,
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from "class-validator";
-import { UserResponseDto } from "./user.dto";
 
 export class CreateAbsenceDto {
-  @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
-  @IsString()
+  @ApiProperty({ example: 1, type: Number })
+  @IsInt()
   @IsNotEmpty()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty({ example: "Congé maladie" })
   @IsString()
@@ -103,10 +102,10 @@ class UserResponse {
 
 export class AbsenceResponseDto {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty()
   typeAbsence: string;

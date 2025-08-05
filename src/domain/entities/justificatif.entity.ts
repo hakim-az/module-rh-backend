@@ -1,6 +1,6 @@
 export class Justificatif {
-  public readonly id: string;
-  public readonly idUser: string;
+  public readonly id: number;
+  public readonly idUser: number;
   public readonly fichierCarteVitalePdf: string;
   public readonly fichierRibPdf: string;
   public readonly fichierPieceIdentitePdf: string;
@@ -10,8 +10,8 @@ export class Justificatif {
   public readonly updatedAt: Date;
 
   constructor(props: {
-    id: string;
-    idUser: string;
+    id: number;
+    idUser: number;
     fichierCarteVitalePdf: string;
     fichierRibPdf: string;
     fichierPieceIdentitePdf: string;

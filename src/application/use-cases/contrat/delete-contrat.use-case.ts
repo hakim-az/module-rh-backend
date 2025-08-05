@@ -8,7 +8,7 @@ export class DeleteContratUseCase {
     private readonly contratRepository: ContratRepository
   ) {}
 
-  async execute(id: string): Promise<void> {
+  async execute(id: number): Promise<void> {
     const existingContrat = await this.contratRepository.findById(id);
     if (!existingContrat) {
       throw new Error("Contract not found");

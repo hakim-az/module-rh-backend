@@ -39,7 +39,7 @@ export class UpdateUserUseCase {
     private readonly prisma: PrismaService
   ) {}
 
-  async execute(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async execute(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) {
       throw new Error("Utilisateur non trouvé");

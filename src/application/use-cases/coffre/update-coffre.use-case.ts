@@ -10,7 +10,7 @@ export class UpdateCoffreUseCase {
     private readonly coffreRepository: CoffreRepository
   ) {}
 
-  async execute(id: string, updateCoffreDto: UpdateCoffreDto): Promise<Coffre> {
+  async execute(id: number, updateCoffreDto: UpdateCoffreDto): Promise<Coffre> {
     const existingCoffre = await this.coffreRepository.findById(id);
     if (!existingCoffre) {
       throw new Error("Coffre not found");

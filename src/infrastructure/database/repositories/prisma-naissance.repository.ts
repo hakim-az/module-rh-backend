@@ -7,7 +7,7 @@ import { PrismaService } from "../../database/prisma.service";
 export class PrismaNaissanceRepository implements NaissanceRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Naissance | null> {
+  async findById(id: number): Promise<Naissance | null> {
     const naissance = await this.prisma.naissance.findUnique({
       where: { id },
     });
@@ -15,7 +15,7 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
     return naissance ? new Naissance(naissance) : null;
   }
 
-  async findByUserId(userId: string): Promise<Naissance | null> {
+  async findByUserId(userId: number): Promise<Naissance | null> {
     const naissance = await this.prisma.naissance.findUnique({
       where: { idUser: userId },
     });
@@ -34,7 +34,7 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
   }
 
   async update(
-    id: string,
+    id: number,
     naissanceData: Partial<Naissance>
   ): Promise<Naissance | null> {
     try {
@@ -49,7 +49,7 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     try {
       await this.prisma.naissance.delete({
         where: { id },

@@ -8,7 +8,7 @@ export class DeleteAbsenceUseCase {
     private readonly absenceRepository: AbsenceRepository
   ) {}
 
-  async execute(id: string): Promise<void> {
+  async execute(id: number): Promise<void> {
     const existingAbsence = await this.absenceRepository.findById(id);
     if (!existingAbsence) {
       throw new Error("Absence not found");

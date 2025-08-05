@@ -7,7 +7,7 @@ import { PrismaService } from "../../database/prisma.service";
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: number): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -56,30 +56,8 @@ export class PrismaUserRepository implements UserRepository {
     return new User(user);
   }
 
-  // async update(id: string, userData: Partial<User>): Promise<User | null> {
-  //   try {
-  //     const user = await this.prisma.user.update({
-  //       where: { id },
-  //       data: userData,
-  //       include: {
-  //         naissance: true,
-  //         adresse: true,
-  //         contrat: true,
-  //         paiement: true,
-  //         urgence: true,
-  //         justificatif: true,
-  //       },
-  //     });
-
-  //     return new User(user);
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // }
-
-  async update(id: string, userData: Partial<User>): Promise<User | null> {
+  async update(id: number, userData: Partial<User>): Promise<User | null> {
     try {
-      // Pick only the user table fields to update
       const allowedFields = [
         "role",
         "statut",
@@ -94,10 +72,8 @@ export class PrismaUserRepository implements UserRepository {
         "telephonePersonnel",
         "telephoneProfessionnel",
         "avatar",
-        // add other user fields here if any
       ];
 
-      // Filter userData to keep only allowed fields
       const filteredData: Partial<User> = {};
       for (const key of allowedFields) {
         if (userData[key] !== undefined) {
@@ -124,7 +100,7 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     try {
       await this.prisma.user.delete({
         where: { id },

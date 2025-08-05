@@ -9,7 +9,7 @@ export class GetUserUseCase {
     private readonly userRepository: UserRepository
   ) {}
 
-  async execute(id: string): Promise<User | null> {
+  async execute(id: number): Promise<User | null> {
     return this.userRepository.findById(id);
   }
 }

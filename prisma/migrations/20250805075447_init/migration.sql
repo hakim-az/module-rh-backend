@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `users` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `role` VARCHAR(191) NOT NULL,
     `statut` VARCHAR(191) NOT NULL,
     `civilite` VARCHAR(191) NULL,
@@ -25,8 +25,8 @@ CREATE TABLE `users` (
 
 -- CreateTable
 CREATE TABLE `naissances` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `date_de_naissance` DATETIME(3) NOT NULL,
     `paysDeNaissance` VARCHAR(191) NOT NULL,
     `departementDeNaissance` VARCHAR(191) NOT NULL,
@@ -41,8 +41,8 @@ CREATE TABLE `naissances` (
 
 -- CreateTable
 CREATE TABLE `adresses` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `pays` VARCHAR(191) NOT NULL,
     `codePostal` VARCHAR(191) NOT NULL,
     `ville` VARCHAR(191) NOT NULL,
@@ -58,8 +58,8 @@ CREATE TABLE `adresses` (
 
 -- CreateTable
 CREATE TABLE `paiements` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `iban` VARCHAR(191) NOT NULL,
     `bic` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -71,8 +71,8 @@ CREATE TABLE `paiements` (
 
 -- CreateTable
 CREATE TABLE `urgences` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `nomComplet` VARCHAR(191) NOT NULL,
     `lienAvecLeSalarie` VARCHAR(191) NOT NULL,
     `telephone` VARCHAR(191) NOT NULL,
@@ -85,8 +85,8 @@ CREATE TABLE `urgences` (
 
 -- CreateTable
 CREATE TABLE `justificatifs` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `fichier_carte_vitale_pdf` VARCHAR(191) NOT NULL,
     `fichier_rib_pdf` VARCHAR(191) NOT NULL,
     `fichier_piece_identite_pdf` VARCHAR(191) NOT NULL,
@@ -101,8 +101,8 @@ CREATE TABLE `justificatifs` (
 
 -- CreateTable
 CREATE TABLE `contrats` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `poste` VARCHAR(191) NOT NULL,
     `typeContrat` VARCHAR(191) NOT NULL,
     `date_debut` DATETIME(3) NOT NULL,
@@ -122,8 +122,8 @@ CREATE TABLE `contrats` (
 
 -- CreateTable
 CREATE TABLE `absences` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `typeAbsence` VARCHAR(191) NOT NULL,
     `date_debut` DATETIME(3) NOT NULL,
     `date_fin` DATETIME(3) NOT NULL,
@@ -139,8 +139,8 @@ CREATE TABLE `absences` (
 
 -- CreateTable
 CREATE TABLE `coffres` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `typeBulletin` VARCHAR(191) NOT NULL,
     `mois` VARCHAR(191) NOT NULL,
     `annee` VARCHAR(191) NOT NULL,
@@ -154,8 +154,8 @@ CREATE TABLE `coffres` (
 
 -- CreateTable
 CREATE TABLE `restaux` (
-    `id` VARCHAR(191) NOT NULL,
-    `id_user` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_user` INTEGER NOT NULL,
     `nbrJours` VARCHAR(191) NOT NULL,
     `mois` VARCHAR(191) NOT NULL,
     `annee` VARCHAR(191) NOT NULL,

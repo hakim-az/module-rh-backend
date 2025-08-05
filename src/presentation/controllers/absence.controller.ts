@@ -140,7 +140,7 @@ export class AbsenceController {
     },
   })
   async getAbsenceTotalsByStatusForUser(
-    @Param("userId") userId: string
+    @Param("userId") userId: number
   ): Promise<Record<string, number>> {
     try {
       const absences = await this.getAbsencesByUserUseCase.execute(userId);
@@ -174,7 +174,7 @@ export class AbsenceController {
     description: "Absence retrieved successfully",
     type: AbsenceResponseDto,
   })
-  async findOne(@Param("id") id: string): Promise<AbsenceResponseDto> {
+  async findOne(@Param("id") id: number): Promise<AbsenceResponseDto> {
     try {
       const absence = await this.getAbsenceUseCase.execute(id);
       if (!absence) {
@@ -274,7 +274,7 @@ export class AbsenceController {
   @ApiOperation({ summary: "Get absences by user ID" })
   @ApiResponse({ status: 200, description: "Absences retrieved successfully" })
   async findByUser(
-    @Param("userId") userId: string
+    @Param("userId") userId: number
   ): Promise<AbsenceResponseDto[]> {
     const absences = await this.getAbsencesByUserUseCase.execute(userId);
 
@@ -329,7 +329,7 @@ export class AbsenceController {
   @ApiOperation({ summary: "Update an absence" })
   @ApiResponse({ status: 200, description: "Absence updated successfully" })
   async update(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @UploadedFiles() files: Express.Multer.File[] | undefined,
     @Body() updateAbsenceDto: UpdateAbsenceDto
   ): Promise<AbsenceResponseDto> {
@@ -377,7 +377,7 @@ export class AbsenceController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete an absence" })
   @ApiResponse({ status: 200, description: "Absence deleted successfully" })
-  async remove(@Param("id") id: string): Promise<{ message: string }> {
+  async remove(@Param("id") id: number): Promise<{ message: string }> {
     await this.deleteAbsenceUseCase.execute(id);
     return { message: "Absence deleted successfully" };
   }

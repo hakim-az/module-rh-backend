@@ -7,7 +7,7 @@ import { PrismaService } from "../prisma.service";
 export class PrismaAbsenceRepository implements AbsenceRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Absence | null> {
+  async findById(id: number): Promise<Absence | null> {
     const absence = await this.prisma.absence.findUnique({
       where: { id },
     });
@@ -29,7 +29,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
     );
   }
 
-  async findByUserId(userId: string): Promise<Absence[]> {
+  async findByUserId(userId: number): Promise<Absence[]> {
     const absences = await this.prisma.absence.findMany({
       where: { idUser: userId },
     });
@@ -112,7 +112,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
     );
   }
 
-  async update(id: string, absenceData: Partial<Absence>): Promise<Absence> {
+  async update(id: number, absenceData: Partial<Absence>): Promise<Absence> {
     const updateData: any = {};
 
     if (absenceData.typeAbsence !== undefined)
@@ -149,7 +149,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
     );
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await this.prisma.absence.delete({
       where: { id },
     });

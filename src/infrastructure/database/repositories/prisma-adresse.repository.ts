@@ -7,7 +7,7 @@ import { PrismaService } from "../../database/prisma.service";
 export class PrismaAdresseRepository implements AdresseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Adresse | null> {
+  async findById(id: number): Promise<Adresse | null> {
     const adresse = await this.prisma.adresse.findUnique({
       where: { id },
     });
@@ -15,7 +15,7 @@ export class PrismaAdresseRepository implements AdresseRepository {
     return adresse ? new Adresse(adresse) : null;
   }
 
-  async findByUserId(userId: string): Promise<Adresse | null> {
+  async findByUserId(userId: number): Promise<Adresse | null> {
     const adresse = await this.prisma.adresse.findUnique({
       where: { idUser: userId },
     });
@@ -34,7 +34,7 @@ export class PrismaAdresseRepository implements AdresseRepository {
   }
 
   async update(
-    id: string,
+    id: number,
     adresseData: Partial<Adresse>
   ): Promise<Adresse | null> {
     try {
@@ -49,7 +49,7 @@ export class PrismaAdresseRepository implements AdresseRepository {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     try {
       await this.prisma.adresse.delete({
         where: { id },

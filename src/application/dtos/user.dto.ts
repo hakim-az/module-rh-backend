@@ -22,7 +22,6 @@ import {
 import { CreateContratDto, UpdateContratDto } from "./contrat.dto";
 
 export class CreateUserDto {
-  // Données utilisateur de base (obligatoires)
   @ApiProperty({ example: "employee" })
   @IsString()
   @IsNotEmpty()
@@ -236,7 +235,7 @@ export class UpdateUserDto {
 
 export class UserResponseDto {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   role: string;

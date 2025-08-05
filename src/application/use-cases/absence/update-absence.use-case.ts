@@ -11,7 +11,7 @@ export class UpdateAbsenceUseCase {
   ) {}
 
   async execute(
-    id: string,
+    id: number,
     updateAbsenceDto: UpdateAbsenceDto
   ): Promise<Absence> {
     const existingAbsence = await this.absenceRepository.findById(id);

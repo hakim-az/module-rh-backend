@@ -1,16 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from "class-validator";
 
 export class CreateNaissanceDto {
-  @ApiProperty({ example: "cmcqkvo0000015x2ahuewe6bx" })
-  @IsString()
+  @ApiProperty({ example: 1, type: Number })
+  @IsInt()
   @IsNotEmpty()
-  idUser: string;
+  idUser: number;
 
   @ApiProperty({ example: "2000-01-01" })
   @IsDateString()
@@ -67,7 +68,10 @@ export class UpdateNaissanceDto {
 
 export class NaissanceResponseDto {
   @ApiProperty()
-  idUser: string;
+  id: number;
+
+  @ApiProperty()
+  idUser: number;
 
   @ApiProperty()
   dateDeNaissance: string;
