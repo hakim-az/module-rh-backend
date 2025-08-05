@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { CoffreRepository } from "@domain/repositories/coffre.repository";
 import { Coffre } from "@domain/entities/coffre.entity";
 import { PrismaService } from "../prisma.service";
-import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
+import { generateUniqueNumericId } from "@/domain/services/generateUniqueNumericId";
 
 @Injectable()
 export class PrismaCoffreRepository implements CoffreRepository {

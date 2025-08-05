@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { JustificatifRepository } from "../../../domain/repositories/justificatif.repository";
 import { Justificatif } from "../../../domain/entities/justificatif.entity";
 import { PrismaService } from "../../database/prisma.service";
-import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
+import { generateUniqueNumericId } from "@/domain/services/generateUniqueNumericId";
 
 @Injectable()
 export class PrismaJustificatifRepository implements JustificatifRepository {

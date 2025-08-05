@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as urgenceRepository from "../../../domain/repositories/urgence.repository";
 import { Urgence } from "../../../domain/entities/urgence.entity";
 import { PrismaService } from "../../database/prisma.service";
-import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
+import { generateUniqueNumericId } from "@/domain/services/generateUniqueNumericId";
 
 @Injectable()
 export class PrismaUrgenceRepository

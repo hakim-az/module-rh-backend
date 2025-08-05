@@ -2,8 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { AbsenceRepository } from "@domain/repositories/absence.repository";
 import { Absence } from "@domain/entities/absence.entity";
 import { PrismaService } from "../prisma.service";
-import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
-
+import { generateUniqueNumericId } from "@/domain/services/generateUniqueNumericId";
 @Injectable()
 export class PrismaAbsenceRepository implements AbsenceRepository {
   constructor(private readonly prisma: PrismaService) {}
