@@ -1,7 +1,7 @@
 export class Contrat {
   constructor(
-    public readonly id: number,
-    public readonly idUser: number,
+    public readonly id: string,
+    public readonly idUser: string,
     public readonly poste: string,
     public readonly typeContrat: string,
     public readonly dateDebut: Date,
@@ -17,7 +17,7 @@ export class Contrat {
   ) {}
 
   public static create(
-    idUser: number,
+    idUser: string,
     poste: string,
     typeContrat: string,
     dateDebut: Date,
@@ -30,7 +30,7 @@ export class Contrat {
     fichierContratSignerPdf?: string
   ): Contrat {
     return new Contrat(
-      0,
+      "0",
       idUser,
       poste,
       typeContrat,

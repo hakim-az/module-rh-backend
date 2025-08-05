@@ -9,7 +9,7 @@ export class GetContratsByUserUseCase {
     private readonly contratRepository: ContratRepository
   ) {}
 
-  async execute(userId: number): Promise<Contrat[]> {
+  async execute(userId: string): Promise<Contrat[]> {
     return this.contratRepository.findByUserId(userId);
   }
 }

@@ -1,6 +1,6 @@
 export class Urgence {
-  public readonly id: number;
-  public readonly idUser: number;
+  public readonly id: string;
+  public readonly idUser: string;
   public readonly nomComplet: string;
   public readonly lienAvecLeSalarie: string;
   public readonly telephone: string;
@@ -8,8 +8,8 @@ export class Urgence {
   public readonly updatedAt: Date;
 
   constructor(props: {
-    id: number;
-    idUser: number;
+    id: string;
+    idUser: string;
     nomComplet: string;
     lienAvecLeSalarie: string;
     telephone: string;

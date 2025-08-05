@@ -8,10 +8,10 @@ import {
 } from "class-validator";
 
 export class CreateNaissanceDto {
-  @ApiProperty({ example: 1, type: Number })
-  @IsInt()
+  @ApiProperty({ example: "6478374", type: String })
+  @IsString()
   @IsNotEmpty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty({ example: "2000-01-01" })
   @IsDateString()
@@ -68,10 +68,10 @@ export class UpdateNaissanceDto {
 
 export class NaissanceResponseDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty()
   dateDeNaissance: string;

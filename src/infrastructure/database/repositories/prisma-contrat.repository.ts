@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { ContratRepository } from "@domain/repositories/contrat.repository";
 import { Contrat } from "@domain/entities/contrat.entity";
 import { PrismaService } from "../prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaContratRepository implements ContratRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Contrat | null> {
+  async findById(id: string): Promise<Contrat | null> {
     const contrat = await this.prisma.contrat.findUnique({
       where: { id },
     });
@@ -32,7 +33,7 @@ export class PrismaContratRepository implements ContratRepository {
     );
   }
 
-  async findByUserId(userId: number): Promise<Contrat[]> {
+  async findByUserId(userId: string): Promise<Contrat[]> {
     const contrats = await this.prisma.contrat.findMany({
       where: { idUser: userId },
     });
@@ -83,8 +84,10 @@ export class PrismaContratRepository implements ContratRepository {
   }
 
   async create(contrat: Contrat): Promise<Contrat> {
+    const id = await generateUniqueNumericId("contrat");
     const createdContrat = await this.prisma.contrat.create({
       data: {
+        id: id,
         idUser: contrat.idUser,
         poste: contrat.poste,
         typeContrat: contrat.typeContrat,
@@ -117,7 +120,7 @@ export class PrismaContratRepository implements ContratRepository {
     );
   }
 
-  async update(id: number, contratData: Partial<Contrat>): Promise<Contrat> {
+  async update(id: string, contratData: Partial<Contrat>): Promise<Contrat> {
     const updateData: any = {};
 
     if (contratData.poste) updateData.poste = contratData.poste;
@@ -160,7 +163,7 @@ export class PrismaContratRepository implements ContratRepository {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.prisma.contrat.delete({
       where: { id },
     });

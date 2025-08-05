@@ -1,7 +1,7 @@
 export class Restau {
   constructor(
-    public readonly id: number,
-    public readonly idUser: number,
+    public readonly id: string,
+    public readonly idUser: string,
     public readonly nbrJours: string,
     public readonly mois: string,
     public readonly annee: string,
@@ -18,7 +18,7 @@ export class Restau {
   ) {}
 
   public static create(
-    idUser: number,
+    idUser: string,
     nbrJours: string,
     mois: string,
     annee: string,
@@ -26,7 +26,7 @@ export class Restau {
     fichierJustificatifPdf?: string
   ): Restau {
     return new Restau(
-      0,
+      "0",
       idUser,
       nbrJours,
       mois,

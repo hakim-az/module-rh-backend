@@ -1,6 +1,6 @@
 export class Adresse {
-  public readonly id: number;
-  public readonly idUser: number;
+  public readonly id: string;
+  public readonly idUser: string;
   public readonly pays: string;
   public readonly codePostal: string;
   public readonly ville: string;
@@ -11,8 +11,8 @@ export class Adresse {
   public readonly updatedAt: Date;
 
   constructor(props: {
-    id: number;
-    idUser: number;
+    id: string;
+    idUser: string;
     pays: string;
     codePostal: string;
     ville: string;

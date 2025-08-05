@@ -235,7 +235,7 @@ export class UpdateUserDto {
 
 export class UserResponseDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
   role: string;

@@ -9,7 +9,7 @@ export class GetContratUseCase {
     private readonly contratRepository: ContratRepository
   ) {}
 
-  async execute(id: number): Promise<Contrat | null> {
+  async execute(id: string): Promise<Contrat | null> {
     return this.contratRepository.findById(id);
   }
 }

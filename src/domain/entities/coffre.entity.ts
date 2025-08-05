@@ -1,7 +1,7 @@
 export class Coffre {
   constructor(
-    public readonly id: number,
-    public readonly idUser: number,
+    public readonly id: string,
+    public readonly idUser: string,
     public readonly typeBulletin: string,
     public readonly mois: string,
     public readonly annee: string,
@@ -18,7 +18,7 @@ export class Coffre {
   ) {}
 
   public static create(
-    idUser: number,
+    idUser: string,
     typeBulletin: string,
     mois: string,
     annee: string,
@@ -26,7 +26,7 @@ export class Coffre {
     fichierJustificatifPdf?: string
   ): Coffre {
     return new Coffre(
-      0,
+      "0",
       idUser,
       typeBulletin,
       mois,

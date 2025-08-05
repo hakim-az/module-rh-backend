@@ -1,14 +1,14 @@
 export class Paiement {
-  public readonly id: number;
-  public readonly idUser: number;
+  public readonly id: string;
+  public readonly idUser: string;
   public readonly iban: string;
   public readonly bic: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
   constructor(props: {
-    id: number;
-    idUser: number;
+    id: string;
+    idUser: string;
     iban: string;
     bic: string;
     createdAt: Date;

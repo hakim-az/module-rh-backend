@@ -9,7 +9,7 @@ export class GetRestauxByUserUseCase {
     private readonly restauRepository: RestauRepository
   ) {}
 
-  async execute(userId: number): Promise<Restau[]> {
+  async execute(userId: string): Promise<Restau[]> {
     return this.restauRepository.findByUserId(userId);
   }
 }

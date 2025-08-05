@@ -306,10 +306,15 @@ export class UserController {
   @ApiResponse({ status: 200, description: "Liste des utilisateurs" })
   async getAllUsers() {
     const users = await this.getAllUsersUseCase.execute();
-    const reversedUsers = users.slice().reverse(); // clone and reverse the array
+
+    // Filter users by role 'employee'
+    const employeeUsers = users.filter((user) => user.role === "employee");
+
+    const reversedUsers = employeeUsers.slice().reverse(); // clone and reverse the array
+
     return {
       statusCode: HttpStatus.OK,
-      message: "Utilisateurs récupérés avec succès",
+      message: "Employés récupérés avec succès",
       data: reversedUsers,
     };
   }
@@ -385,7 +390,7 @@ export class UserController {
   @ApiOperation({ summary: "Récupérer un utilisateur par ID" })
   @ApiResponse({ status: 200, description: "Utilisateur trouvé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
-  async getUserById(@Param("id") id: number) {
+  async getUserById(@Param("id") id: string) {
     const user = await this.getUserUseCase.execute(id);
 
     if (!user) {
@@ -427,7 +432,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "Utilisateur mis à jour" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
   async updateUser(
-    @Param("id") id: number,
+    @Param("id") id: string,
     @UploadedFiles() files: Express.Multer.File[] | undefined,
     @Body() updateUserDto: UpdateUserDto
   ) {
@@ -679,7 +684,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: "Avatar mis à jour avec succès" })
   @ApiResponse({ status: 400, description: "Fichier invalide" })
   async uploadAvatar(
-    @Param("id") id: number,
+    @Param("id") id: string,
     @UploadedFile() file: Express.Multer.File
   ) {
     if (!file) {
@@ -719,7 +724,7 @@ export class UserController {
   @ApiOperation({ summary: "Supprimer un utilisateur" })
   @ApiResponse({ status: 200, description: "Utilisateur supprimé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
-  async deleteUser(@Param("id") id: number) {
+  async deleteUser(@Param("id") id: string) {
     try {
       const success = await this.deleteUserUseCase.execute(id);
       return {

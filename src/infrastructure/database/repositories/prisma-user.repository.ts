@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { UserRepository } from "../../../domain/repositories/user.repository";
 import { User } from "../../../domain/entities/user.entity";
 import { PrismaService } from "../../database/prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -41,8 +42,12 @@ export class PrismaUserRepository implements UserRepository {
   async create(
     userData: Omit<User, "id" | "createdAt" | "updatedAt">
   ): Promise<User> {
+    const id = await generateUniqueNumericId("user");
     const user = await this.prisma.user.create({
-      data: userData,
+      data: {
+        id,
+        ...userData,
+      },
       include: {
         naissance: true,
         adresse: true,
@@ -56,7 +61,7 @@ export class PrismaUserRepository implements UserRepository {
     return new User(user);
   }
 
-  async update(id: number, userData: Partial<User>): Promise<User | null> {
+  async update(id: string, userData: Partial<User>): Promise<User | null> {
     try {
       const allowedFields = [
         "role",
@@ -100,7 +105,7 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     try {
       await this.prisma.user.delete({
         where: { id },

@@ -8,7 +8,7 @@ export class DeleteCoffreUseCase {
     private readonly coffreRepository: CoffreRepository
   ) {}
 
-  async execute(id: number): Promise<void> {
+  async execute(id: string): Promise<void> {
     const existingAbsence = await this.coffreRepository.findById(id);
     if (!existingAbsence) {
       throw new Error("Coffre not found");

@@ -9,7 +9,7 @@ export class GetAbsencesByUserUseCase {
     private readonly absenceRepository: AbsenceRepository
   ) {}
 
-  async execute(userId: number): Promise<Absence[]> {
+  async execute(userId: string): Promise<Absence[]> {
     return this.absenceRepository.findByUserId(userId);
   }
 }

@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { PaiementRepository } from "../../../domain/repositories/paiement.repository";
 import { Paiement } from "../../../domain/entities/paiement.entity";
 import { PrismaService } from "../../database/prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaPaiementRepository implements PaiementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Paiement | null> {
+  async findById(id: string): Promise<Paiement | null> {
     const paiement = await this.prisma.paiement.findUnique({
       where: { id },
     });
@@ -15,7 +16,7 @@ export class PrismaPaiementRepository implements PaiementRepository {
     return paiement ? new Paiement(paiement) : null;
   }
 
-  async findByUserId(userId: number): Promise<Paiement | null> {
+  async findByUserId(userId: string): Promise<Paiement | null> {
     const paiement = await this.prisma.paiement.findUnique({
       where: { idUser: userId },
     });
@@ -26,15 +27,19 @@ export class PrismaPaiementRepository implements PaiementRepository {
   async create(
     paiementData: Omit<Paiement, "id" | "createdAt" | "updatedAt">
   ): Promise<Paiement> {
+    const id = await generateUniqueNumericId("paiement");
     const paiement = await this.prisma.paiement.create({
-      data: paiementData,
+      data: {
+        id: id,
+        ...paiementData,
+      },
     });
 
     return new Paiement(paiement);
   }
 
   async update(
-    id: number,
+    id: string,
     paiementData: Partial<Paiement>
   ): Promise<Paiement | null> {
     try {
@@ -49,7 +54,7 @@ export class PrismaPaiementRepository implements PaiementRepository {
     }
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     try {
       await this.prisma.paiement.delete({
         where: { id },

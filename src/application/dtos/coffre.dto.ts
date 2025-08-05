@@ -1,11 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateCoffreDto {
-  @ApiProperty({ example: 1, type: Number })
-  @IsInt()
+  @ApiProperty({ example: "6478374", type: String })
+  @IsString()
   @IsNotEmpty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty({ example: "Fiche de paie" })
   @IsString()
@@ -76,10 +76,10 @@ class UserResponse {
 
 export class CoffreResponseDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty()
   typeBulletin: string;

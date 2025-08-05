@@ -8,7 +8,7 @@ export class DeleteRestauUseCase {
     private readonly restauRepository: RestauRepository
   ) {}
 
-  async execute(id: number): Promise<void> {
+  async execute(id: string): Promise<void> {
     const existingRestau = await this.restauRepository.findById(id);
     if (!existingRestau) {
       throw new Error("Restau not found");

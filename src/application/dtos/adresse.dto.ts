@@ -2,10 +2,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateAdresseDto {
-  @ApiProperty({ example: 1, type: Number })
-  @IsInt()
+  @ApiProperty({ example: "6478374", type: String })
+  @IsString()
   @IsNotEmpty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty({ example: "France" })
   @IsString()
@@ -72,10 +72,10 @@ export class UpdateAdresseDto {
 
 export class AdresseResponseDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty()
   pays: string;

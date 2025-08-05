@@ -1,17 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { String } from "aws-sdk/clients/appstream";
 import {
   IsDateString,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from "class-validator";
 
 export class CreateContratDto {
-  @ApiProperty({ example: 1, type: Number })
-  @IsInt()
+  @ApiProperty({ example: "6478374", type: String })
+  @IsString()
   @IsNotEmpty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty({ example: "Développeur full-stack" })
   @IsString()
@@ -125,10 +125,10 @@ export class UploadSignedContractDto {
 
 export class ContratResponseDto {
   @ApiProperty()
-  id: number;
+  id: String;
 
   @ApiProperty()
-  idUser: number;
+  idUser: String;
 
   @ApiProperty()
   poste: string;

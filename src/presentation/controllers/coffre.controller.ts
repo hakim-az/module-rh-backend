@@ -89,7 +89,7 @@ export class CoffreController {
     description: "Coffre retrieved successfully",
     type: CoffreResponseDto,
   })
-  async findOne(@Param("id") id: number): Promise<CoffreResponseDto> {
+  async findOne(@Param("id") id: string): Promise<CoffreResponseDto> {
     try {
       const coffre = await this.getCoffreUseCase.execute(id);
       if (!coffre) {
@@ -185,7 +185,7 @@ export class CoffreController {
   @ApiOperation({ summary: "Get coffres by user ID" })
   @ApiResponse({ status: 200, description: "Coffres retrieved successfully" })
   async findByUser(
-    @Param("userId") userId: number
+    @Param("userId") userId: string
   ): Promise<CoffreResponseDto[]> {
     const coffres = await this.getCoffresByUserUseCase.execute(userId);
 
@@ -238,7 +238,7 @@ export class CoffreController {
   @ApiOperation({ summary: "Update a coffre" })
   @ApiResponse({ status: 200, description: "Coffre updated successfully" })
   async update(
-    @Param("id") id: number,
+    @Param("id") id: string,
     @UploadedFiles() files: Express.Multer.File[] | undefined,
     @Body() updateCoffreDto: UpdateCoffreDto
   ): Promise<CoffreResponseDto> {
@@ -281,7 +281,7 @@ export class CoffreController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete a coffre" })
   @ApiResponse({ status: 200, description: "Coffre deleted successfully" })
-  async remove(@Param("id") id: number): Promise<{ message: string }> {
+  async remove(@Param("id") id: string): Promise<{ message: string }> {
     await this.deleteCoffreUseCase.execute(id);
     return { message: "Coffre deleted successfully" };
   }

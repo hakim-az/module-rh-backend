@@ -2,10 +2,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateJustificatifDto {
-  @ApiProperty({ example: 1, type: Number })
-  @IsInt()
+  @ApiProperty({ example: "6478374", type: String })
+  @IsString()
   @IsNotEmpty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
@@ -62,10 +62,10 @@ export class UpdateJustificatifDto {
 
 export class JustificatifResponseDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  idUser: number;
+  idUser: string;
 
   @ApiProperty()
   fichierCarteVitalePdf: string;

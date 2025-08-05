@@ -1,6 +1,6 @@
 export class Naissance {
-  public readonly id: number;
-  public readonly idUser: number;
+  public readonly id: string;
+  public readonly idUser: string;
   public readonly dateDeNaissance: Date;
   public readonly paysDeNaissance: string;
   public readonly departementDeNaissance: string;
@@ -10,8 +10,8 @@ export class Naissance {
   public readonly updatedAt: Date;
 
   constructor(props: {
-    id: number;
-    idUser: number;
+    id: string;
+    idUser: string;
     dateDeNaissance: Date;
     paysDeNaissance: string;
     departementDeNaissance: string;

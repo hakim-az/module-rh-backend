@@ -11,7 +11,7 @@ export class UpdateContratUseCase {
   ) {}
 
   async execute(
-    id: number,
+    id: string,
     updateContratDto: UpdateContratDto
   ): Promise<Contrat> {
     const existingContrat = await this.contratRepository.findById(id);

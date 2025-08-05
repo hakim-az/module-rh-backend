@@ -158,7 +158,7 @@ export class ContratController {
     type: [ContratResponseDto],
   })
   async findByUser(
-    @Param("userId") userId: number
+    @Param("userId") userId: string
   ): Promise<ContratResponseDto[]> {
     try {
       const contrats = await this.getContratsByUserUseCase.execute(userId);
@@ -190,7 +190,7 @@ export class ContratController {
     description: "Contract retrieved successfully",
     type: ContratResponseDto,
   })
-  async findOne(@Param("id") id: number): Promise<ContratResponseDto> {
+  async findOne(@Param("id") id: string): Promise<ContratResponseDto> {
     try {
       const contrat = await this.getContratUseCase.execute(id);
       if (!contrat) {
@@ -242,7 +242,7 @@ export class ContratController {
     type: ContratResponseDto,
   })
   async update(
-    @Param("id") id: number,
+    @Param("id") id: string,
     @UploadedFiles() files: Express.Multer.File[],
     @Body(ValidationPipe) updateContratDto: UpdateContratDto
   ): Promise<ContratResponseDto> {
@@ -292,7 +292,7 @@ export class ContratController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete a contract" })
   @ApiResponse({ status: 200, description: "Contract deleted successfully" })
-  async remove(@Param("id") id: number): Promise<{ message: string }> {
+  async remove(@Param("id") id: string): Promise<{ message: string }> {
     try {
       await this.deleteContratUseCase.execute(id);
       return { message: "Contract deleted successfully" };
@@ -327,7 +327,7 @@ export class ContratController {
     type: ContratResponseDto,
   })
   async uploadSignedContract(
-    @Param("userId") userId: number,
+    @Param("userId") userId: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadSignedContractDto: UploadSignedContractDto
   ): Promise<ContratResponseDto> {

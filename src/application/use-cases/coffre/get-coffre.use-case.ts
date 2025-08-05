@@ -9,7 +9,7 @@ export class GetCoffreUseCase {
     private readonly coffreRepository: CoffreRepository
   ) {}
 
-  async execute(id: number): Promise<Coffre | null> {
+  async execute(id: string): Promise<Coffre | null> {
     return this.coffreRepository.findById(id);
   }
 }

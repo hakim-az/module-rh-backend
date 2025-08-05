@@ -38,7 +38,7 @@ export class YousignController {
   async createSignature(
     @Body()
     body: {
-      idUser: number;
+      idUser: string;
       firstName: string;
       lastName: string;
       email: string;

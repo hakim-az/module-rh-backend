@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { NaissanceRepository } from "../../../domain/repositories/naissance.repository";
 import { Naissance } from "../../../domain/entities/naissance.entity";
 import { PrismaService } from "../../database/prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaNaissanceRepository implements NaissanceRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Naissance | null> {
+  async findById(id: string): Promise<Naissance | null> {
     const naissance = await this.prisma.naissance.findUnique({
       where: { id },
     });
@@ -15,7 +16,7 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
     return naissance ? new Naissance(naissance) : null;
   }
 
-  async findByUserId(userId: number): Promise<Naissance | null> {
+  async findByUserId(userId: string): Promise<Naissance | null> {
     const naissance = await this.prisma.naissance.findUnique({
       where: { idUser: userId },
     });
@@ -26,15 +27,19 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
   async create(
     naissanceData: Omit<Naissance, "id" | "createdAt" | "updatedAt">
   ): Promise<Naissance> {
+    const id = await generateUniqueNumericId("naissance");
     const naissance = await this.prisma.naissance.create({
-      data: naissanceData,
+      data: {
+        id: id,
+        ...naissanceData,
+      },
     });
 
     return new Naissance(naissance);
   }
 
   async update(
-    id: number,
+    id: string,
     naissanceData: Partial<Naissance>
   ): Promise<Naissance | null> {
     try {
@@ -49,7 +54,7 @@ export class PrismaNaissanceRepository implements NaissanceRepository {
     }
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     try {
       await this.prisma.naissance.delete({
         where: { id },

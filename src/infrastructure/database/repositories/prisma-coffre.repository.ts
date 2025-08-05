@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { CoffreRepository } from "@domain/repositories/coffre.repository";
 import { Coffre } from "@domain/entities/coffre.entity";
 import { PrismaService } from "../prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaCoffreRepository implements CoffreRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Coffre | null> {
+  async findById(id: string): Promise<Coffre | null> {
     const coffre = await this.prisma.coffre.findUnique({
       where: { id },
       include: { user: true },
@@ -36,7 +37,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
     );
   }
 
-  async findByUserId(userId: number): Promise<Coffre[]> {
+  async findByUserId(userId: string): Promise<Coffre[]> {
     const coffres = await this.prisma.coffre.findMany({
       where: { idUser: userId },
       include: { user: true },
@@ -96,8 +97,10 @@ export class PrismaCoffreRepository implements CoffreRepository {
   }
 
   async create(coffre: Coffre): Promise<Coffre> {
+    const id = await generateUniqueNumericId("coffre");
     const createdCoffre = await this.prisma.coffre.create({
       data: {
+        id: id,
         idUser: coffre.idUser,
         typeBulletin: coffre.typeBulletin,
         mois: coffre.mois,
@@ -120,7 +123,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
     );
   }
 
-  async update(id: number, coffreData: Partial<Coffre>): Promise<Coffre> {
+  async update(id: string, coffreData: Partial<Coffre>): Promise<Coffre> {
     const updateData: any = {};
 
     if (coffreData.typeBulletin !== undefined)
@@ -149,7 +152,7 @@ export class PrismaCoffreRepository implements CoffreRepository {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.prisma.coffre.delete({
       where: { id },
     });

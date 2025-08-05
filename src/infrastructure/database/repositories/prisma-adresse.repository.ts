@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { AdresseRepository } from "../../../domain/repositories/adresse.repository";
 import { Adresse } from "../../../domain/entities/adresse.entity";
 import { PrismaService } from "../../database/prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaAdresseRepository implements AdresseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Adresse | null> {
+  async findById(id: string): Promise<Adresse | null> {
     const adresse = await this.prisma.adresse.findUnique({
       where: { id },
     });
@@ -15,7 +16,7 @@ export class PrismaAdresseRepository implements AdresseRepository {
     return adresse ? new Adresse(adresse) : null;
   }
 
-  async findByUserId(userId: number): Promise<Adresse | null> {
+  async findByUserId(userId: string): Promise<Adresse | null> {
     const adresse = await this.prisma.adresse.findUnique({
       where: { idUser: userId },
     });
@@ -26,15 +27,19 @@ export class PrismaAdresseRepository implements AdresseRepository {
   async create(
     adresseData: Omit<Adresse, "id" | "createdAt" | "updatedAt">
   ): Promise<Adresse> {
+    const id = await generateUniqueNumericId("adresse");
     const adresse = await this.prisma.adresse.create({
-      data: adresseData,
+      data: {
+        id: id,
+        ...adresseData,
+      },
     });
 
     return new Adresse(adresse);
   }
 
   async update(
-    id: number,
+    id: string,
     adresseData: Partial<Adresse>
   ): Promise<Adresse | null> {
     try {
@@ -49,7 +54,7 @@ export class PrismaAdresseRepository implements AdresseRepository {
     }
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     try {
       await this.prisma.adresse.delete({
         where: { id },

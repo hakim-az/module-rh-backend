@@ -14,7 +14,7 @@ export class UploadSignedContractUseCase {
   ) {}
 
   async execute(
-    userId: number,
+    userId: string,
     uploadSignedContractDto: UploadSignedContractDto
   ): Promise<Contrat> {
     // Find the user's contract

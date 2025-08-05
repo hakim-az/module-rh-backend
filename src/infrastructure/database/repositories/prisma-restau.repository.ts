@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { RestauRepository } from "@domain/repositories/restau.repository";
 import { Restau } from "@domain/entities/restau.entity";
 import { PrismaService } from "../prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaRestauRepository implements RestauRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Restau | null> {
+  async findById(id: string): Promise<Restau | null> {
     const restau = await this.prisma.restau.findUnique({
       where: { id },
       include: { user: true },
@@ -36,7 +37,7 @@ export class PrismaRestauRepository implements RestauRepository {
     );
   }
 
-  async findByUserId(userId: number): Promise<Restau[]> {
+  async findByUserId(userId: string): Promise<Restau[]> {
     const restaux = await this.prisma.restau.findMany({
       where: { idUser: userId },
     });
@@ -87,8 +88,10 @@ export class PrismaRestauRepository implements RestauRepository {
   }
 
   async create(restau: Restau): Promise<Restau> {
+    const id = await generateUniqueNumericId("restau");
     const createdRestau = await this.prisma.restau.create({
       data: {
+        id: id,
         idUser: restau.idUser,
         nbrJours: restau.nbrJours,
         mois: restau.mois,
@@ -111,7 +114,7 @@ export class PrismaRestauRepository implements RestauRepository {
     );
   }
 
-  async update(id: number, restauData: Partial<Restau>): Promise<Restau> {
+  async update(id: string, restauData: Partial<Restau>): Promise<Restau> {
     const updateData: any = {};
 
     if (restauData.nbrJours !== undefined)
@@ -140,7 +143,7 @@ export class PrismaRestauRepository implements RestauRepository {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.prisma.restau.delete({
       where: { id },
     });

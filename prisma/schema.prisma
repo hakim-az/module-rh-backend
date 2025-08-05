@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                     Int           @id @default(autoincrement())
+  id                     String        @id
   role                   String
   statut                 String
   civilite               String?
@@ -40,8 +40,8 @@ model User {
 }
 
 model Naissance {
-  id                     Int      @id @default(autoincrement())
-  idUser                 Int      @unique @map("id_user")
+  id                     String   @id
+  idUser                 String   @unique @map("id_user")
   dateDeNaissance        DateTime @map("date_de_naissance")
   paysDeNaissance        String
   departementDeNaissance String
@@ -56,8 +56,8 @@ model Naissance {
 }
 
 model Adresse {
-  id                     Int      @id @default(autoincrement())
-  idUser                 Int      @unique @map("id_user")
+  id                     String   @id
+  idUser                 String   @unique @map("id_user")
   pays                   String
   codePostal             String
   ville                  String
@@ -73,8 +73,8 @@ model Adresse {
 }
 
 model Paiement {
-  id        Int      @id @default(autoincrement())
-  idUser    Int      @unique @map("id_user")
+  id        String   @id
+  idUser    String   @unique @map("id_user")
   iban      String
   bic       String
   createdAt DateTime @default(now())
@@ -86,8 +86,8 @@ model Paiement {
 }
 
 model Urgence {
-  id                Int      @id @default(autoincrement())
-  idUser            Int      @unique @map("id_user")
+  id                String   @id
+  idUser            String   @unique @map("id_user")
   nomComplet        String
   lienAvecLeSalarie String
   telephone         String
@@ -100,8 +100,8 @@ model Urgence {
 }
 
 model Justificatif {
-  id                             Int      @id @default(autoincrement())
-  idUser                         Int      @unique @map("id_user")
+  id                             String   @id
+  idUser                         String   @unique @map("id_user")
   fichierCarteVitalePdf          String   @map("fichier_carte_vitale_pdf")
   fichierRibPdf                  String   @map("fichier_rib_pdf")
   fichierPieceIdentitePdf        String   @map("fichier_piece_identite_pdf")
@@ -116,8 +116,8 @@ model Justificatif {
 }
 
 model Contrat {
-  id                         Int      @id @default(autoincrement())
-  idUser                     Int      @unique @map("id_user")
+  id                         String   @id
+  idUser                     String   @unique @map("id_user")
   poste                      String
   typeContrat                String
   dateDebut                  DateTime @map("date_debut")
@@ -137,8 +137,8 @@ model Contrat {
 }
 
 model Absence {
-  id                     Int      @id @default(autoincrement())
-  idUser                 Int      @map("id_user")
+  id                     String   @id
+  idUser                 String   @map("id_user")
   typeAbsence            String
   dateDebut              DateTime @map("date_debut")
   dateFin                DateTime @map("date_fin")
@@ -155,8 +155,8 @@ model Absence {
 }
 
 model Coffre {
-  id                     Int      @id @default(autoincrement())
-  idUser                 Int      @map("id_user")
+  id                     String   @id
+  idUser                 String   @map("id_user")
   typeBulletin           String
   mois                   String
   annee                  String
@@ -171,8 +171,8 @@ model Coffre {
 }
 
 model Restau {
-  id                     Int      @id @default(autoincrement())
-  idUser                 Int      @map("id_user")
+  id                     String   @id
+  idUser                 String   @map("id_user")
   nbrJours               String
   mois                   String
   annee                  String

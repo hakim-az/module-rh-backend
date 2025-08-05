@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { AbsenceRepository } from "@domain/repositories/absence.repository";
 import { Absence } from "@domain/entities/absence.entity";
 import { PrismaService } from "../prisma.service";
+import { generateUniqueNumericId } from "@/domain/services/generate-id.service";
 
 @Injectable()
 export class PrismaAbsenceRepository implements AbsenceRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: number): Promise<Absence | null> {
+  async findById(id: string): Promise<Absence | null> {
     const absence = await this.prisma.absence.findUnique({
       where: { id },
     });
@@ -29,7 +30,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
     );
   }
 
-  async findByUserId(userId: number): Promise<Absence[]> {
+  async findByUserId(userId: string): Promise<Absence[]> {
     const absences = await this.prisma.absence.findMany({
       where: { idUser: userId },
     });
@@ -84,8 +85,10 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
   }
 
   async create(absence: Absence): Promise<Absence> {
+    const id = await generateUniqueNumericId("absence");
     const createdAbsence = await this.prisma.absence.create({
       data: {
+        id: id,
         idUser: absence.idUser,
         typeAbsence: absence.typeAbsence,
         dateDebut: absence.dateDebut,
@@ -112,7 +115,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
     );
   }
 
-  async update(id: number, absenceData: Partial<Absence>): Promise<Absence> {
+  async update(id: string, absenceData: Partial<Absence>): Promise<Absence> {
     const updateData: any = {};
 
     if (absenceData.typeAbsence !== undefined)
@@ -149,9 +152,12 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.prisma.absence.delete({
       where: { id },
     });
   }
+}
+function uuidv4(): any {
+  throw new Error("Function not implemented.");
 }
