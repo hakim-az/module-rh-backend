@@ -46,6 +46,7 @@ export class CreateUserUseCase {
 
     return await this.prisma.$transaction(async () => {
       const userData = {
+        id: createUserDto.id,
         role: createUserDto.role,
         statut: createUserDto.statut,
         civilite: createUserDto.civilite,

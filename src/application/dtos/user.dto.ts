@@ -22,6 +22,11 @@ import {
 import { CreateContratDto, UpdateContratDto } from "./contrat.dto";
 
 export class CreateUserDto {
+  @ApiProperty({ example: "13131313" })
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
   @ApiProperty({ example: "employee" })
   @IsString()
   @IsNotEmpty()

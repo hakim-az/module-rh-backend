@@ -339,6 +339,9 @@ export class UserController {
     try {
       const users = await this.getAllUsersUseCase.execute();
 
+      // 🔽 Filter only employee users
+      const employeeUsers = users.filter((user) => user.role === "employee");
+
       const statusTotals: Record<string, number> = {
         "user-registred": 0,
         "profile-completed": 0,
@@ -348,8 +351,8 @@ export class UserController {
         "user-approuved": 0,
       };
 
-      for (const user of users) {
-        const status = user.statut; // assuming `statut` is the field name
+      for (const user of employeeUsers) {
+        const status = user.statut;
         if (status && statusTotals.hasOwnProperty(status)) {
           statusTotals[status]++;
         }
@@ -373,7 +376,10 @@ export class UserController {
   async getLightUsers() {
     const users = await this.getAllUsersUseCase.execute();
 
-    const lightUsers = users.map((user: any) => ({
+    // 🔽 Filter only employee users
+    const employeeUsers = users.filter((user: any) => user.role === "employee");
+
+    const lightUsers = employeeUsers.map((user: any) => ({
       id: user.id,
       prenom: user.prenom,
       nomComplet: user.nomDeNaissance,

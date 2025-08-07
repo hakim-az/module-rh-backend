@@ -11,7 +11,7 @@ import {
   HttpStatus,
   Patch,
   UploadedFiles,
-  ValidationPipe,
+  Query,
 } from "@nestjs/common";
 import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { CreateAbsenceUseCase } from "@application/use-cases/absence/create-absence.use-case";
@@ -27,6 +27,7 @@ import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { UpdateAbsenceUseCase } from "@/application/use-cases/absence/update-absence.use-case";
 import { GetAllAbsencesUseCase } from "@/application/use-cases/absence/get-all-absences.use-case";
 import { GetAbsenceUseCase } from "@/application/use-cases/absence/get-absence.use-case";
+import { countBusinessDays } from "@/domain/services/count-business-days.service";
 
 @ApiTags("absences")
 @Controller("absences")
@@ -48,39 +49,52 @@ export class AbsenceController {
     description: "Absences retrieved successfully",
     type: [AbsenceResponseDto],
   })
-  async findAll(): Promise<AbsenceResponseDto[]> {
+  async findAll(): Promise<(AbsenceResponseDto & { total: number })[]> {
     try {
       const absences = await this.getAllAbsencesUseCase.execute();
 
       // Sort absences by createdAt descending (recent first)
       const sortedAbsences = absences.sort((a, b) => {
-        // Convert to timestamps for comparison
         const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       });
 
-      return sortedAbsences.map((absence) => ({
-        id: absence.id,
-        idUser: absence.idUser,
-        typeAbsence: absence.typeAbsence,
-        dateDebut: absence.dateDebut?.toISOString(),
-        dateFin: absence.dateFin?.toISOString(),
-        note: absence.note,
-        statut: absence.statut,
-        motifDeRefus: absence.motifDeRefus,
-        fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
-        createdAt: absence.createdAt?.toISOString(),
-        updatedAt: absence.updatedAt?.toISOString(),
-        user: absence.user
-          ? {
-              nomDeNaissance: absence.user.nomDeNaissance,
-              prenom: absence.user.prenom,
-              emailProfessionnel: absence.user.emailProfessionnel,
-              avatar: absence.user.avatar,
-            }
-          : undefined,
-      }));
+      return sortedAbsences.map((absence) => {
+        const dateDebut = absence.dateDebut
+          ? new Date(absence.dateDebut)
+          : null;
+        const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
+
+        // ✅ Calculer le total sans week-ends
+        let total = 0;
+        if (dateDebut && dateFin) {
+          total = countBusinessDays(dateDebut, dateFin);
+        }
+
+        return {
+          id: absence.id,
+          idUser: absence.idUser,
+          typeAbsence: absence.typeAbsence,
+          dateDebut: dateDebut?.toISOString(),
+          dateFin: dateFin?.toISOString(),
+          note: absence.note,
+          statut: absence.statut,
+          motifDeRefus: absence.motifDeRefus,
+          fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
+          createdAt: absence.createdAt?.toISOString(),
+          updatedAt: absence.updatedAt?.toISOString(),
+          user: absence.user
+            ? {
+                nomDeNaissance: absence.user.nomDeNaissance,
+                prenom: absence.user.prenom,
+                emailProfessionnel: absence.user.emailProfessionnel,
+                avatar: absence.user.avatar,
+              }
+            : undefined,
+          total, // ✅ nombre de jours ouvrés uniquement
+        };
+      });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -162,6 +176,71 @@ export class AbsenceController {
     } catch (error) {
       throw new HttpException(
         "Failed to retrieve absence totals for user",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get("total-conge/:userId")
+  @ApiOperation({
+    summary:
+      "Get total approved absence days for a specific user, optionally filtered by month and year",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Total approved absence days retrieved successfully",
+    schema: {
+      example: {
+        totalCongeApprouve: 12,
+      },
+    },
+  })
+  async getTotalCongeApprouveByUser(
+    @Param("userId") userId: string,
+    @Query("month") month?: string,
+    @Query("year") year?: string
+  ): Promise<{ totalCongeApprouve: number }> {
+    try {
+      const absences = await this.getAbsencesByUserUseCase.execute(userId);
+
+      const totalCongeApprouve = absences
+        .filter((a) => a.statut === "approuver")
+        .reduce((sum, absence) => {
+          const dateDebut = absence.dateDebut
+            ? new Date(absence.dateDebut)
+            : null;
+          const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
+
+          if (!dateDebut || !dateFin) return sum;
+
+          // If month and year are provided, check if the absence overlaps with that month
+          if (month && year) {
+            const monthNum = parseInt(month, 10) - 1; // JS Date months are 0-based
+            const yearNum = parseInt(year, 10);
+
+            const startOfMonth = new Date(yearNum, monthNum, 1);
+            const endOfMonth = new Date(yearNum, monthNum + 1, 0);
+
+            // Compute the overlapping date range
+            const overlapStart =
+              dateDebut > startOfMonth ? dateDebut : startOfMonth;
+            const overlapEnd = dateFin < endOfMonth ? dateFin : endOfMonth;
+
+            if (overlapStart > overlapEnd) return sum; // No overlap
+
+            const joursOuvres = countBusinessDays(overlapStart, overlapEnd);
+            return sum + joursOuvres;
+          } else {
+            // No month/year filter → count full approved absence
+            const joursOuvres = countBusinessDays(dateDebut, dateFin);
+            return sum + joursOuvres;
+          }
+        }, 0);
+
+      return { totalCongeApprouve };
+    } catch (error) {
+      throw new HttpException(
+        "Failed to calculate approved absence total",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
@@ -275,37 +354,48 @@ export class AbsenceController {
   @ApiResponse({ status: 200, description: "Absences retrieved successfully" })
   async findByUser(
     @Param("userId") userId: string
-  ): Promise<AbsenceResponseDto[]> {
+  ): Promise<(AbsenceResponseDto & { total: number })[]> {
     const absences = await this.getAbsencesByUserUseCase.execute(userId);
 
-    // Sort absences by createdAt descending (recent first)
     const sortedAbsences = absences.sort((a, b) => {
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return dateB - dateA;
     });
 
-    return sortedAbsences.map((absence) => ({
-      id: absence.id,
-      idUser: absence.idUser,
-      typeAbsence: absence.typeAbsence,
-      dateDebut: absence.dateDebut?.toISOString(),
-      dateFin: absence.dateFin?.toISOString(),
-      note: absence.note,
-      statut: absence.statut,
-      motifDeRefus: absence.motifDeRefus,
-      fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
-      createdAt: absence.createdAt?.toISOString(),
-      updatedAt: absence.updatedAt?.toISOString(),
-      user: absence.user
-        ? {
-            nomDeNaissance: absence.user.nomDeNaissance,
-            prenom: absence.user.prenom,
-            emailProfessionnel: absence.user.emailProfessionnel,
-            avatar: absence.user.avatar,
-          }
-        : undefined,
-    }));
+    return sortedAbsences.map((absence) => {
+      const dateDebut = absence.dateDebut ? new Date(absence.dateDebut) : null;
+      const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
+
+      // ✅ Calculer total sans week-ends
+      let total = 0;
+      if (dateDebut && dateFin) {
+        total = countBusinessDays(dateDebut, dateFin);
+      }
+
+      return {
+        id: absence.id,
+        idUser: absence.idUser,
+        typeAbsence: absence.typeAbsence,
+        dateDebut: dateDebut?.toISOString(),
+        dateFin: dateFin?.toISOString(),
+        note: absence.note,
+        statut: absence.statut,
+        motifDeRefus: absence.motifDeRefus,
+        fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
+        createdAt: absence.createdAt?.toISOString(),
+        updatedAt: absence.updatedAt?.toISOString(),
+        user: absence.user
+          ? {
+              nomDeNaissance: absence.user.nomDeNaissance,
+              prenom: absence.user.prenom,
+              emailProfessionnel: absence.user.emailProfessionnel,
+              avatar: absence.user.avatar,
+            }
+          : undefined,
+        total, // ➕ jours ouvrés uniquement
+      };
+    });
   }
 
   @Patch(":id")

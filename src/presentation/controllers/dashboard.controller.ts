@@ -42,7 +42,12 @@ export class DashboardController {
       const sortByNewest = (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 
-      const latestUsers = users.sort(sortByNewest).slice(0, 5);
+      // 🔽 Filter only employee users
+      const employeeUsers = users.filter((user) => user.role === "employee");
+
+      // 🔽 Get latest 5 employee users
+      const latestUsers = employeeUsers.sort(sortByNewest).slice(0, 5);
+
       const latestAbsences = absences
         .sort(sortByNewest)
         .slice(0, 5)
@@ -119,13 +124,13 @@ export class DashboardController {
         message: "Dashboard data retrieved successfully",
         data: {
           totals: {
-            users: users.length,
+            users: employeeUsers.length, // ✅ Only count employees
             absences: absences.length,
             coffres: coffres.length,
             restaus: restaus.length,
           },
           latest: {
-            users: latestUsers,
+            users: latestUsers, // ✅ Only show latest employees
             absences: latestAbsences,
             coffres: latestCoffres,
             restaus: latestRestaus,
