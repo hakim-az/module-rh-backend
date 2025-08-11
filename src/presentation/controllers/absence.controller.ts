@@ -140,6 +140,100 @@ export class AbsenceController {
     }
   }
 
+  @Get("calculate-holidays/:userId")
+  @ApiOperation({
+    summary: "Calculate remaining holiday days for an employee",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Holiday days calculated successfully",
+    schema: {
+      example: {
+        earnedDays: 12.48,
+        usedDays: 5,
+        remainingDays: 7.48,
+      },
+    },
+  })
+  async calculateHolidays(
+    @Param("userId") userId: string,
+    @Query("entryDate") entryDateStr: string,
+    @Query("currentDate") currentDateStr?: string
+  ): Promise<{ earnedDays: number; usedDays: number; remainingDays: number }> {
+    try {
+      if (!entryDateStr) {
+        throw new HttpException(
+          "entryDate query parameter is required (YYYY-MM-DD)",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      const entryDate = new Date(entryDateStr);
+      if (isNaN(entryDate.getTime())) {
+        throw new HttpException(
+          "Invalid entryDate format",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      const currentDate = currentDateStr
+        ? new Date(currentDateStr)
+        : new Date();
+      if (isNaN(currentDate.getTime())) {
+        throw new HttpException(
+          "Invalid currentDate format",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      // Calculate number of full months worked
+      let monthsWorked =
+        (currentDate.getFullYear() - entryDate.getFullYear()) * 12 +
+        (currentDate.getMonth() - entryDate.getMonth());
+
+      // If the current day of the month is >= entry day, count it as a full month
+      if (currentDate.getDate() >= entryDate.getDate()) {
+        monthsWorked += 1;
+      }
+
+      if (monthsWorked < 0) monthsWorked = 0;
+
+      const earnedDays = +(monthsWorked * 2.08).toFixed(2);
+
+      // Get approved absences for the user
+      const absences = await this.getAbsencesByUserUseCase.execute(userId);
+      const usedDays = absences
+        .filter((a) => a.statut === "approuver")
+        .reduce((sum, absence) => {
+          const dateDebut = absence.dateDebut
+            ? new Date(absence.dateDebut)
+            : null;
+          const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
+          if (!dateDebut || !dateFin) return sum;
+
+          // Count only if after entry date
+          if (dateFin < entryDate) return sum;
+
+          const start = dateDebut < entryDate ? entryDate : dateDebut;
+          const joursOuvres = countBusinessDays(start, dateFin);
+          return sum + joursOuvres;
+        }, 0);
+
+      const remainingDays = +(earnedDays - usedDays).toFixed(2);
+
+      return {
+        earnedDays,
+        usedDays,
+        remainingDays: remainingDays < 0 ? 0 : remainingDays,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Failed to calculate holidays",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @Get("user/:userId/totals-by-status")
   @ApiOperation({ summary: "Get total absences by status for a specific user" })
   @ApiResponse({
