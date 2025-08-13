@@ -13,7 +13,6 @@ export class User {
   public readonly telephonePersonnel: string;
   public readonly telephoneProfessionnel: string;
   public readonly avatar: string;
-  public readonly password: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -40,7 +39,6 @@ export class User {
     telephonePersonnel: string;
     telephoneProfessionnel: string;
     avatar: string;
-    password: string;
     createdAt: Date;
     updatedAt: Date;
 
@@ -65,7 +63,6 @@ export class User {
     this.telephonePersonnel = props.telephonePersonnel;
     this.telephoneProfessionnel = props.telephoneProfessionnel;
     this.avatar = props.avatar;
-    this.password = props.password;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
 

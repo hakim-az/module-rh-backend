@@ -39,28 +39,6 @@ export class PrismaUserRepository implements UserRepository {
     return users.map((user) => new User(user));
   }
 
-  // async create(
-  //   userData: Omit<User, "id" | "createdAt" | "updatedAt">
-  // ): Promise<User> {
-  //   const id = await generateUniqueNumericId("user");
-  //   const user = await this.prisma.user.create({
-  //     data: {
-  //       id,
-  //       ...userData,
-  //     },
-  //     include: {
-  //       naissance: true,
-  //       adresse: true,
-  //       contrat: true,
-  //       paiement: true,
-  //       urgence: true,
-  //       justificatif: true,
-  //     },
-  //   });
-
-  //   return new User(user);
-  // }
-
   async create(userData: Omit<User, "createdAt" | "updatedAt">): Promise<User> {
     const user = await this.prisma.user.create({
       data: {

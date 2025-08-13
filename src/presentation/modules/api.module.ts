@@ -15,8 +15,6 @@ import { CoffreController } from "../controllers/coffre.controller";
 import { RestauController } from "../controllers/restau.controller";
 import { YousignController } from "../controllers/yousign.controller";
 import { DashboardController } from "../controllers/dashboard.controller";
-import { AuthController } from "../controllers/auth.controller";
-import { AuthModule } from "@/application/modules/auth.module";
 
 @Module({
   imports: [
@@ -27,7 +25,6 @@ import { AuthModule } from "@/application/modules/auth.module";
     CoffreModule,
     RestauModule,
     YousignModule,
-    AuthModule,
   ],
   controllers: [
     UserController,
@@ -38,7 +35,6 @@ import { AuthModule } from "@/application/modules/auth.module";
     RestauController,
     YousignController,
     DashboardController,
-    AuthController,
   ],
 })
 export class ApiModule {}

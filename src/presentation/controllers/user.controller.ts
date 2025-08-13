@@ -319,6 +319,53 @@ export class UserController {
     };
   }
 
+  // Get all users except admins
+  @Get("admin")
+  @ApiOperation({
+    summary: "Admin: Récupérer tous les utilisateurs sauf les admins",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Liste complète des utilisateurs sans les admins",
+  })
+  async getAllUsersForAdmin() {
+    const users = await this.getAllUsersUseCase.execute();
+
+    const nonAdminUsers = users.filter((user) => user.role !== "admin");
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: "Tous les utilisateurs (hors admins) récupérés avec succès",
+      data: nonAdminUsers,
+    };
+  }
+
+  // Get the 5 most recent users except admins
+  @Get("admin/recent")
+  @ApiOperation({
+    summary: "Admin: Récupérer les 5 derniers utilisateurs sauf les admins",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "5 derniers utilisateurs récupérés sans les admins",
+  })
+  async getFiveRecentUsersForAdmin() {
+    const users = await this.getAllUsersUseCase.execute();
+
+    const nonAdminUsers = users
+      .filter((user) => user.role !== "admin")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: "5 derniers utilisateurs (hors admins) récupérés avec succès",
+      data: nonAdminUsers.slice(0, 5),
+    };
+  }
+
   @Get("totals-by-status")
   @ApiOperation({ summary: "Get user totals grouped by status" })
   @ApiResponse({

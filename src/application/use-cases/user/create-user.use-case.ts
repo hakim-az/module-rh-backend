@@ -42,8 +42,6 @@ export class CreateUserUseCase {
       throw new Error("Un utilisateur avec cet email existe déjà");
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
     return await this.prisma.$transaction(async () => {
       const userData = {
         id: createUserDto.id,
@@ -60,7 +58,6 @@ export class CreateUserUseCase {
         telephonePersonnel: createUserDto.telephonePersonnel,
         telephoneProfessionnel: createUserDto.telephoneProfessionnel,
         avatar: createUserDto.avatar,
-        password: hashedPassword,
       };
 
       const user = await this.userRepository.create(userData);

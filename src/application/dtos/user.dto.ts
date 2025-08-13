@@ -92,11 +92,6 @@ export class CreateUserDto {
   @IsOptional()
   avatar?: string;
 
-  @ApiProperty({ example: "12345678" })
-  @IsNotEmpty()
-  @MinLength(8)
-  password: string;
-
   // Données associées (optionnelles)
   @ApiProperty({ required: false, type: CreateNaissanceDto })
   @IsOptional()

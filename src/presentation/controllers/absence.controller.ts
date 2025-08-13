@@ -28,6 +28,7 @@ import { UpdateAbsenceUseCase } from "@/application/use-cases/absence/update-abs
 import { GetAllAbsencesUseCase } from "@/application/use-cases/absence/get-all-absences.use-case";
 import { GetAbsenceUseCase } from "@/application/use-cases/absence/get-absence.use-case";
 import { countBusinessDays } from "@/domain/services/count-business-days.service";
+import { GetContratUseCase } from "@/application/use-cases/contrat/get-contrat.use-case";
 
 @ApiTags("absences")
 @Controller("absences")
@@ -39,7 +40,8 @@ export class AbsenceController {
     private readonly updateAbsenceUseCase: UpdateAbsenceUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly getAllAbsencesUseCase: GetAllAbsencesUseCase,
-    private readonly getAbsenceUseCase: GetAbsenceUseCase
+    private readonly getAbsenceUseCase: GetAbsenceUseCase,
+    private readonly getContratUseCase: GetContratUseCase
   ) {}
 
   @Get()
@@ -186,21 +188,61 @@ export class AbsenceController {
         );
       }
 
-      // Calculate number of full months worked
-      let monthsWorked =
-        (currentDate.getFullYear() - entryDate.getFullYear()) * 12 +
-        (currentDate.getMonth() - entryDate.getMonth());
-
-      // If the current day of the month is >= entry day, count it as a full month
-      if (currentDate.getDate() >= entryDate.getDate()) {
-        monthsWorked += 1;
+      if (currentDate < entryDate) {
+        // If current date is before entry date, no days earned
+        return { earnedDays: 0, usedDays: 0, remainingDays: 0 };
       }
 
-      if (monthsWorked < 0) monthsWorked = 0;
+      // Helper function to get days in a month
+      function daysInMonth(year: number, month: number) {
+        return new Date(year, month + 1, 0).getDate();
+      }
 
-      const earnedDays = +(monthsWorked * 2.08).toFixed(2);
+      // Calculate earned days
 
-      // Get approved absences for the user
+      // 1. Calculate partial days in the first month
+      const startMonthDays = daysInMonth(
+        entryDate.getFullYear(),
+        entryDate.getMonth()
+      );
+      const daysWorkedInFirstMonth = startMonthDays - entryDate.getDate() + 1;
+      const partialFirstMonthEarned =
+        (daysWorkedInFirstMonth / startMonthDays) * 2.08;
+
+      // 2. Calculate number of full months after the first partial month
+      // Full months count from the first day of the next month after entryDate
+      const firstFullMonthStart = new Date(
+        entryDate.getFullYear(),
+        entryDate.getMonth() + 1,
+        1
+      );
+
+      // Calculate months difference between first full month and currentDate (full months only)
+      let fullMonths = 0;
+      if (currentDate >= firstFullMonthStart) {
+        fullMonths =
+          (currentDate.getFullYear() - firstFullMonthStart.getFullYear()) * 12 +
+          (currentDate.getMonth() - firstFullMonthStart.getMonth());
+
+        // If currentDate's day is less than the first of the next month, we don't count the last month fully
+        // But since fullMonths is counting full months completed, we just keep it as is (no partial prorate for end)
+        if (currentDate.getDate() < 1) {
+          fullMonths -= 1; // but this case is impossible since day < 1 never true, so can skip
+        }
+
+        if (fullMonths < 0) fullMonths = 0;
+      }
+
+      // 3. Calculate earned days for full months
+      const fullMonthsEarned = fullMonths * 2.08;
+
+      // 4. Sum partial first month + full months
+      let earnedDays = partialFirstMonthEarned + fullMonthsEarned;
+
+      // Round to 2 decimals
+      earnedDays = +earnedDays.toFixed(2);
+
+      // Calculate used days as before (your original code)
       const absences = await this.getAbsencesByUserUseCase.execute(userId);
       const usedDays = absences
         .filter((a) => a.statut === "approuver")
