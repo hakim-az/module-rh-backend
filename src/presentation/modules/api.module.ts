@@ -15,6 +15,7 @@ import { CoffreController } from "../controllers/coffre.controller";
 import { RestauController } from "../controllers/restau.controller";
 import { YousignController } from "../controllers/yousign.controller";
 import { DashboardController } from "../controllers/dashboard.controller";
+import { HolidayCalculationController } from "../controllers/holidays-calculation.controller";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DashboardController } from "../controllers/dashboard.controller";
     RestauController,
     YousignController,
     DashboardController,
+    HolidayCalculationController,
   ],
 })
 export class ApiModule {}

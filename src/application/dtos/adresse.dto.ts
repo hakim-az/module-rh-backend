@@ -29,8 +29,8 @@ export class CreateAdresseDto {
 
   @ApiProperty({ example: "test" })
   @IsString()
-  @IsNotEmpty()
-  complementAdresse: string;
+  @IsOptional()
+  complementAdresse?: string;
 
   @ApiProperty({ example: "false", required: false })
   @IsString()

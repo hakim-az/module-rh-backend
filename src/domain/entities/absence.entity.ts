@@ -1,4 +1,7 @@
 export class Absence {
+  type(type: any) {
+    throw new Error("Method not implemented.");
+  }
   constructor(
     public readonly id: string,
     public readonly idUser: string,
