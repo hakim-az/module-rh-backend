@@ -382,6 +382,129 @@ export class AbsenceController {
     }
   }
 
+  @Get("holidays-cumulative")
+  @ApiOperation({
+    summary:
+      "Calcule les congés cumulés depuis le début du contrat jusqu'à une date donnée",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Congés calculés avec succès",
+  })
+  async calculateHolidaysCumulative(
+    @Query("userId") userId: string,
+    @Query("dateDebut") dateDebutStr: string,
+    @Query("dateFin") dateFinStr: string
+  ): Promise<any> {
+    if (!userId || !dateDebutStr || !dateFinStr) {
+      throw new HttpException(
+        "userId, dateDebut et dateFin sont requis (YYYY-MM-DD)",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const dateDebut = new Date(dateDebutStr);
+    const dateFin = new Date(dateFinStr);
+
+    if (isNaN(dateDebut.getTime()) || isNaN(dateFin.getTime())) {
+      throw new HttpException("Dates invalides", HttpStatus.BAD_REQUEST);
+    }
+
+    if (dateFin < dateDebut) {
+      throw new HttpException(
+        "dateFin doit être >= dateDebut",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    // 🔹 Détermination de la période de référence actuelle (1er juin → 31 mai)
+    const refYear =
+      dateFin.getMonth() + 1 >= 6
+        ? dateFin.getFullYear()
+        : dateFin.getFullYear() - 1;
+    const periodeDebut = new Date(refYear, 5, 1); // 1 juin
+    const periodeFin = new Date(refYear + 1, 4, 31); // 31 mai
+
+    // 🔹 Helper pour prorata du mois
+    const prorataMois = (d1: Date, d2: Date) => {
+      const daysInMonth = new Date(
+        d1.getFullYear(),
+        d1.getMonth() + 1,
+        0
+      ).getDate();
+      const joursTravailles = d2.getDate() - d1.getDate() + 1;
+      return +((joursTravailles / daysInMonth) * 2.0833).toFixed(2);
+    };
+
+    // 🔹 Calcul total acquis depuis le début du contrat
+    let totalAcquisDepuisDebut = 0;
+    let current = new Date(dateDebut);
+
+    while (current <= dateFin) {
+      const monthEnd = new Date(
+        current.getFullYear(),
+        current.getMonth() + 1,
+        0
+      );
+      const end = monthEnd < dateFin ? monthEnd : dateFin;
+      totalAcquisDepuisDebut += prorataMois(current, end);
+      current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+    }
+    totalAcquisDepuisDebut = +totalAcquisDepuisDebut.toFixed(2);
+
+    // 🔹 Calcul acquis dans la période actuelle (1er juin → 31 mai)
+    let startAcquis = periodeDebut > dateDebut ? periodeDebut : dateDebut;
+    let currentAcquis = new Date(startAcquis);
+    let acquis = 0;
+
+    while (currentAcquis <= dateFin && currentAcquis <= periodeFin) {
+      const monthEnd = new Date(
+        currentAcquis.getFullYear(),
+        currentAcquis.getMonth() + 1,
+        0
+      );
+      const end = monthEnd < dateFin ? monthEnd : dateFin;
+      acquis += prorataMois(currentAcquis, end);
+      currentAcquis = new Date(
+        currentAcquis.getFullYear(),
+        currentAcquis.getMonth() + 1,
+        1
+      );
+    }
+    acquis = +acquis.toFixed(2);
+
+    // 🔹 Calcul des jours consommés
+    const typesAExclure = ["conge_parental", "mise_a_pied", "conge_sans_solde"];
+
+    const absences = await this.getAbsencesByUserUseCase.execute(userId);
+    const consommes = absences
+      .filter(
+        (a) =>
+          a.statut === "approuver" &&
+          !typesAExclure.includes(a.typeAbsence) && // exclure ces types
+          a.fichierJustificatifPdf !== "" &&
+          a.dateDebut &&
+          a.dateFin
+      )
+      .reduce((sum, absence) => {
+        const d1 = new Date(absence.dateDebut);
+        const d2 = new Date(absence.dateFin);
+        return sum + countBusinessDays(d1, d2);
+      }, 0);
+
+    const restants = +(acquis - consommes).toFixed(2);
+
+    return {
+      periodeReference: `${periodeDebut.toISOString().split("T")[0]} au ${
+        periodeFin.toISOString().split("T")[0]
+      }`,
+      acquis,
+      consommes,
+      restants,
+      totalAcquisDepuisDebut,
+    };
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "Get a single absence by ID" })
   @ApiResponse({
