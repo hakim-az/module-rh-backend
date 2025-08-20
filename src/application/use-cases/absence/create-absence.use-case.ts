@@ -26,6 +26,7 @@ export class CreateAbsenceUseCase {
       createAbsenceDto.typeAbsence,
       new Date(createAbsenceDto.dateDebut),
       new Date(createAbsenceDto.dateFin),
+      createAbsenceDto.partieDeJour,
       createAbsenceDto.note,
       createAbsenceDto.statut,
       createAbsenceDto.motifDeRefus,

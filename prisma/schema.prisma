@@ -141,6 +141,7 @@ model Absence {
   typeAbsence            String
   dateDebut              DateTime @map("date_debut")
   dateFin                DateTime @map("date_fin")
+  partieDeJour           String?
   note                   String?
   statut                 String?
   motifDeRefus           String?

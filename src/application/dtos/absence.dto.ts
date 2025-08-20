@@ -27,6 +27,11 @@ export class CreateAbsenceDto {
   @IsNotEmpty()
   dateFin: Date;
 
+  @ApiProperty({ example: "matin" })
+  @IsString()
+  @IsOptional()
+  partieDeJour?: string;
+
   @ApiProperty({ example: "note", required: false })
   @IsString()
   @IsOptional()
@@ -63,6 +68,11 @@ export class UpdateAbsenceDto {
   @IsDateString()
   @IsOptional()
   dateFin?: Date;
+
+  @ApiProperty({ example: "matin" })
+  @IsString()
+  @IsOptional()
+  partieDeJour?: string;
 
   @ApiProperty({ example: "note", required: false })
   @IsString()
@@ -114,6 +124,9 @@ export class AbsenceResponseDto {
 
   @ApiProperty()
   dateFin: String;
+
+  @ApiProperty()
+  partieDeJour: string;
 
   @ApiProperty()
   note: string;

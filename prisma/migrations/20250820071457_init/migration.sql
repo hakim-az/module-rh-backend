@@ -126,6 +126,7 @@ CREATE TABLE `absences` (
     `typeAbsence` VARCHAR(191) NOT NULL,
     `date_debut` DATETIME(3) NOT NULL,
     `date_fin` DATETIME(3) NOT NULL,
+    `partieDeJour` VARCHAR(191) NULL,
     `note` VARCHAR(191) NULL,
     `statut` VARCHAR(191) NULL,
     `motifDeRefus` VARCHAR(191) NULL,

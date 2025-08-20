@@ -20,6 +20,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
       absence.typeAbsence,
       absence.dateDebut,
       absence.dateFin,
+      absence.partieDeJour,
       absence.note,
       absence.statut,
       absence.motifDeRefus,
@@ -42,6 +43,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
           absence.typeAbsence,
           absence.dateDebut,
           absence.dateFin,
+          absence.partieDeJour,
           absence.note,
           absence.statut,
           absence.motifDeRefus,
@@ -65,6 +67,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
           absence.typeAbsence,
           absence.dateDebut,
           absence.dateFin,
+          absence.partieDeJour,
           absence.note,
           absence.statut,
           absence.motifDeRefus,
@@ -91,6 +94,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
         idUser: absence.idUser,
         typeAbsence: absence.typeAbsence,
         dateDebut: absence.dateDebut,
+        partieDeJour: absence.partieDeJour,
         dateFin: absence.dateFin,
         note: absence.note,
         statut: absence.statut,
@@ -105,6 +109,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
       absence.typeAbsence,
       absence.dateDebut,
       absence.dateFin,
+      absence.partieDeJour,
       absence.note,
       absence.statut,
       absence.motifDeRefus,
@@ -123,6 +128,8 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
       updateData.dateDebut = absenceData.dateDebut;
     if (absenceData.dateFin !== undefined)
       updateData.dateFin = absenceData.dateFin;
+    if (absenceData.partieDeJour !== undefined)
+      updateData.partieDeJour = absenceData.partieDeJour;
     if (absenceData.note !== undefined) updateData.note = absenceData.note;
     if (absenceData.statut !== undefined)
       updateData.statut = absenceData.statut;
@@ -142,6 +149,7 @@ export class PrismaAbsenceRepository implements AbsenceRepository {
       updatedAbsence.typeAbsence,
       updatedAbsence.dateDebut,
       updatedAbsence.dateFin,
+      updatedAbsence.partieDeJour,
       updatedAbsence.note,
       updatedAbsence.statut,
       updatedAbsence.motifDeRefus,

@@ -68,10 +68,32 @@ export class AbsenceController {
           : null;
         const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
 
-        // ✅ Calculer le total sans week-ends
-        let total = 0;
+        // ✅ Calculer le total en tenant compte de partieDeJour
+        let total: number = 0;
         if (dateDebut && dateFin) {
-          total = countBusinessDays(dateDebut, dateFin);
+          // Comparer directement les dates au format ISO string (même jour)
+          const dateDebutStr = dateDebut.toISOString().split("T")[0]; // YYYY-MM-DD
+          const dateFinStr = dateFin.toISOString().split("T")[0]; // YYYY-MM-DD
+          const isSameDay = dateDebutStr === dateFinStr;
+
+          if (isSameDay) {
+            // Même jour : calculer selon partieDeJour
+            switch (absence.partieDeJour) {
+              case "matin":
+              case "apres_midi":
+                total = 0.5;
+                break;
+              case "journee_entiereeee":
+                total = 1.0;
+                break;
+              default:
+                total = 5.0; // fallback pour les autres valeurs
+                break;
+            }
+          } else {
+            // Dates différentes : calculer les jours ouvrés normalement
+            total = countBusinessDays(dateDebut, dateFin);
+          }
         }
 
         return {
@@ -80,6 +102,7 @@ export class AbsenceController {
           typeAbsence: absence.typeAbsence,
           dateDebut: dateDebut?.toISOString(),
           dateFin: dateFin?.toISOString(),
+          partieDeJour: absence.partieDeJour,
           note: absence.note,
           statut: absence.statut,
           motifDeRefus: absence.motifDeRefus,
@@ -94,7 +117,7 @@ export class AbsenceController {
                 avatar: absence.user.avatar,
               }
             : undefined,
-          total, // ✅ nombre de jours ouvrés uniquement
+          total: Number(total), // ✅ S'assurer que c'est un number (float)
         };
       });
     } catch (error) {
@@ -439,7 +462,6 @@ export class AbsenceController {
   //   // 🔹 Calcul total acquis depuis le début du contrat
   //   let totalAcquisDepuisDebut = 0;
   //   let current = new Date(dateDebut);
-
   //   while (current <= dateFin) {
   //     const monthEnd = new Date(
   //       current.getFullYear(),
@@ -456,7 +478,6 @@ export class AbsenceController {
   //   let startAcquis = periodeDebut > dateDebut ? periodeDebut : dateDebut;
   //   let currentAcquis = new Date(startAcquis);
   //   let acquis = 0;
-
   //   while (currentAcquis <= dateFin && currentAcquis <= periodeFin) {
   //     const monthEnd = new Date(
   //       currentAcquis.getFullYear(),
@@ -475,8 +496,9 @@ export class AbsenceController {
 
   //   // 🔹 Calcul des jours consommés
   //   const typesAExclure = ["conge_parental", "mise_a_pied", "conge_sans_solde"];
-
   //   const absences = await this.getAbsencesByUserUseCase.execute(userId);
+
+  //   // Consommés dans la période actuelle (1er juin → 31 mai)
   //   const consommes = absences
   //     .filter(
   //       (a) =>
@@ -490,12 +512,28 @@ export class AbsenceController {
   //       const d1 = new Date(absence.dateDebut);
   //       const d2 = new Date(absence.dateFin);
 
-  //       // 🔹 On ne compte que les jours dans la période actuelle
-  //       const startAbs = d1 > periodeDebut ? d1 : periodeDebut;
-  //       const endAbs = d2 < periodeFin ? d2 : periodeFin;
-  //       if (startAbs > endAbs) return sum;
+  //       // Calcul intersection avec la période actuelle
+  //       const start = d1 < periodeDebut ? periodeDebut : d1;
+  //       const end = d2 > periodeFin ? periodeFin : d2;
+  //       if (start > end) return sum;
 
-  //       return sum + countBusinessDays(startAbs, endAbs);
+  //       return sum + countBusinessDays(start, end);
+  //     }, 0);
+
+  //   // 🔹 Total consommés depuis le début du contrat
+  //   const totalConsommesDepuisDebut = absences
+  //     .filter(
+  //       (a) =>
+  //         a.statut === "approuver" &&
+  //         !typesAExclure.includes(a.typeAbsence) &&
+  //         a.fichierJustificatifPdf !== "" &&
+  //         a.dateDebut &&
+  //         a.dateFin
+  //     )
+  //     .reduce((sum, absence) => {
+  //       const d1 = new Date(absence.dateDebut);
+  //       const d2 = new Date(absence.dateFin);
+  //       return sum + countBusinessDays(d1, d2);
   //     }, 0);
 
   //   const restants = +(acquis - consommes).toFixed(2);
@@ -508,6 +546,7 @@ export class AbsenceController {
   //     consommes,
   //     restants,
   //     totalAcquisDepuisDebut,
+  //     totalConsommesDepuisDebut,
   //   };
   // }
 
@@ -565,6 +604,43 @@ export class AbsenceController {
       return +((joursTravailles / daysInMonth) * 2.0833).toFixed(2);
     };
 
+    // 🔹 Helper pour calculer les jours avec partieDeJour
+    const calculateDaysWithPartieDeJour = (
+      absence: any,
+      startDate: Date,
+      endDate: Date
+    ): number => {
+      const d1 = new Date(absence.dateDebut);
+      const d2 = new Date(absence.dateFin);
+
+      // Appliquer les limites de la période
+      const start = d1 < startDate ? startDate : d1;
+      const end = d2 > endDate ? endDate : d2;
+
+      if (start > end) return 0;
+
+      // Vérifier si c'est le même jour
+      const startStr = start.toISOString().split("T")[0]; // YYYY-MM-DD
+      const endStr = end.toISOString().split("T")[0]; // YYYY-MM-DD
+      const isSameDay = startStr === endStr;
+
+      if (isSameDay) {
+        // Même jour : calculer selon partieDeJour
+        switch (absence.partieDeJour) {
+          case "matin":
+          case "apres_midi":
+            return 0.5;
+          case "journee_entiere":
+            return 1.0;
+          default:
+            return 1.0; // fallback
+        }
+      } else {
+        // Dates différentes : calculer les jours ouvrés normalement
+        return countBusinessDays(start, end);
+      }
+    };
+
     // 🔹 Calcul total acquis depuis le début du contrat
     let totalAcquisDepuisDebut = 0;
     let current = new Date(dateDebut);
@@ -604,7 +680,7 @@ export class AbsenceController {
     const typesAExclure = ["conge_parental", "mise_a_pied", "conge_sans_solde"];
     const absences = await this.getAbsencesByUserUseCase.execute(userId);
 
-    // Consommés dans la période actuelle (1er juin → 31 mai)
+    // ✅ Consommés dans la période actuelle (1er juin → 31 mai) avec partieDeJour
     const consommes = absences
       .filter(
         (a) =>
@@ -615,18 +691,12 @@ export class AbsenceController {
           a.dateFin
       )
       .reduce((sum, absence) => {
-        const d1 = new Date(absence.dateDebut);
-        const d2 = new Date(absence.dateFin);
-
-        // Calcul intersection avec la période actuelle
-        const start = d1 < periodeDebut ? periodeDebut : d1;
-        const end = d2 > periodeFin ? periodeFin : d2;
-        if (start > end) return sum;
-
-        return sum + countBusinessDays(start, end);
+        return (
+          sum + calculateDaysWithPartieDeJour(absence, periodeDebut, periodeFin)
+        );
       }, 0);
 
-    // 🔹 Total consommés depuis le début du contrat
+    // ✅ Total consommés depuis le début du contrat avec partieDeJour
     const totalConsommesDepuisDebut = absences
       .filter(
         (a) =>
@@ -637,9 +707,7 @@ export class AbsenceController {
           a.dateFin
       )
       .reduce((sum, absence) => {
-        const d1 = new Date(absence.dateDebut);
-        const d2 = new Date(absence.dateFin);
-        return sum + countBusinessDays(d1, d2);
+        return sum + calculateDaysWithPartieDeJour(absence, dateDebut, dateFin);
       }, 0);
 
     const restants = +(acquis - consommes).toFixed(2);
@@ -663,18 +731,53 @@ export class AbsenceController {
     description: "Absence retrieved successfully",
     type: AbsenceResponseDto,
   })
-  async findOne(@Param("id") id: string): Promise<AbsenceResponseDto> {
+  async findOne(
+    @Param("id") id: string
+  ): Promise<AbsenceResponseDto & { total: number }> {
     try {
       const absence = await this.getAbsenceUseCase.execute(id);
       if (!absence) {
         throw new HttpException("Absence not found", HttpStatus.NOT_FOUND);
       }
+
+      const dateDebut = absence.dateDebut ? new Date(absence.dateDebut) : null;
+      const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
+
+      // ✅ Calculer le total en tenant compte de partieDeJour
+      let total: number = 0;
+      if (dateDebut && dateFin) {
+        // Comparer directement les dates au format ISO string (même jour)
+        const dateDebutStr = dateDebut.toISOString().split("T")[0]; // YYYY-MM-DD
+        const dateFinStr = dateFin.toISOString().split("T")[0]; // YYYY-MM-DD
+        const isSameDay = dateDebutStr === dateFinStr;
+
+        if (isSameDay) {
+          // Même jour : calculer selon partieDeJour
+          switch (absence.partieDeJour) {
+            case "matin":
+            case "apres_midi":
+              total = 0.5;
+              break;
+            case "journee_entiere":
+              total = 1.0;
+              break;
+            default:
+              total = 1.0; // fallback pour les autres valeurs
+              break;
+          }
+        } else {
+          // Dates différentes : calculer les jours ouvrés normalement
+          total = countBusinessDays(dateDebut, dateFin);
+        }
+      }
+
       return {
         id: absence.id,
         idUser: absence.idUser,
         typeAbsence: absence.typeAbsence,
         dateDebut: absence.dateDebut?.toISOString(),
         dateFin: absence.dateFin?.toISOString(),
+        partieDeJour: absence.partieDeJour,
         note: absence.note,
         statut: absence.statut,
         motifDeRefus: absence.motifDeRefus,
@@ -689,6 +792,7 @@ export class AbsenceController {
               avatar: absence.user.avatar,
             }
           : undefined,
+        total: Number(total), // ✅ S'assurer que c'est un number (float)
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -742,6 +846,7 @@ export class AbsenceController {
       typeAbsence: absence.typeAbsence,
       dateDebut: absence.dateDebut?.toISOString(),
       dateFin: absence.dateFin?.toISOString(),
+      partieDeJour: absence.partieDeJour,
       note: absence.note,
       statut: absence.statut,
       motifDeRefus: absence.motifDeRefus,
@@ -777,10 +882,32 @@ export class AbsenceController {
       const dateDebut = absence.dateDebut ? new Date(absence.dateDebut) : null;
       const dateFin = absence.dateFin ? new Date(absence.dateFin) : null;
 
-      // ✅ Calculer total sans week-ends
-      let total = 0;
+      // ✅ Calculer le total en tenant compte de partieDeJour
+      let total: number = 0;
       if (dateDebut && dateFin) {
-        total = countBusinessDays(dateDebut, dateFin);
+        // Comparer directement les dates au format ISO string (même jour)
+        const dateDebutStr = dateDebut.toISOString().split("T")[0]; // YYYY-MM-DD
+        const dateFinStr = dateFin.toISOString().split("T")[0]; // YYYY-MM-DD
+        const isSameDay = dateDebutStr === dateFinStr;
+
+        if (isSameDay) {
+          // Même jour : calculer selon partieDeJour
+          switch (absence.partieDeJour) {
+            case "matin":
+            case "apres_midi":
+              total = 0.5;
+              break;
+            case "journee_entiere":
+              total = 1.0;
+              break;
+            default:
+              total = 1.0; // fallback pour les autres valeurs
+              break;
+          }
+        } else {
+          // Dates différentes : calculer les jours ouvrés normalement
+          total = countBusinessDays(dateDebut, dateFin);
+        }
       }
 
       return {
@@ -789,6 +916,7 @@ export class AbsenceController {
         typeAbsence: absence.typeAbsence,
         dateDebut: dateDebut?.toISOString(),
         dateFin: dateFin?.toISOString(),
+        partieDeJour: absence.partieDeJour,
         note: absence.note,
         statut: absence.statut,
         motifDeRefus: absence.motifDeRefus,
@@ -803,7 +931,7 @@ export class AbsenceController {
               avatar: absence.user.avatar,
             }
           : undefined,
-        total, // ➕ jours ouvrés uniquement
+        total: Number(total), // ✅ S'assurer que c'est un number (float)
       };
     });
   }
@@ -857,6 +985,7 @@ export class AbsenceController {
       typeAbsence: absence.typeAbsence,
       dateDebut: absence.dateDebut?.toISOString(),
       dateFin: absence.dateFin?.toISOString(),
+      partieDeJour: absence.partieDeJour,
       note: absence.note,
       statut: absence.statut,
       motifDeRefus: absence.motifDeRefus,
