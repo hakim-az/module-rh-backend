@@ -15,6 +15,9 @@ import { CoffreController } from "../controllers/coffre.controller";
 import { RestauController } from "../controllers/restau.controller";
 import { YousignController } from "../controllers/yousign.controller";
 import { DashboardController } from "../controllers/dashboard.controller";
+import { NotificationsGateway } from "@/domain/services/notifications.gateway";
+import { NotificationsModule } from "@/application/modules/notifications.module";
+import { NotificationsController } from "../controllers/notification.controller";
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { DashboardController } from "../controllers/dashboard.controller";
     CoffreModule,
     RestauModule,
     YousignModule,
+    NotificationsModule,
   ],
   controllers: [
     UserController,
@@ -35,6 +39,8 @@ import { DashboardController } from "../controllers/dashboard.controller";
     RestauController,
     YousignController,
     DashboardController,
+    NotificationsController,
   ],
+  providers: [NotificationsGateway],
 })
 export class ApiModule {}

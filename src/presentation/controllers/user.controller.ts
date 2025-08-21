@@ -23,6 +23,7 @@ import { UpdateUserUseCase } from "../../application/use-cases/user/update-user.
 import { DeleteUserUseCase } from "../../application/use-cases/user/delete-user.use-case";
 import { UploadFileUseCase } from "../../application/use-cases/file/upload-file.use-case";
 import { CreateUserDto, UpdateUserDto } from "../../application/dtos/user.dto";
+import { NotificationsGateway } from "@/domain/services/notifications.gateway";
 
 @ApiTags("users")
 @Controller("users")
@@ -34,7 +35,8 @@ export class UserController {
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
-    private readonly uploadFileUseCase: UploadFileUseCase
+    private readonly uploadFileUseCase: UploadFileUseCase,
+    private readonly notificationsGateway: NotificationsGateway
   ) {}
 
   @Post()
@@ -697,6 +699,12 @@ export class UserController {
       );
 
       const user = await this.updateUserUseCase.execute(id, updateUserDto);
+
+      // 🔥 Envoi d'une notif via WebSocket
+      this.notificationsGateway.sendNotification(
+        id,
+        "Votre formulaire d'intégration a bien été reçu ✅"
+      );
       return {
         statusCode: HttpStatus.OK,
         message: "Utilisateur mis à jour avec succès",

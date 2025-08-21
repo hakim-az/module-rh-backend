@@ -28,7 +28,10 @@ import { UpdateAbsenceUseCase } from "@/application/use-cases/absence/update-abs
 import { GetAllAbsencesUseCase } from "@/application/use-cases/absence/get-all-absences.use-case";
 import { GetAbsenceUseCase } from "@/application/use-cases/absence/get-absence.use-case";
 import { countBusinessDays } from "@/domain/services/count-business-days.service";
-import { GetContratUseCase } from "@/application/use-cases/contrat/get-contrat.use-case";
+import { NotificationsService } from "@/domain/services/notifications.service";
+import { NotificationsGateway } from "@/domain/services/notifications.gateway";
+import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
+import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 
 @ApiTags("absences")
 @Controller("absences")
@@ -41,7 +44,10 @@ export class AbsenceController {
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly getAllAbsencesUseCase: GetAllAbsencesUseCase,
     private readonly getAbsenceUseCase: GetAbsenceUseCase,
-    private readonly getContratUseCase: GetContratUseCase
+    private readonly notificationsService: NotificationsService,
+    private readonly notificationsGateway: NotificationsGateway,
+    private readonly getAllUsersUseCase: GetAllUsersUseCase,
+    private readonly getUserUseCase: GetUserUseCase
   ) {}
 
   @Get()
@@ -839,6 +845,23 @@ export class AbsenceController {
       ...createAbsenceDto,
       fichierJustificatifPdf,
     });
+
+    // notification
+    const user = await this.getUserUseCase.execute(absence.idUser);
+    const allUsers = await this.getAllUsersUseCase.execute();
+    const hrUsers = allUsers.filter((user) => user.role === "hr");
+
+    for (const hr of hrUsers) {
+      const savedNotification =
+        await this.notificationsService.createNotification({
+          userId: hr.id,
+          title: "Nouvelle demande d'absence",
+          message: `${user.prenom} ${user.nomDeNaissance} a soumis une demande d'absence du ${absence.dateDebut?.toISOString()} au ${absence.dateFin?.toISOString()}`,
+        });
+
+      // Send the full notification object
+      this.notificationsGateway.sendNotification(hr.id, savedNotification);
+    }
 
     return {
       id: absence.id,
