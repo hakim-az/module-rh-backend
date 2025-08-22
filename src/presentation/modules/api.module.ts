@@ -18,6 +18,7 @@ import { DashboardController } from "../controllers/dashboard.controller";
 import { NotificationsGateway } from "@/domain/services/notifications.gateway";
 import { NotificationsModule } from "@/application/modules/notifications.module";
 import { NotificationsController } from "../controllers/notification.controller";
+import { UserInitService } from "@/domain/services/user-init-.service";
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { NotificationsController } from "../controllers/notification.controller"
     DashboardController,
     NotificationsController,
   ],
-  providers: [NotificationsGateway],
+  providers: [NotificationsGateway, UserInitService],
 })
 export class ApiModule {}
