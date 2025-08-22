@@ -3,6 +3,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import * as bodyParser from "body-parser";
+import { UserInitService } from "./domain/services/user-init-.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,9 @@ async function bootstrap() {
   // Increase body-parser limits
   app.use(bodyParser.json({ limit: "100mb" }));
   app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
+
+  // init users
+  const initService = app.get(UserInitService);
 
   // Global validation pipe
   app.useGlobalPipes(
