@@ -22,8 +22,8 @@ export class UserInitService implements OnModuleInit {
       const usersToInit = [
         {
           id: this.config.get<string>("INIT_ADMIN_ID"),
-          role: "admin",
-          statut: "profile-completed",
+          role: this.config.get<string>("INIT_ADMIN_ROLE"),
+          statut: this.config.get<string>("INIT_ADMIN_STATUT"),
           civilite: "M",
           prenom: "System",
           nomDeNaissance: "Administrator",
@@ -32,8 +32,8 @@ export class UserInitService implements OnModuleInit {
         },
         {
           id: this.config.get<string>("INIT_RH_ID"),
-          role: "rh",
-          statut: "profile-completed",
+          role: this.config.get<string>("INIT_RH_ROLE"),
+          statut: this.config.get<string>("INIT_RH_STATUT"),
           civilite: "F",
           prenom: "Claire",
           nomDeNaissance: "RH",
