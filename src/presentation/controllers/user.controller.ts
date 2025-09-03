@@ -13,9 +13,15 @@ import {
   UploadedFile,
   Req,
   Patch,
+  UseGuards,
 } from "@nestjs/common";
 import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
-import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
 import { CreateUserUseCase } from "../../application/use-cases/user/create-user.use-case";
 import { GetUserUseCase } from "../../application/use-cases/user/get-user.use-case";
 import { GetAllUsersUseCase } from "../../application/use-cases/user/get-all-users.use-case";
@@ -24,9 +30,12 @@ import { DeleteUserUseCase } from "../../application/use-cases/user/delete-user.
 import { UploadFileUseCase } from "../../application/use-cases/file/upload-file.use-case";
 import { CreateUserDto, UpdateUserDto } from "../../application/dtos/user.dto";
 import { NotificationsGateway } from "@/domain/services/notifications.gateway";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 
 @ApiTags("users")
+@ApiBearerAuth()
 @Controller("users")
+@UseGuards(KeycloakAuthGuard)
 export class UserController {
   getFileUrlUseCase: any;
   constructor(

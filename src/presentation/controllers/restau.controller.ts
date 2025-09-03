@@ -53,9 +53,10 @@ export class RestauController {
     private readonly getRestauUseCase: GetRestauUseCase
   ) {}
 
+  // GET RESTAU ALL ----------------------------------------------------------------------------------------------
   @Get()
-  @UseGuards(GroupsGuard) // ✅ check groups only for this route
-  @Groups("RH-Manager", "admin")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get all restaus" })
   @ApiResponse({
     status: 200,
@@ -96,8 +97,10 @@ export class RestauController {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
+  // GET RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Get(":id")
+  @UseGuards(GroupsGuard) // ✅ check groups only for this route
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get a single restau by ID" })
   @ApiResponse({
     status: 200,
@@ -134,7 +137,10 @@ export class RestauController {
     }
   }
 
+  // ADD RESTAU ----------------------------------------------------------------------------------------------
   @Post()
+  @UseGuards(GroupsGuard) // ✅ check groups only for this route
+  @Groups("RH-Manager", "RH-Admin")
   @UseInterceptors(
     FileInterceptor("fichierJustificatifPdf", {
       limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
@@ -194,7 +200,21 @@ export class RestauController {
     };
   }
 
+  // ADD RESTAU BY USER ID ----------------------------------------------------------------------------------------------
   @Get("user/:userId")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "Get restaus by user ID" })
   @ApiResponse({ status: 200, description: "Restaus retrieved successfully" })
   async findByUser(
@@ -230,6 +250,7 @@ export class RestauController {
     }));
   }
 
+  // UPDATE RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Patch(":id")
   @UseInterceptors(
     AnyFilesInterceptor({
@@ -291,6 +312,7 @@ export class RestauController {
     };
   }
 
+  // ADD RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Delete(":id")
   @ApiOperation({ summary: "Delete a restau" })
   @ApiResponse({ status: 200, description: "Restau deleted successfully" })
