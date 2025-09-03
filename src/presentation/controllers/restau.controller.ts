@@ -11,15 +11,24 @@ import {
   HttpException,
   HttpStatus,
   Patch,
+  UseGuards,
 } from "@nestjs/common";
 import { FileInterceptor, AnyFilesInterceptor } from "@nestjs/platform-express";
-import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
 
 import {
   CreateRestauDto,
   RestauResponseDto,
   UpdateRestauDto,
 } from "@application/dtos/restau.dto";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { Groups } from "@/application/auth/groups.decorator";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 
 import { CreateRestauUseCase } from "@application/use-cases/restau/create-restau.use-case";
 import { GetRestauxByUserUseCase } from "@application/use-cases/restau/get-restaux-by-user.use-case";
@@ -30,7 +39,9 @@ import { GetAllRestauxUseCase } from "@application/use-cases/restau/get-all-rest
 import { GetRestauUseCase } from "@application/use-cases/restau/get-restau.use-case";
 
 @ApiTags("restaux")
+@ApiBearerAuth()
 @Controller("restaux")
+@UseGuards(KeycloakAuthGuard)
 export class RestauController {
   constructor(
     private readonly createRestauUseCase: CreateRestauUseCase,
@@ -43,6 +54,8 @@ export class RestauController {
   ) {}
 
   @Get()
+  @UseGuards(GroupsGuard) // ✅ check groups only for this route
+  @Groups("RH-Manager", "admin")
   @ApiOperation({ summary: "Get all restaus" })
   @ApiResponse({
     status: 200,
