@@ -12,4 +12,8 @@ export class GetUserUseCase {
   async execute(id: string): Promise<User | null> {
     return this.userRepository.findById(id);
   }
+
+  async executeByEmail(email: string) {
+    return this.userRepository.findByEmail(email);
+  }
 }

@@ -6,15 +6,18 @@ import { GetUserUseCase } from "../use-cases/user/get-user.use-case";
 import { GetAllUsersUseCase } from "../use-cases/user/get-all-users.use-case";
 import { UpdateUserUseCase } from "../use-cases/user/update-user.use-case";
 import { DeleteUserUseCase } from "../use-cases/user/delete-user.use-case";
+import { UserInitService } from "@/domain/services/user-init-.service";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-  imports: [DatabaseModule, FileModule],
+  imports: [DatabaseModule, FileModule, ConfigModule],
   providers: [
     CreateUserUseCase,
     GetUserUseCase,
     GetAllUsersUseCase,
     UpdateUserUseCase,
     DeleteUserUseCase,
+    UserInitService,
   ],
   exports: [
     CreateUserUseCase,
