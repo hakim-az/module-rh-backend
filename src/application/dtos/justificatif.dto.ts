@@ -25,12 +25,22 @@ export class CreateJustificatifDto {
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
   @IsOptional()
+  fichierPieceIdentitePdfVerso?: string;
+
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
+  @IsString()
+  @IsOptional()
   fichierJustificatifDomicilePdf?: string;
 
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
   @IsOptional()
   fichierAmeli?: string;
+
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
+  @IsString()
+  @IsOptional()
+  autreFichier?: string;
 }
 
 export class UpdateJustificatifDto {
@@ -52,12 +62,22 @@ export class UpdateJustificatifDto {
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
   @IsOptional()
+  fichierPieceIdentitePdfVerso?: string;
+
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
+  @IsString()
+  @IsOptional()
   fichierJustificatifDomicilePdf?: string;
 
   @ApiProperty({ example: "https://example.com/pdf", required: false })
   @IsString()
   @IsOptional()
   fichierAmeli?: string;
+
+  @ApiProperty({ example: "https://example.com/pdf", required: false })
+  @IsString()
+  @IsOptional()
+  autreFichier?: string;
 }
 
 export class JustificatifResponseDto {
@@ -77,10 +97,16 @@ export class JustificatifResponseDto {
   fichierPieceIdentitePdf: string;
 
   @ApiProperty()
+  fichierPieceIdentitePdfVerso: string;
+
+  @ApiProperty()
   fichierJustificatifDomicilePdf: string;
 
   @ApiProperty()
   fichierAmeli: string;
+
+  @ApiProperty()
+  autreFichier: string;
 
   @ApiProperty()
   createdAt: Date;

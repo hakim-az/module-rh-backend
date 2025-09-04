@@ -111,9 +111,12 @@ export class CreateUserUseCase {
           fichierRibPdf: createUserDto.justificatif.fichierRibPdf || "",
           fichierPieceIdentitePdf:
             createUserDto.justificatif.fichierPieceIdentitePdf || "",
+          fichierPieceIdentitePdfVerso:
+            createUserDto.justificatif.fichierPieceIdentitePdfVerso || "",
           fichierJustificatifDomicilePdf:
             createUserDto.justificatif.fichierJustificatifDomicilePdf || "",
           fichierAmeli: createUserDto.justificatif.fichierAmeli || "",
+          autreFichier: createUserDto.justificatif.autreFichier || "",
         });
       }
 

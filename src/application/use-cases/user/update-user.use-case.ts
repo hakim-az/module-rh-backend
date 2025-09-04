@@ -213,18 +213,24 @@ export class UpdateUserUseCase {
           fichierCarteVitalePdf,
           fichierRibPdf,
           fichierPieceIdentitePdf,
+          fichierPieceIdentitePdfVerso,
           fichierJustificatifDomicilePdf,
           fichierAmeli,
+          autreFichier,
         } = updateUserDto.justificatif;
 
         const justificatifData = {
           ...(fichierCarteVitalePdf ? { fichierCarteVitalePdf } : {}),
           ...(fichierRibPdf ? { fichierRibPdf } : {}),
           ...(fichierPieceIdentitePdf ? { fichierPieceIdentitePdf } : {}),
+          ...(fichierPieceIdentitePdfVerso
+            ? { fichierPieceIdentitePdfVerso }
+            : {}),
           ...(fichierJustificatifDomicilePdf
             ? { fichierJustificatifDomicilePdf }
             : {}),
           ...(fichierAmeli ? { fichierAmeli } : {}),
+          ...(autreFichier ? { autreFichier } : {}),
         };
 
         if (justificatifExist) {
@@ -237,8 +243,10 @@ export class UpdateUserUseCase {
             fichierCarteVitalePdf &&
             fichierRibPdf &&
             fichierPieceIdentitePdf &&
+            fichierPieceIdentitePdfVerso &&
             fichierJustificatifDomicilePdf &&
-            fichierAmeli;
+            fichierAmeli &&
+            autreFichier;
 
           if (hasAllJustificatifFields) {
             await this.justificatifRepository.create({
@@ -246,9 +254,11 @@ export class UpdateUserUseCase {
               fichierCarteVitalePdf: fichierCarteVitalePdf || "",
               fichierRibPdf: fichierRibPdf || "",
               fichierPieceIdentitePdf: fichierPieceIdentitePdf || "",
+              fichierPieceIdentitePdfVerso: fichierPieceIdentitePdfVerso || "",
               fichierJustificatifDomicilePdf:
                 fichierJustificatifDomicilePdf || "",
               fichierAmeli: fichierAmeli || "",
+              autreFichier: autreFichier || "",
             });
           } else {
             // Create justificatif with available fields, empty strings for missing ones
@@ -257,9 +267,11 @@ export class UpdateUserUseCase {
               fichierCarteVitalePdf: fichierCarteVitalePdf || "",
               fichierRibPdf: fichierRibPdf || "",
               fichierPieceIdentitePdf: fichierPieceIdentitePdf || "",
+              fichierPieceIdentitePdfVerso: fichierPieceIdentitePdfVerso || "",
               fichierJustificatifDomicilePdf:
                 fichierJustificatifDomicilePdf || "",
               fichierAmeli: fichierAmeli || "",
+              autreFichier: autreFichier || "",
             });
           }
         }

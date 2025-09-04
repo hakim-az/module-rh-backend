@@ -28,6 +28,7 @@ export class YousignController {
   @ApiOperation({ summary: "Create and activate a signature request" })
   @UseGuards(GroupsGuard)
   @Groups(
+    "Users",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",

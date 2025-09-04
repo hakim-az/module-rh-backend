@@ -89,7 +89,9 @@ CREATE TABLE `justificatifs` (
     `fichier_carte_vitale_pdf` VARCHAR(191) NOT NULL,
     `fichier_rib_pdf` VARCHAR(191) NOT NULL,
     `fichier_piece_identite_pdf` VARCHAR(191) NOT NULL,
+    `fichier_piece_identite_pdf_verso` VARCHAR(191) NOT NULL,
     `fichier_justificatif_domicile_pdf` VARCHAR(191) NOT NULL,
+    `autre_fichier` VARCHAR(191) NOT NULL,
     `fichier_ameli` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -167,6 +169,19 @@ CREATE TABLE `restaux` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `notifications` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `message` VARCHAR(191) NOT NULL,
+    `read` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `naissances` ADD CONSTRAINT `naissances_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -193,3 +208,6 @@ ALTER TABLE `coffres` ADD CONSTRAINT `coffres_id_user_fkey` FOREIGN KEY (`id_use
 
 -- AddForeignKey
 ALTER TABLE `restaux` ADD CONSTRAINT `restaux_id_user_fkey` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `notifications` ADD CONSTRAINT `notifications_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

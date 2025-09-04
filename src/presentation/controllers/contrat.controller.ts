@@ -334,6 +334,7 @@ export class ContratController {
   @Patch("user/:userId/upload-signed")
   @UseGuards(GroupsGuard)
   @Groups(
+    "Users",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",

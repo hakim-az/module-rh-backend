@@ -278,8 +278,10 @@ export class UserController {
               key.includes("fichierCarteVitalePdf") ||
               key.includes("fichierRibPdf") ||
               key.includes("fichierPieceIdentitePdf") ||
+              key.includes("fichierPieceIdentitePdfVerso") ||
               key.includes("fichierJustificatifDomicilePdf") ||
-              key.includes("fichierAmeli")
+              key.includes("fichierAmeli") ||
+              key.includes("autreFichier")
           )
         ) {
           // Initialize justificatif object if it doesn't exist
@@ -348,6 +350,26 @@ export class UserController {
           }
 
           if (
+            fileMap["justificatif[fichierPieceIdentitePdfVerso]"] ||
+            fileMap["fichierPieceIdentitePdfVerso"]
+          ) {
+            const file =
+              fileMap["justificatif[fichierPieceIdentitePdfVerso]"] ||
+              fileMap["fichierPieceIdentitePdfVerso"];
+            console.log("Uploading fichierPieceIdentitePdfVerso...");
+            updateUserDto.justificatif.fichierPieceIdentitePdfVerso =
+              await this.uploadFileUseCase.execute(
+                file.buffer,
+                file.originalname,
+                file.mimetype
+              );
+            console.log(
+              "Uploaded fichierPieceIdentitePdfVerso:",
+              updateUserDto.justificatif.fichierPieceIdentitePdfVerso
+            );
+          }
+
+          if (
             fileMap["justificatif[fichierJustificatifDomicilePdf]"] ||
             fileMap["fichierJustificatifDomicilePdf"]
           ) {
@@ -385,6 +407,22 @@ export class UserController {
               updateUserDto.justificatif.fichierAmeli
             );
           }
+        }
+
+        if (fileMap["justificatif[autreFichier]"] || fileMap["autreFichier"]) {
+          const file =
+            fileMap["justificatif[autreFichier]"] || fileMap["autreFichier"];
+          console.log("Uploading autreFichier...");
+          updateUserDto.justificatif.autreFichier =
+            await this.uploadFileUseCase.execute(
+              file.buffer,
+              file.originalname,
+              file.mimetype
+            );
+          console.log(
+            "Uploaded autreFichier:",
+            updateUserDto.justificatif.autreFichier
+          );
         }
 
         // Upload contrat files if provided

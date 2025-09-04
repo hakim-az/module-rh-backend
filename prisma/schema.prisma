@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                     String        @id
+  id                     String         @id
   role                   String
   statut                 String
   civilite               String?
@@ -17,24 +17,23 @@ model User {
   nomUsuel               String?
   situationFamiliale     String?
   numeroSecuriteSociale  String?
-  emailPersonnel         String        @unique
-  emailProfessionnel     String?       @unique
+  emailPersonnel         String         @unique
+  emailProfessionnel     String?        @unique
   telephonePersonnel     String
   telephoneProfessionnel String?
-  avatar                 String        @map("avatar")
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
-
+  avatar                 String         @map("avatar")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  absence                Absence[]
   adresse                Adresse?
+  coffre                 Coffre[]
   contrat                Contrat?
   justificatif           Justificatif?
   naissance              Naissance?
+  notification           Notification[]
   paiement               Paiement?
-  urgence                Urgence?
-  absence                Absence[]
-  coffre                 Coffre[]
   restau                 Restau[]
-  notification                 Notification[]
+  urgence                Urgence?
 
   @@map("users")
 }
@@ -49,7 +48,6 @@ model Naissance {
   paysDeNationalite      String
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-
   user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("naissances")
@@ -66,7 +64,6 @@ model Adresse {
   domiciliteHorsLaFrance String
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-
   user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("adresses")
@@ -79,7 +76,6 @@ model Paiement {
   bic       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   user      User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("paiements")
@@ -93,7 +89,6 @@ model Urgence {
   telephone         String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-
   user              User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("urgences")
@@ -105,11 +100,12 @@ model Justificatif {
   fichierCarteVitalePdf          String   @map("fichier_carte_vitale_pdf")
   fichierRibPdf                  String   @map("fichier_rib_pdf")
   fichierPieceIdentitePdf        String   @map("fichier_piece_identite_pdf")
+  fichierPieceIdentitePdfVerso   String   @map("fichier_piece_identite_pdf_verso")
   fichierJustificatifDomicilePdf String   @map("fichier_justificatif_domicile_pdf")
+  autreFichier                   String   @map("autre_fichier")
   fichierAmeli                   String   @map("fichier_ameli")
   createdAt                      DateTime @default(now())
   updatedAt                      DateTime @updatedAt
-
   user                           User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("justificatifs")
@@ -130,7 +126,6 @@ model Contrat {
   fichierContratSignerPdf    String?  @map("fichier_contrat_signer_pdf")
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
-
   user                       User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("contrats")
@@ -149,9 +144,9 @@ model Absence {
   fichierJustificatifPdf String?  @map("fichier_justificatif_pdf")
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-
   user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
+  @@index([idUser], map: "absences_id_user_fkey")
   @@map("absences")
 }
 
@@ -165,9 +160,9 @@ model Coffre {
   fichierJustificatifPdf String?  @map("fichier_justificatif_pdf")
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-
   user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
+  @@index([idUser], map: "coffres_id_user_fkey")
   @@map("coffres")
 }
 
@@ -181,12 +176,11 @@ model Restau {
   fichierJustificatifPdf String?  @map("fichier_justificatif_pdf")
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-
   user                   User     @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
+  @@index([idUser], map: "restaux_id_user_fkey")
   @@map("restaux")
 }
-
 
 model Notification {
   id        String   @id @default(cuid())
@@ -196,8 +190,8 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId], map: "notifications_userId_fkey")
   @@map("notifications")
 }
