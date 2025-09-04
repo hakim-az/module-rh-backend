@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
@@ -16,15 +17,21 @@ import {
   ApiOperation,
   ApiResponse,
   ApiConsumes,
+  ApiBearerAuth,
 } from "@nestjs/swagger";
 import { Response } from "express";
 import { UploadFileUseCase } from "../../application/use-cases/file/upload-file.use-case";
 import { DownloadFileUseCase } from "../../application/use-cases/file/download-file.use-case";
 import { GetFileUrlUseCase } from "../../application/use-cases/file/get-file-url.use-case";
 import { DeleteFileUseCase } from "../../application/use-cases/file/delete-file.use-case";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { Groups } from "@/application/auth/groups.decorator";
 
 @ApiTags("files")
+@ApiBearerAuth()
 @Controller("files")
+@UseGuards(KeycloakAuthGuard)
 export class FileController {
   constructor(
     private readonly uploadFileUseCase: UploadFileUseCase,
@@ -33,7 +40,21 @@ export class FileController {
     private readonly deleteFileUseCase: DeleteFileUseCase
   ) {}
 
+  // ADDING FILE ---------------------------------------------------
   @Post("upload")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "Upload a file to S3" })
   @ApiConsumes("multipart/form-data")
   @ApiResponse({ status: 201, description: "File uploaded successfully" })
@@ -84,7 +105,21 @@ export class FileController {
     }
   }
 
+  // DOWNLOAD FILE BY ITS NAME ---------------------------------------------------
   @Get("download/:fileName")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "Download a file from S3" })
   @ApiResponse({ status: 200, description: "File downloaded successfully" })
   async downloadFile(
@@ -105,7 +140,21 @@ export class FileController {
     }
   }
 
+  // VIEW FILE ---------------------------------------------------
   @Get("view/:fileName")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "View a file from S3 directly in browser" })
   @ApiResponse({ status: 200, description: "File streamed successfully" })
   async viewFile(
@@ -123,7 +172,21 @@ export class FileController {
     }
   }
 
+  // GETTING FILE URL ---------------------------------------------------
   @Get("url/:fileName")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "Get a signed URL for a file from S3" })
   @ApiResponse({
     status: 200,
@@ -158,7 +221,10 @@ export class FileController {
     }
   }
 
+  // DELETE FILE ---------------------------------------------------
   @Delete(":fileName")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Delete a file from S3" })
   @ApiResponse({
     status: 200,

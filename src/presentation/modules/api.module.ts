@@ -18,6 +18,7 @@ import { DashboardController } from "../controllers/dashboard.controller";
 import { NotificationsGateway } from "@/domain/services/notifications.gateway";
 import { NotificationsModule } from "@/application/modules/notifications.module";
 import { NotificationsController } from "../controllers/notification.controller";
+import { SignupController } from "../controllers/signup.controller";
 // import { UserInitService } from "@/domain/services/user-init-.service";
 
 @Module({
@@ -41,6 +42,7 @@ import { NotificationsController } from "../controllers/notification.controller"
     YousignController,
     DashboardController,
     NotificationsController,
+    SignupController,
   ],
   providers: [NotificationsGateway],
 })

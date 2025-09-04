@@ -12,8 +12,14 @@ import {
   UseInterceptors,
   UploadedFile,
   UploadedFiles,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
 import {
   CreateContratDto,
   UpdateContratDto,
@@ -30,9 +36,14 @@ import { UploadSignedContractUseCase } from "@/application/use-cases/contrat/upl
 import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { UploadSignedContractDto } from "@/application/dtos/contrat.dto";
 import { UpdateUserUseCase } from "@/application/use-cases/user/update-user.use-case";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { Groups } from "@/application/auth/groups.decorator";
 
 @ApiTags("contrats")
+@ApiBearerAuth()
 @Controller("contrats")
+@UseGuards(KeycloakAuthGuard)
 export class ContratController {
   constructor(
     private readonly createContratUseCase: CreateContratUseCase,
@@ -46,7 +57,10 @@ export class ContratController {
     private readonly updateUserUseCase: UpdateUserUseCase
   ) {}
 
+  // ADD CONTRACT -----------------------------------------------------------
   @Post()
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -119,7 +133,10 @@ export class ContratController {
     };
   }
 
+  // GET ALL CONTRACTS ------------------------------------------------------------------
   @Get()
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get all contracts" })
   @ApiResponse({
     status: 200,
@@ -150,7 +167,10 @@ export class ContratController {
     }
   }
 
+  // GET CONTRACTS BY USER ID --------------------------------------------------
   @Get("user/:userId")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get contracts by user ID" })
   @ApiResponse({
     status: 200,
@@ -183,7 +203,10 @@ export class ContratController {
     }
   }
 
+  // GET CONTRACT BY ID -----------------------------------------------------------
   @Get(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get a contract by ID" })
   @ApiResponse({
     status: 200,
@@ -217,7 +240,10 @@ export class ContratController {
     }
   }
 
+  // UPDATE CONTRACT BY ID -----------------------------------------------------------
   @Patch(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -289,7 +315,10 @@ export class ContratController {
     };
   }
 
+  // DELETE CONTRACT BY ID ----------------------------------------------------------
   @Delete(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Delete a contract" })
   @ApiResponse({ status: 200, description: "Contract deleted successfully" })
   async remove(@Param("id") id: string): Promise<{ message: string }> {
@@ -301,7 +330,19 @@ export class ContratController {
     }
   }
 
+  // ADD SIGNED CONTRACT BY USER ID ----------------------------------------------------------
   @Patch("user/:userId/upload-signed")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @UseInterceptors(
     FileInterceptor("fichierContratSignerPdf", {
       limits: { fileSize: 50 * 1024 * 1024 },

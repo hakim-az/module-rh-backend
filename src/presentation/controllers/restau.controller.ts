@@ -314,6 +314,8 @@ export class RestauController {
 
   // ADD RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Delete(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Delete a restau" })
   @ApiResponse({ status: 200, description: "Restau deleted successfully" })
   async remove(@Param("id") id: string): Promise<{ message: string }> {

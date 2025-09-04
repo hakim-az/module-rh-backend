@@ -1,3 +1,6 @@
+import { Groups } from "@/application/auth/groups.decorator";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GetAllAbsencesUseCase } from "@/application/use-cases/absence/get-all-absences.use-case";
 import { GetAllCoffresUseCase } from "@/application/use-cases/coffre/get-all-coffres.use-case";
 import { GetAllRestauxUseCase } from "@/application/use-cases/restau/get-all-restaux.use-case";
@@ -8,11 +11,19 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 @ApiTags("Dashboard")
+@ApiBearerAuth()
 @Controller("dashboard")
+@UseGuards(KeycloakAuthGuard)
 export class DashboardController {
   constructor(
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
@@ -21,7 +32,10 @@ export class DashboardController {
     private readonly getAllRestauxUseCase: GetAllRestauxUseCase
   ) {}
 
+  // GET USERS STATS DASHBOARD ----------------------------------------------------------------------------------------------
   @Get()
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({
     summary:
       "Get latest 5 records + totals for users, absences, coffres, and restaus",
@@ -142,7 +156,19 @@ export class DashboardController {
     }
   }
 
+  // GET USERS STATS DASHBOARD BY USER ID ----------------------------------------------------------------------------------------------
   @Get(":userId")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({
     summary:
       "Get latest 5 records + totals for a specific user (users, absences, coffres, restaus)",

@@ -1,19 +1,42 @@
-import { Controller, Post, Body, HttpStatus } from "@nestjs/common";
+import { Controller, Post, Body, HttpStatus, UseGuards } from "@nestjs/common";
 import { YousignService } from "../../application/use-cases/yousign/signature.use-case";
 import { UpdateUserUseCase } from "../../application/use-cases/user/update-user.use-case";
 import * as fs from "fs";
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { Groups } from "@/application/auth/groups.decorator";
 
 @ApiTags("Signature")
+@ApiBearerAuth()
 @Controller("signature")
+@UseGuards(KeycloakAuthGuard)
 export class YousignController {
   constructor(
     private readonly yousignService: YousignService,
     private readonly updateUserUseCase: UpdateUserUseCase
   ) {}
 
+  // SIGN CONTRACT BY EMPLOYEE -------------------------------------------------
   @Post()
   @ApiOperation({ summary: "Create and activate a signature request" })
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiBody({
     schema: {
       type: "object",

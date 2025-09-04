@@ -11,6 +11,7 @@ import {
   HttpStatus,
   Patch,
   UploadedFiles,
+  UseGuards,
 } from "@nestjs/common";
 import { FileInterceptor, AnyFilesInterceptor } from "@nestjs/platform-express";
 import { CreateCoffreUseCase } from "@application/use-cases/coffre/create-coffre.use-case";
@@ -22,13 +23,23 @@ import {
   CoffreResponseDto,
   UpdateCoffreDto,
 } from "@application/dtos/coffre.dto";
-import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
 import { UpdateCoffreUseCase } from "@/application/use-cases/coffre/update-coffre.use-case";
 import { GetAllCoffresUseCase } from "@/application/use-cases/coffre/get-all-coffres.use-case";
 import { GetCoffreUseCase } from "@/application/use-cases/coffre/get-coffre.use-case";
+import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { Groups } from "@/application/auth/groups.decorator";
 
 @ApiTags("coffres")
+@ApiBearerAuth()
 @Controller("coffres")
+@UseGuards(KeycloakAuthGuard)
 export class CoffreController {
   constructor(
     private readonly createCoffreUseCase: CreateCoffreUseCase,
@@ -40,7 +51,10 @@ export class CoffreController {
     private readonly getCoffreUseCase: GetCoffreUseCase
   ) {}
 
+  // GET COFFRE ALL ----------------------------------------------------------------------------------------------
   @Get()
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get all coffres" })
   @ApiResponse({
     status: 200,
@@ -82,7 +96,10 @@ export class CoffreController {
     }
   }
 
+  // GET COFFRE BY ID ----------------------------------------------------------------------------------------------
   @Get(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get a single coffre by ID" })
   @ApiResponse({
     status: 200,
@@ -119,7 +136,10 @@ export class CoffreController {
     }
   }
 
+  // ADD COFFRE  ----------------------------------------------------------------------------------------------
   @Post()
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @UseInterceptors(
     FileInterceptor("fichierJustificatifPdf", {
       limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
@@ -181,7 +201,21 @@ export class CoffreController {
     };
   }
 
+  // GET COFFRE BY USER ID ----------------------------------------------------------------------------------------------
   @Get("user/:userId")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "Get coffres by user ID" })
   @ApiResponse({ status: 200, description: "Coffres retrieved successfully" })
   async findByUser(
@@ -217,7 +251,10 @@ export class CoffreController {
     }));
   }
 
+  // UPDATE COFFRE BY ID ----------------------------------------------------------------------------------------------
   @Patch(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -278,7 +315,10 @@ export class CoffreController {
     };
   }
 
+  // DELETE COFFRE BY ID ----------------------------------------------------------------------------------------------
   @Delete(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Delete a coffre" })
   @ApiResponse({ status: 200, description: "Coffre deleted successfully" })
   async remove(@Param("id") id: string): Promise<{ message: string }> {

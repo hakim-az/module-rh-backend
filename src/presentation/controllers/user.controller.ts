@@ -28,9 +28,11 @@ import { GetAllUsersUseCase } from "../../application/use-cases/user/get-all-use
 import { UpdateUserUseCase } from "../../application/use-cases/user/update-user.use-case";
 import { DeleteUserUseCase } from "../../application/use-cases/user/delete-user.use-case";
 import { UploadFileUseCase } from "../../application/use-cases/file/upload-file.use-case";
-import { CreateUserDto, UpdateUserDto } from "../../application/dtos/user.dto";
+import { UpdateUserDto } from "../../application/dtos/user.dto";
 import { NotificationsGateway } from "@/domain/services/notifications.gateway";
 import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
+import { GroupsGuard } from "@/application/auth/groups.guard";
+import { Groups } from "@/application/auth/groups.decorator";
 
 @ApiTags("users")
 @ApiBearerAuth()
@@ -39,7 +41,6 @@ import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 export class UserController {
   getFileUrlUseCase: any;
   constructor(
-    private readonly createUserUseCase: CreateUserUseCase,
     private readonly getUserUseCase: GetUserUseCase,
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
@@ -48,271 +49,10 @@ export class UserController {
     private readonly notificationsGateway: NotificationsGateway
   ) {}
 
-  @Post()
-  @UseInterceptors(
-    AnyFilesInterceptor({
-      limits: { fileSize: 50 * 1024 * 1024 },
-      fileFilter: (req, file, cb) => {
-        // Allow PDF files for justificatif documents and images for avatar
-        const allowedTypes = [
-          "application/pdf",
-          "image/jpeg",
-          "image/png",
-          "image/jpg",
-        ];
-        if (!allowedTypes.includes(file.mimetype)) {
-          return cb(
-            new HttpException(
-              "Only PDF files and images are allowed",
-              HttpStatus.BAD_REQUEST
-            ),
-            false
-          );
-        }
-        cb(null, true);
-      },
-    })
-  )
-  @ApiOperation({
-    summary:
-      "Créer un utilisateur avec toutes ses données associées (contrat optionnel)",
-  })
-  @ApiResponse({
-    status: 201,
-    description: "Utilisateur créé avec succès avec toutes ses données",
-  })
-  @ApiResponse({ status: 400, description: "Données invalides" })
-  async createUser(
-    @UploadedFiles() files: Express.Multer.File[] | undefined,
-    @Body() createUserDto: CreateUserDto
-  ) {
-    try {
-      console.log(
-        "Files received:",
-        files?.map((f) => ({
-          fieldname: f.fieldname,
-          originalname: f.originalname,
-        }))
-      );
-      console.log(
-        "CreateUserDto before processing:",
-        JSON.stringify(createUserDto, null, 2)
-      );
-
-      // Handle file uploads
-      if (files && Array.isArray(files)) {
-        const fileMap = Object.fromEntries(files.map((f) => [f.fieldname, f]));
-        console.log("File map keys:", Object.keys(fileMap));
-
-        // Upload justificatif files if provided
-        if (
-          createUserDto.justificatif ||
-          Object.keys(fileMap).some(
-            (key) =>
-              key.includes("fichierCarteVitalePdf") ||
-              key.includes("fichierRibPdf") ||
-              key.includes("fichierPieceIdentitePdf") ||
-              key.includes("fichierJustificatifDomicilePdf") ||
-              key.includes("fichierAmeli")
-          )
-        ) {
-          // Initialize justificatif object if it doesn't exist
-          if (!createUserDto.justificatif) {
-            createUserDto.justificatif = {} as any;
-          }
-
-          if (
-            fileMap["justificatif[fichierCarteVitalePdf]"] ||
-            fileMap["fichierCarteVitalePdf"]
-          ) {
-            const file =
-              fileMap["justificatif[fichierCarteVitalePdf]"] ||
-              fileMap["fichierCarteVitalePdf"];
-            console.log("Uploading fichierCarteVitalePdf...");
-            createUserDto.justificatif.fichierCarteVitalePdf =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierCarteVitalePdf:",
-              createUserDto.justificatif.fichierCarteVitalePdf
-            );
-          }
-
-          if (
-            fileMap["justificatif[fichierRibPdf]"] ||
-            fileMap["fichierRibPdf"]
-          ) {
-            const file =
-              fileMap["justificatif[fichierRibPdf]"] ||
-              fileMap["fichierRibPdf"];
-            console.log("Uploading fichierRibPdf...");
-            createUserDto.justificatif.fichierRibPdf =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierRibPdf:",
-              createUserDto.justificatif.fichierRibPdf
-            );
-          }
-
-          if (
-            fileMap["justificatif[fichierPieceIdentitePdf]"] ||
-            fileMap["fichierPieceIdentitePdf"]
-          ) {
-            const file =
-              fileMap["justificatif[fichierPieceIdentitePdf]"] ||
-              fileMap["fichierPieceIdentitePdf"];
-            console.log("Uploading fichierPieceIdentitePdf...");
-            createUserDto.justificatif.fichierPieceIdentitePdf =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierPieceIdentitePdf:",
-              createUserDto.justificatif.fichierPieceIdentitePdf
-            );
-          }
-
-          if (
-            fileMap["justificatif[fichierJustificatifDomicilePdf]"] ||
-            fileMap["fichierJustificatifDomicilePdf"]
-          ) {
-            const file =
-              fileMap["justificatif[fichierJustificatifDomicilePdf]"] ||
-              fileMap["fichierJustificatifDomicilePdf"];
-            console.log("Uploading fichierJustificatifDomicilePdf...");
-            createUserDto.justificatif.fichierJustificatifDomicilePdf =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierJustificatifDomicilePdf:",
-              createUserDto.justificatif.fichierJustificatifDomicilePdf
-            );
-          }
-
-          if (
-            fileMap["justificatif[fichierAmeli]"] ||
-            fileMap["fichierAmeli"]
-          ) {
-            const file =
-              fileMap["justificatif[fichierAmeli]"] || fileMap["fichierAmeli"];
-            console.log("Uploading fichierAmeli...");
-            createUserDto.justificatif.fichierAmeli =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierAmeli:",
-              createUserDto.justificatif.fichierAmeli
-            );
-          }
-        }
-
-        // Upload contrat files if provided
-        if (
-          createUserDto.contrat ||
-          Object.keys(fileMap).some(
-            (key) =>
-              key.includes("fichierContratNonSignerPdf") ||
-              key.includes("fichierContratSignerPdf")
-          )
-        ) {
-          // Initialize contrat object if it doesn't exist
-          if (!createUserDto.contrat) {
-            createUserDto.contrat = {} as any;
-          }
-
-          if (
-            fileMap["contrat[fichierContratNonSignerPdf]"] ||
-            fileMap["fichierContratNonSignerPdf"]
-          ) {
-            const file =
-              fileMap["contrat[fichierContratNonSignerPdf]"] ||
-              fileMap["fichierContratNonSignerPdf"];
-            console.log("Uploading fichierContratNonSignerPdf...");
-            createUserDto.contrat.fichierContratNonSignerPdf =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierContratNonSignerPdf:",
-              createUserDto.contrat.fichierContratNonSignerPdf
-            );
-          }
-
-          if (
-            fileMap["contrat[fichierContratSignerPdf]"] ||
-            fileMap["fichierContratSignerPdf"]
-          ) {
-            const file =
-              fileMap["contrat[fichierContratSignerPdf]"] ||
-              fileMap["fichierContratSignerPdf"];
-            console.log("Uploading fichierContratSignerPdf...");
-            createUserDto.contrat.fichierContratSignerPdf =
-              await this.uploadFileUseCase.execute(
-                file.buffer,
-                file.originalname,
-                file.mimetype
-              );
-            console.log(
-              "Uploaded fichierContratSignerPdf:",
-              createUserDto.contrat.fichierContratSignerPdf
-            );
-          }
-        }
-
-        // Handle avatar upload
-        if (fileMap["avatar"]) {
-          console.log("Uploading avatar...");
-          createUserDto.avatar = await this.uploadFileUseCase.execute(
-            fileMap["avatar"].buffer,
-            fileMap["avatar"].originalname,
-            fileMap["avatar"].mimetype
-          );
-          console.log("Uploaded avatar:", createUserDto.avatar);
-        }
-      }
-
-      console.log(
-        "CreateUserDto after file processing:",
-        JSON.stringify(createUserDto, null, 2)
-      );
-
-      const user = await this.createUserUseCase.execute(createUserDto);
-      return {
-        statusCode: HttpStatus.CREATED,
-        message:
-          "Utilisateur créé avec succès avec toutes ses données associées",
-        data: user,
-      };
-    } catch (error) {
-      console.error("Error creating user:", error);
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST
-      );
-    }
-  }
-
+  // GET ALL USERS ----------------------------------------------------------------------
   @Get()
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager")
   @ApiOperation({ summary: "Récupérer tous les utilisateurs" })
   @ApiResponse({ status: 200, description: "Liste des utilisateurs" })
   async getAllUsers() {
@@ -330,8 +70,10 @@ export class UserController {
     };
   }
 
-  // Get all users except admins
+  // GET ALL USERS EXCEPT ADMINS ----------------------------------------------------------------------
   @Get("admin")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Admin")
   @ApiOperation({
     summary: "Admin: Récupérer tous les utilisateurs sauf les admins",
   })
@@ -351,33 +93,10 @@ export class UserController {
     };
   }
 
-  // Get the 5 most recent users except admins
-  @Get("admin/recent")
-  @ApiOperation({
-    summary: "Admin: Récupérer les 5 derniers utilisateurs sauf les admins",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "5 derniers utilisateurs récupérés sans les admins",
-  })
-  async getFiveRecentUsersForAdmin() {
-    const users = await this.getAllUsersUseCase.execute();
-
-    const nonAdminUsers = users
-      .filter((user) => user.role !== "admin")
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: "5 derniers utilisateurs (hors admins) récupérés avec succès",
-      data: nonAdminUsers.slice(0, 5),
-    };
-  }
-
+  // GET USERS TOTLA BY STATUS ----------------------------------------------------------------------
   @Get("totals-by-status")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Get user totals grouped by status" })
   @ApiResponse({
     status: 200,
@@ -425,7 +144,10 @@ export class UserController {
     }
   }
 
+  // GET ALL USERS LIGHT ----------------------------------------------------------------------
   @Get("light")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({
     summary:
       "Récupérer les utilisateurs avec id, prenom et nomComplet uniquement",
@@ -450,7 +172,22 @@ export class UserController {
     };
   }
 
+  // GET USER BY ID ----------------------------------------------------------------------
   @Get(":id")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Users",
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @ApiOperation({ summary: "Récupérer un utilisateur par ID" })
   @ApiResponse({ status: 200, description: "Utilisateur trouvé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
@@ -474,7 +211,22 @@ export class UserController {
     };
   }
 
+  // UPDATE USER BY ID ----------------------------------------------------------------------
   @Patch(":id")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Users",
+    "RH-Manager",
+    "RH-Admin",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -731,7 +483,19 @@ export class UserController {
     }
   }
 
+  // ADD USER AVATAR ----------------------------------------------------------------------
   @Put(":id/avatar")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @UseInterceptors(
     FileInterceptor("avatar", {
       limits: { fileSize: 5 * 1024 * 1024 }, // max 5MB
@@ -790,7 +554,10 @@ export class UserController {
     }
   }
 
+  // DELETE USER BY ID ----------------------------------------------------------------------
   @Delete(":id")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin")
   @ApiOperation({ summary: "Supprimer un utilisateur" })
   @ApiResponse({ status: 200, description: "Utilisateur supprimé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })
