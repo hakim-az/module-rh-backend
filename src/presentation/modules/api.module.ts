@@ -15,9 +15,6 @@ import { CoffreController } from "../controllers/coffre.controller";
 import { RestauController } from "../controllers/restau.controller";
 import { YousignController } from "../controllers/yousign.controller";
 import { DashboardController } from "../controllers/dashboard.controller";
-import { NotificationsGateway } from "@/domain/services/notifications.gateway";
-import { NotificationsModule } from "@/application/modules/notifications.module";
-import { NotificationsController } from "../controllers/notification.controller";
 import { SignupController } from "../controllers/signup.controller";
 import { UserInitService } from "@/domain/services/user-init-.service";
 
@@ -30,7 +27,6 @@ import { UserInitService } from "@/domain/services/user-init-.service";
     CoffreModule,
     RestauModule,
     YousignModule,
-    NotificationsModule,
   ],
   controllers: [
     UserController,
@@ -41,9 +37,8 @@ import { UserInitService } from "@/domain/services/user-init-.service";
     RestauController,
     YousignController,
     DashboardController,
-    NotificationsController,
     SignupController,
   ],
-  providers: [UserInitService, NotificationsGateway],
+  providers: [UserInitService],
 })
 export class ApiModule {}
