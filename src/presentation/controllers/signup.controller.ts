@@ -87,8 +87,10 @@ export class SignupController {
               key.includes("fichierCarteVitalePdf") ||
               key.includes("fichierRibPdf") ||
               key.includes("fichierPieceIdentitePdf") ||
+              key.includes("fichierPieceIdentitePdfVerso") ||
               key.includes("fichierJustificatifDomicilePdf") ||
-              key.includes("fichierAmeli")
+              key.includes("fichierAmeli") ||
+              key.includes("autreFichier")
           )
         ) {
           // Initialize justificatif object if it doesn't exist
@@ -157,6 +159,26 @@ export class SignupController {
           }
 
           if (
+            fileMap["justificatif[fichierPieceIdentitePdfVerso]"] ||
+            fileMap["fichierPieceIdentitePdfVerso"]
+          ) {
+            const file =
+              fileMap["justificatif[fichierPieceIdentitePdfVerso]"] ||
+              fileMap["fichierPieceIdentitePdfVerso"];
+            console.log("Uploading fichierPieceIdentitePdfVerso...");
+            createUserDto.justificatif.fichierPieceIdentitePdfVerso =
+              await this.uploadFileUseCase.execute(
+                file.buffer,
+                file.originalname,
+                file.mimetype
+              );
+            console.log(
+              "Uploaded fichierPieceIdentitePdfVerso:",
+              createUserDto.justificatif.fichierPieceIdentitePdfVerso
+            );
+          }
+
+          if (
             fileMap["justificatif[fichierJustificatifDomicilePdf]"] ||
             fileMap["fichierJustificatifDomicilePdf"]
           ) {
@@ -192,6 +214,25 @@ export class SignupController {
             console.log(
               "Uploaded fichierAmeli:",
               createUserDto.justificatif.fichierAmeli
+            );
+          }
+
+          if (
+            fileMap["justificatif[autreFichier]"] ||
+            fileMap["autreFichier"]
+          ) {
+            const file =
+              fileMap["justificatif[autreFichier]"] || fileMap["autreFichier"];
+            console.log("Uploading autreFichier...");
+            createUserDto.justificatif.autreFichier =
+              await this.uploadFileUseCase.execute(
+                file.buffer,
+                file.originalname,
+                file.mimetype
+              );
+            console.log(
+              "Uploaded autreFichier:",
+              createUserDto.justificatif.autreFichier
             );
           }
         }

@@ -8,7 +8,7 @@ import { JustificatifRepository } from "../../../domain/repositories/justificati
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { User } from "../../../domain/entities/user.entity";
 import { CreateUserDto } from "../../dtos/user.dto";
-import * as bcrypt from "bcrypt";
+import { ContratRepository } from "../../../domain/repositories/contrat.repository";
 
 @Injectable()
 export class CreateUserUseCase {
@@ -30,6 +30,9 @@ export class CreateUserUseCase {
 
     @Inject(JustificatifRepository)
     private readonly justificatifRepository: JustificatifRepository,
+
+    @Inject(ContratRepository)
+    private readonly contratRepository: ContratRepository,
 
     private readonly prisma: PrismaService
   ) {}
@@ -117,6 +120,23 @@ export class CreateUserUseCase {
             createUserDto.justificatif.fichierJustificatifDomicilePdf || "",
           fichierAmeli: createUserDto.justificatif.fichierAmeli || "",
           autreFichier: createUserDto.justificatif.autreFichier || "",
+        });
+      }
+
+      if (createUserDto.contrat) {
+        await this.contratRepository.create({
+          idUser: user.id,
+          poste: createUserDto.contrat.poste,
+          typeContrat: createUserDto.contrat.typeContrat,
+          dateDebut: new Date(createUserDto.contrat.dateDebut),
+          dateFin: new Date(createUserDto.contrat.dateFin),
+          matricule: createUserDto.contrat.matricule,
+          etablissementDeSante: createUserDto.contrat.etablissementDeSante,
+          serviceDeSante: createUserDto.contrat.serviceDeSante,
+          salaire: createUserDto.contrat.salaire,
+          fichierContratSignerPdf:
+            createUserDto.contrat.fichierContratSignerPdf || "",
+          id: "",
         });
       }
 
