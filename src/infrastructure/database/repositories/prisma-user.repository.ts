@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { UserRepository } from "../../../domain/repositories/user.repository";
 import { User } from "../../../domain/entities/user.entity";
 import { PrismaService } from "../../database/prisma.service";
-import { generateUniqueNumericId } from "@/domain/services/generateUniqueNumericId";
+import { UpdateUserDto } from "@/application/dtos/user.dto";
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -57,48 +57,47 @@ export class PrismaUserRepository implements UserRepository {
     return new User(user);
   }
 
-  async update(id: string, userData: Partial<User>): Promise<User | null> {
-    try {
-      const allowedFields = [
-        "role",
-        "statut",
-        "civilite",
-        "prenom",
-        "nomDeNaissance",
-        "nomUsuel",
-        "situationFamiliale",
-        "numeroSecuriteSociale",
-        "emailPersonnel",
-        "emailProfessionnel",
-        "telephonePersonnel",
-        "telephoneProfessionnel",
-        "avatar",
-      ];
+  async update(id: string, userData: UpdateUserDto): Promise<User | null> {
+    // on construit un objet libre pour Prisma
+    const filteredData: Record<string, any> = {};
 
-      const filteredData: Partial<User> = {};
-      for (const key of allowedFields) {
-        if (userData[key] !== undefined) {
-          filteredData[key] = userData[key];
-        }
+    const allowedFields = [
+      "role",
+      "statut",
+      "civilite",
+      "prenom",
+      "nomDeNaissance",
+      "nomUsuel",
+      "situationFamiliale",
+      "numeroSecuriteSociale",
+      "emailPersonnel",
+      "emailProfessionnel",
+      "telephonePersonnel",
+      "telephoneProfessionnel",
+      "avatar",
+    ];
+
+    for (const key of allowedFields) {
+      if (userData[key] !== undefined) {
+        filteredData[key] = userData[key];
       }
-
-      const user = await this.prisma.user.update({
-        where: { id },
-        data: filteredData,
-        include: {
-          naissance: true,
-          adresse: true,
-          contrat: true,
-          paiement: true,
-          urgence: true,
-          justificatif: true,
-        },
-      });
-
-      return new User(user);
-    } catch (error) {
-      return null;
     }
+
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: filteredData,
+      include: {
+        naissance: true,
+        adresse: true,
+        paiement: true,
+        urgence: true,
+        justificatif: true,
+        contrat: true,
+      },
+    });
+
+    // ici on reconstruit l’entité immutable User
+    return new User(user);
   }
 
   async delete(id: string): Promise<boolean> {
