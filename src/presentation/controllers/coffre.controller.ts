@@ -54,7 +54,7 @@ export class CoffreController {
   // GET COFFRE ALL ----------------------------------------------------------------------------------------------
   @Get()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
   @ApiOperation({ summary: "Get all coffres" })
   @ApiResponse({
     status: 200,
@@ -99,7 +99,7 @@ export class CoffreController {
   // GET COFFRE BY ID ----------------------------------------------------------------------------------------------
   @Get(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
   @ApiOperation({ summary: "Get a single coffre by ID" })
   @ApiResponse({
     status: 200,
@@ -139,7 +139,7 @@ export class CoffreController {
   // ADD COFFRE  ----------------------------------------------------------------------------------------------
   @Post()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
   @UseInterceptors(
     FileInterceptor("fichierJustificatifPdf", {
       limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
@@ -207,6 +207,7 @@ export class CoffreController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
@@ -254,7 +255,7 @@ export class CoffreController {
   // UPDATE COFFRE BY ID ----------------------------------------------------------------------------------------------
   @Patch(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -318,7 +319,7 @@ export class CoffreController {
   // DELETE COFFRE BY ID ----------------------------------------------------------------------------------------------
   @Delete(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
   @ApiOperation({ summary: "Delete a coffre" })
   @ApiResponse({ status: 200, description: "Coffre deleted successfully" })
   async remove(@Param("id") id: string): Promise<{ message: string }> {

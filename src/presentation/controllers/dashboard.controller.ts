@@ -35,7 +35,7 @@ export class DashboardController {
   // GET USERS STATS DASHBOARD ----------------------------------------------------------------------------------------------
   @Get()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
   @ApiOperation({
     summary:
       "Get latest 5 records + totals for users, absences, coffres, and restaus",
