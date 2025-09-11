@@ -34,8 +34,6 @@ import { UpdateAbsenceUseCase } from "@/application/use-cases/absence/update-abs
 import { GetAllAbsencesUseCase } from "@/application/use-cases/absence/get-all-absences.use-case";
 import { GetAbsenceUseCase } from "@/application/use-cases/absence/get-absence.use-case";
 import { countBusinessDays } from "@/domain/services/count-business-days.service";
-import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
-import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
