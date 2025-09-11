@@ -50,7 +50,7 @@ export class UserController {
   // GET ALL USERS ----------------------------------------------------------------------
   @Get()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant")
+  @Groups("RH-Manager", "RH-Gestionnaire", "RH-Assistant")
   @ApiOperation({ summary: "Récupérer tous les utilisateurs" })
   @ApiResponse({ status: 200, description: "Liste des utilisateurs" })
   async getAllUsers() {
@@ -94,7 +94,7 @@ export class UserController {
   // GET USERS TOTLA BY STATUS ----------------------------------------------------------------------
   @Get("totals-by-status")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Gestionnaire", "RH-Assistant", "RH-Admin")
   @ApiOperation({ summary: "Get user totals grouped by status" })
   @ApiResponse({
     status: 200,
@@ -145,7 +145,7 @@ export class UserController {
   // GET ALL USERS LIGHT ----------------------------------------------------------------------
   @Get("light")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({
     summary:
       "Récupérer les utilisateurs avec id, prenom et nomComplet uniquement",
@@ -178,6 +178,7 @@ export class UserController {
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",
+    "RH-Gestionnaire",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
@@ -218,6 +219,7 @@ export class UserController {
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",
+    "RH-Gestionnaire",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
@@ -590,7 +592,7 @@ export class UserController {
   // DELETE USER BY ID ----------------------------------------------------------------------
   @Delete(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Supprimer un utilisateur" })
   @ApiResponse({ status: 200, description: "Utilisateur supprimé" })
   @ApiResponse({ status: 404, description: "Utilisateur non trouvé" })

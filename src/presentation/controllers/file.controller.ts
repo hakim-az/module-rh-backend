@@ -46,6 +46,7 @@ export class FileController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -112,6 +113,7 @@ export class FileController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -148,6 +150,7 @@ export class FileController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -181,6 +184,7 @@ export class FileController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -228,7 +232,7 @@ export class FileController {
   // DELETE FILE ---------------------------------------------------
   @Delete(":fileName")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Delete a file from S3" })
   @ApiResponse({
     status: 200,

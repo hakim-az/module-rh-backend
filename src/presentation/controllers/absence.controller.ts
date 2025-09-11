@@ -58,7 +58,7 @@ export class AbsenceController {
   // GET ABSENCE ALL ----------------------------------------------------------------------------------------------
   @Get()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin", "RH-Assistant")
+  @Groups("RH-Manager", "RH-Admin", "RH-Gestionnaire", "RH-Assistant")
   @ApiOperation({ summary: "Get all absences" })
   @ApiResponse({
     status: 200,
@@ -142,7 +142,7 @@ export class AbsenceController {
   // GET ABSENCE BY STATUS TOTALS ----------------------------------------------------------------------------------------------
   @Get("totals-by-status")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin", "RH-Assistant")
+  @Groups("RH-Manager", "RH-Admin", "RH-Gestionnaire", "RH-Assistant")
   @ApiOperation({ summary: "Get total absences grouped by status" })
   @ApiResponse({
     status: 200,
@@ -238,7 +238,7 @@ export class AbsenceController {
   // GET ABSENCE TOTAL HOLIDAYS ----------------------------------------------------------------------------------------------
   @Get("total-conge/:userId")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Admin", "RH-Assistant")
+  @Groups("RH-Manager", "RH-Admin", "RH-Gestionnaire", "RH-Assistant")
   @ApiOperation({
     summary:
       "Get total approved absence days for a specific user, optionally filtered by month and year",
@@ -309,6 +309,7 @@ export class AbsenceController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -499,6 +500,7 @@ export class AbsenceController {
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",
+    "RH-Gestionnaire",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
@@ -588,6 +590,7 @@ export class AbsenceController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -753,6 +756,7 @@ export class AbsenceController {
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",
+    "RH-Gestionnaire",
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
@@ -834,6 +838,7 @@ export class AbsenceController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",

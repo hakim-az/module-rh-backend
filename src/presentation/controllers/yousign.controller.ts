@@ -82,7 +82,8 @@ export class YousignController {
       document.id,
       firstName,
       lastName,
-      email
+      email,
+      filePath
     );
     await this.yousignService.activateSignatureRequest(signatureRequest.id);
 

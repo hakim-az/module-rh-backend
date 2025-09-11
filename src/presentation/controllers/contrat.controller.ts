@@ -60,7 +60,7 @@ export class ContratController {
   // ADD CONTRACT -----------------------------------------------------------
   @Post()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -136,7 +136,7 @@ export class ContratController {
   // GET ALL CONTRACTS ------------------------------------------------------------------
   @Get()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Get all contracts" })
   @ApiResponse({
     status: 200,
@@ -170,7 +170,7 @@ export class ContratController {
   // GET CONTRACTS BY USER ID --------------------------------------------------
   @Get("user/:userId")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Get contracts by user ID" })
   @ApiResponse({
     status: 200,
@@ -206,7 +206,7 @@ export class ContratController {
   // GET CONTRACT BY ID -----------------------------------------------------------
   @Get(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Get a contract by ID" })
   @ApiResponse({
     status: 200,
@@ -243,7 +243,7 @@ export class ContratController {
   // UPDATE CONTRACT BY ID -----------------------------------------------------------
   @Patch(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -318,7 +318,7 @@ export class ContratController {
   // DELETE CONTRACT BY ID ----------------------------------------------------------
   @Delete(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Delete a contract" })
   @ApiResponse({ status: 200, description: "Contract deleted successfully" })
   async remove(@Param("id") id: string): Promise<{ message: string }> {

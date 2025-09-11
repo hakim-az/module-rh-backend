@@ -51,6 +51,18 @@ export class UserInitService implements OnModuleInit {
           emailPersonnel: this.config.get<string>("INIT_ASSISTANT_EMAIL"),
           emailProfessionnel: this.config.get<string>("INIT_ASSISTANT_EMAIL"),
         },
+        {
+          id: this.config.get<string>("INIT_GESTIONNAIRE_ID"),
+          role: this.config.get<string>("INIT_GESTIONNAIRE_ROLE"),
+          statut: this.config.get<string>("INIT_GESTIONNAIRE_STATUT"),
+          civilite: "F",
+          prenom: "Gestionnaire",
+          nomDeNaissance: "Gestionnaire",
+          emailPersonnel: this.config.get<string>("INIT_GESTIONNAIRE_EMAIL"),
+          emailProfessionnel: this.config.get<string>(
+            "INIT_GESTIONNAIRE_EMAIL"
+          ),
+        },
       ];
 
       for (const user of usersToInit) {

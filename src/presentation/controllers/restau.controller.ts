@@ -56,7 +56,7 @@ export class RestauController {
   // GET RESTAU ALL ----------------------------------------------------------------------------------------------
   @Get()
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Get all restaus" })
   @ApiResponse({
     status: 200,
@@ -100,7 +100,7 @@ export class RestauController {
   // GET RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Get(":id")
   @UseGuards(GroupsGuard) // ✅ check groups only for this route
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Get a single restau by ID" })
   @ApiResponse({
     status: 200,
@@ -140,7 +140,7 @@ export class RestauController {
   // ADD RESTAU ----------------------------------------------------------------------------------------------
   @Post()
   @UseGuards(GroupsGuard) // ✅ check groups only for this route
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @UseInterceptors(
     FileInterceptor("fichierJustificatifPdf", {
       limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
@@ -206,6 +206,7 @@ export class RestauController {
   @Groups(
     "RH-Manager",
     "RH-Admin",
+    "RH-Gestionnaire",
     "RH-Assistant",
     "Prospection-Admin",
     "Prospection-Commercial",
@@ -253,6 +254,21 @@ export class RestauController {
 
   // UPDATE RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Patch(":id")
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "RH-Manager",
+    "RH-Admin",
+    "RH-Gestionnaire",
+    "RH-Assistant",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: { fileSize: 50 * 1024 * 1024 },
@@ -316,7 +332,7 @@ export class RestauController {
   // ADD RESTAU BY ID ----------------------------------------------------------------------------------------------
   @Delete(":id")
   @UseGuards(GroupsGuard)
-  @Groups("RH-Manager", "RH-Assistant", "RH-Admin")
+  @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
   @ApiOperation({ summary: "Delete a restau" })
   @ApiResponse({ status: 200, description: "Restau deleted successfully" })
   async remove(@Param("id") id: string): Promise<{ message: string }> {

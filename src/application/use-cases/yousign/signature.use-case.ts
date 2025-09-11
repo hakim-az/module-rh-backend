@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { getPdfPageCount } from "@/domain/services/get-pdf-count.service";
 import axios from "axios";
 import * as FormData from "form-data";
 import * as fs from "fs";
@@ -17,7 +18,7 @@ export class YousignService {
 
     if (!this.BASE_URL || !this.API_KEY) {
       throw new Error(
-        `Missing YOUSIGN_BASE_URL or YOUSIGN_API_KEY in environment variables.\nBASE_URL: ${this.BASE_URL}\nAPI_KEY: ${this.API_KEY}`
+        `Missing YOUSIGN_BASE_URL or YOUSIGN_API_KEY in environment variables.`
       );
     }
   }
@@ -51,7 +52,7 @@ export class YousignService {
   // 1- Create Signature Request
   async createSignatureRequest() {
     const body = {
-      name: "Signature request from NestJS",
+      name: "Contrat de travail",
       delivery_mode: "email",
       timezone: "Europe/Paris",
     };
@@ -92,8 +93,10 @@ export class YousignService {
     documentId: string,
     firstName: string,
     lastName: string,
-    email: string
+    email: string,
+    filePath: string
   ) {
+    const lastPage = await getPdfPageCount(filePath);
     const body = {
       info: {
         first_name: firstName,
@@ -108,7 +111,7 @@ export class YousignService {
         {
           document_id: documentId,
           type: "signature",
-          page: 1,
+          page: lastPage,
           x: 345,
           y: 592,
           width: 150,
