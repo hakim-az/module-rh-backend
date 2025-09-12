@@ -17,6 +17,7 @@ import { YousignController } from "../controllers/yousign.controller";
 import { DashboardController } from "../controllers/dashboard.controller";
 import { SignupController } from "../controllers/signup.controller";
 import { UserInitService } from "@/domain/services/user-init-.service";
+import { LoginController } from "../controllers/login.controller";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UserInitService } from "@/domain/services/user-init-.service";
     YousignController,
     DashboardController,
     SignupController,
+    LoginController,
   ],
   providers: [UserInitService],
 })
