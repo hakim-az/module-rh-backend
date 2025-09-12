@@ -20,6 +20,8 @@ import { CoffreRepository } from "@/domain/repositories/coffre.repository";
 import { PrismaCoffreRepository } from "../database/repositories/prisma-coffre.repository";
 import { PrismaRestauRepository } from "../database/repositories/prisma-restau.repository";
 import { RestauRepository } from "@/domain/repositories/restau.repository";
+import { NotificationRepository } from "@/domain/repositories/notification.repository";
+import { PrismaNotificationRepository } from "../database/repositories/prisma-notification.repository";
 
 @Module({
   providers: [
@@ -64,6 +66,10 @@ import { RestauRepository } from "@/domain/repositories/restau.repository";
       provide: RestauRepository,
       useClass: PrismaRestauRepository,
     },
+    {
+      provide: NotificationRepository, // ✅ token
+      useClass: PrismaNotificationRepository, // ✅ concrete class
+    },
   ],
   exports: [
     PrismaService,
@@ -77,6 +83,7 @@ import { RestauRepository } from "@/domain/repositories/restau.repository";
     AbsenceRepository,
     CoffreRepository,
     RestauRepository,
+    NotificationRepository,
   ],
 })
 export class DatabaseModule {}

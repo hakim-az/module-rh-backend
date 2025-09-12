@@ -18,6 +18,8 @@ import { DashboardController } from "../controllers/dashboard.controller";
 import { SignupController } from "../controllers/signup.controller";
 import { UserInitService } from "@/domain/services/user-init-.service";
 import { LoginController } from "../controllers/login.controller";
+import { NotificationController } from "../controllers/notification.controller";
+import { NotificationModule } from "@/application/modules/notification.module";
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { LoginController } from "../controllers/login.controller";
     CoffreModule,
     RestauModule,
     YousignModule,
+    NotificationModule,
   ],
   controllers: [
     UserController,
@@ -40,6 +43,7 @@ import { LoginController } from "../controllers/login.controller";
     DashboardController,
     SignupController,
     LoginController,
+    NotificationController,
   ],
   providers: [UserInitService],
 })
