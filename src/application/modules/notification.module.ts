@@ -10,6 +10,7 @@ import { MarkAllNotificationsAsReadUseCase } from "../use-cases/notification/mar
 import { GetNotificationStatsUseCase } from "../use-cases/notification/get-notification-stats.use-case";
 import { NotificationService } from "@/domain/services/notification.service";
 import { DatabaseModule } from "@/infrastructure/modules/database.module";
+import { NotificationsGateway } from "@/domain/services/notifications.gateway";
 
 @Module({
   imports: [DatabaseModule],
@@ -24,6 +25,7 @@ import { DatabaseModule } from "@/infrastructure/modules/database.module";
     MarkAllNotificationsAsReadUseCase,
     GetNotificationStatsUseCase,
     NotificationService,
+    NotificationsGateway,
   ],
   exports: [
     CreateNotificationUseCase,

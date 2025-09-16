@@ -37,6 +37,9 @@ import { countBusinessDays } from "@/domain/services/count-business-days.service
 import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
+import { NotificationService } from "@/domain/services/notification.service";
+import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
+import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
 
 @ApiTags("absences")
 @ApiBearerAuth()
@@ -50,7 +53,10 @@ export class AbsenceController {
     private readonly updateAbsenceUseCase: UpdateAbsenceUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly getAllAbsencesUseCase: GetAllAbsencesUseCase,
-    private readonly getAbsenceUseCase: GetAbsenceUseCase
+    private readonly getAbsenceUseCase: GetAbsenceUseCase,
+    private readonly notificationService: NotificationService,
+    private readonly getUserUseCase: GetUserUseCase,
+    private readonly getAllUsersUseCase: GetAllUsersUseCase
   ) {}
 
   // GET ABSENCE ALL ----------------------------------------------------------------------------------------------
@@ -639,6 +645,26 @@ export class AbsenceController {
       fichierJustificatifPdf,
     });
 
+    // Récupérer l'utilisateur qui fait la demande
+    const user = await this.getUserUseCase.execute(absence.idUser);
+
+    // Récupérer tous les utilisateurs
+    const allUsers = await this.getAllUsersUseCase.execute();
+
+    // Filtrer uniquement ceux qui ont un rôle RH
+    const rhUsers = allUsers.filter((u) =>
+      ["admin", "hr", "assistant", "gestionnaire"].includes(u.role)
+    );
+
+    // Envoyer la notification à tous les RH
+    for (const rhUser of rhUsers) {
+      await this.notificationService.createCustomNotification(
+        rhUser.id,
+        "Nouvelle demande d'absence",
+        `${user?.prenom ?? ""} ${user?.nomDeNaissance ?? ""}`.trim() ||
+          "Employé"
+      );
+    }
     return {
       id: absence.id,
       idUser: absence.idUser,

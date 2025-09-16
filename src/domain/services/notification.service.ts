@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { CreateNotificationUseCase } from "@/application/use-cases/notification/create-notification.use-case";
+import { NotificationsGateway } from "./notifications.gateway"; // 👈 import gateway
 
 @Injectable()
 export class NotificationService {
-  constructor(private createNotificationUseCase: CreateNotificationUseCase) {}
+  constructor(
+    private createNotificationUseCase: CreateNotificationUseCase,
+    private readonly gateway: NotificationsGateway // 👈 inject gateway
+  ) {}
 
   // Notification pour changement de statut d'absence
   async notifyAbsenceStatusChange(
@@ -24,7 +28,9 @@ export class NotificationService {
         break;
       case "refuser":
         title = "Demande d'absence refusée";
-        message = `Votre demande d'absence (${absenceType}) du ${dateDebut} au ${dateFin} a été refusée.${motifDeRefus ? ` Motif: ${motifDeRefus}` : ""}`;
+        message = `Votre demande d'absence (${absenceType}) du ${dateDebut} au ${dateFin} a été refusée.${
+          motifDeRefus ? ` Motif: ${motifDeRefus}` : ""
+        }`;
         break;
       case "en-attente":
         title = "Demande d'absence en attente";
@@ -34,11 +40,14 @@ export class NotificationService {
         return;
     }
 
-    await this.createNotificationUseCase.execute({
+    const notification = await this.createNotificationUseCase.execute({
       userId,
       title,
       message,
     });
+
+    // 👇 emit to frontend
+    this.gateway.sendNotification(userId, notification);
   }
 
   // Notification pour nouvelle demande d'absence (pour les RH)
@@ -53,11 +62,14 @@ export class NotificationService {
     const message = `${employeeName} a soumis une nouvelle demande d'absence (${absenceType}) du ${dateDebut} au ${dateFin}.`;
 
     for (const userId of rhUserIds) {
-      await this.createNotificationUseCase.execute({
+      const notification = await this.createNotificationUseCase.execute({
         userId,
         title,
         message,
       });
+
+      // 👇 emit to frontend
+      this.gateway.sendNotification(userId, notification);
     }
   }
 
@@ -67,11 +79,14 @@ export class NotificationService {
     title: string,
     message: string
   ): Promise<void> {
-    await this.createNotificationUseCase.execute({
+    const notification = await this.createNotificationUseCase.execute({
       userId,
       title,
       message,
     });
+
+    // 👇 emit to frontend
+    this.gateway.sendNotification(userId, notification);
   }
 
   // Notification de rappel
@@ -83,11 +98,14 @@ export class NotificationService {
     const title = "Rappel";
     const message = `N'oubliez pas: ${subject} - Échéance: ${dueDate}`;
 
-    await this.createNotificationUseCase.execute({
+    const notification = await this.createNotificationUseCase.execute({
       userId,
       title,
       message,
     });
+
+    // 👇 emit to frontend
+    this.gateway.sendNotification(userId, notification);
   }
 
   // Notification de bienvenue
@@ -98,10 +116,13 @@ export class NotificationService {
     const title = "Bienvenue !";
     const message = `Bienvenue ${userName} ! Votre compte a été créé avec succès.`;
 
-    await this.createNotificationUseCase.execute({
+    const notification = await this.createNotificationUseCase.execute({
       userId,
       title,
       message,
     });
+
+    // 👇 emit to frontend
+    this.gateway.sendNotification(userId, notification);
   }
 }
