@@ -658,13 +658,15 @@ export class AbsenceController {
 
     // Envoyer la notification à tous les RH
     for (const rhUser of rhUsers) {
+      const description = `${user?.nomDeNaissance ?? ""} ${user?.prenom ?? ""} a soumis une nouvelle demande d'absence de type ${absence.typeAbsence} du ${absence.dateDebut?.toLocaleDateString()} au ${absence.dateFin?.toLocaleDateString()}${absence.partieDeJour ? " pour la partie " + absence.partieDeJour.toLowerCase() : ""}${absence.note ? " avec la note suivante " + absence.note : ""}.`;
+
       await this.notificationService.createCustomNotification(
         rhUser.id,
         "Nouvelle demande d'absence",
-        `${user?.prenom ?? ""} ${user?.nomDeNaissance ?? ""}`.trim() ||
-          "Employé"
+        description.trim()
       );
     }
+
     return {
       id: absence.id,
       idUser: absence.idUser,
@@ -771,6 +773,107 @@ export class AbsenceController {
         total: Number(total), // ✅ S'assurer que c'est un number (float)
       };
     });
+  }
+
+  // APPROUVER ABSENCE ----------------------------------------------------------------------------------------------
+  @Patch(":id/approuver")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin", "RH-Gestionnaire", "RH-Assistant")
+  @ApiOperation({ summary: "Approuver une demande d'absence" })
+  @ApiResponse({ status: 200, description: "Absence approuvée avec succès" })
+  async approveAbsence(@Param("id") id: string): Promise<AbsenceResponseDto> {
+    const absence = await this.updateAbsenceUseCase.execute(id, {
+      statut: "approuver",
+      motifDeRefus: null, // On réinitialise le motif si besoin
+    });
+
+    // Récupérer l'utilisateur qui a fait la demande
+    const user = await this.getUserUseCase.execute(absence.idUser);
+
+    // Message de notification personnalisé
+    const description = `Votre demande d'absence de type ${absence.typeAbsence} du ${absence.dateDebut?.toLocaleDateString()} au ${absence.dateFin?.toLocaleDateString()}${absence.partieDeJour ? " pour la partie " + absence.partieDeJour.toLowerCase() : ""} a été approuvée.`;
+
+    // Envoi de la notification à l’employé
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Demande d'absence approuvée",
+      description.trim()
+    );
+
+    return {
+      id: absence.id,
+      idUser: absence.idUser,
+      typeAbsence: absence.typeAbsence,
+      dateDebut: absence.dateDebut?.toISOString(),
+      dateFin: absence.dateFin?.toISOString(),
+      partieDeJour: absence.partieDeJour,
+      note: absence.note,
+      statut: absence.statut,
+      motifDeRefus: absence.motifDeRefus,
+      fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
+      createdAt: absence.createdAt?.toISOString(),
+      updatedAt: absence.updatedAt?.toISOString(),
+      user: absence.user
+        ? {
+            nomDeNaissance: absence.user.nomDeNaissance,
+            prenom: absence.user.prenom,
+            emailProfessionnel: absence.user.emailProfessionnel,
+            avatar: absence.user.avatar,
+          }
+        : undefined,
+    };
+  }
+
+  // REFUSER ABSENCE ----------------------------------------------------------------------------------------------
+  @Patch(":id/refuser")
+  @UseGuards(GroupsGuard)
+  @Groups("RH-Manager", "RH-Admin", "RH-Gestionnaire", "RH-Assistant")
+  @ApiOperation({ summary: "Refuser une demande d'absence" })
+  @ApiResponse({ status: 200, description: "Absence refusée avec succès" })
+  async rejectAbsence(
+    @Param("id") id: string,
+    @Body("motifDeRefus") motifDeRefus: string
+  ): Promise<AbsenceResponseDto> {
+    const absence = await this.updateAbsenceUseCase.execute(id, {
+      statut: "refuser",
+      motifDeRefus: motifDeRefus ?? "Non spécifié",
+    });
+
+    // Récupérer l'utilisateur qui a fait la demande
+    const user = await this.getUserUseCase.execute(absence.idUser);
+
+    // Message de notification personnalisé
+    const description = `Votre demande d'absence de type ${absence.typeAbsence} du ${absence.dateDebut?.toLocaleDateString()} au ${absence.dateFin?.toLocaleDateString()}${absence.partieDeJour ? " pour la partie " + absence.partieDeJour.toLowerCase() : ""} a été refusée${absence.motifDeRefus ? " pour le motif suivant : " + absence.motifDeRefus : ""}.`;
+
+    // Envoi de la notification à l’employé
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Demande d'absence refusée",
+      description.trim()
+    );
+
+    return {
+      id: absence.id,
+      idUser: absence.idUser,
+      typeAbsence: absence.typeAbsence,
+      dateDebut: absence.dateDebut?.toISOString(),
+      dateFin: absence.dateFin?.toISOString(),
+      partieDeJour: absence.partieDeJour,
+      note: absence.note,
+      statut: absence.statut,
+      motifDeRefus: absence.motifDeRefus,
+      fichierJustificatifPdf: absence.fichierJustificatifPdf ?? "",
+      createdAt: absence.createdAt?.toISOString(),
+      updatedAt: absence.updatedAt?.toISOString(),
+      user: absence.user
+        ? {
+            nomDeNaissance: absence.user.nomDeNaissance,
+            prenom: absence.user.prenom,
+            emailProfessionnel: absence.user.emailProfessionnel,
+            avatar: absence.user.avatar,
+          }
+        : undefined,
+    };
   }
 
   // UPDATE ABSENCE BY ID ----------------------------------------------------------------------------------------------
