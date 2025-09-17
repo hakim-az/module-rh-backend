@@ -35,6 +35,8 @@ import { GetCoffreUseCase } from "@/application/use-cases/coffre/get-coffre.use-
 import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
+import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
+import { NotificationService } from "@/domain/services/notification.service";
 
 @ApiTags("coffres")
 @ApiBearerAuth()
@@ -48,7 +50,9 @@ export class CoffreController {
     private readonly updateCoffreUseCase: UpdateCoffreUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly getAllCoffresUseCase: GetAllCoffresUseCase,
-    private readonly getCoffreUseCase: GetCoffreUseCase
+    private readonly getCoffreUseCase: GetCoffreUseCase,
+    private readonly getUserUseCase: GetUserUseCase,
+    private readonly notificationService: NotificationService
   ) {}
 
   // GET COFFRE ALL ----------------------------------------------------------------------------------------------
@@ -180,6 +184,19 @@ export class CoffreController {
       fichierJustificatifPdf,
     });
 
+    // Récupérer l'utilisateur qui a fait la demande
+    const user = await this.getUserUseCase.execute(coffre.idUser);
+
+    // Message de notification personnalisé
+    const description = `Un nouveau document de type ${coffre.typeBulletin} a été ajouté dans votre coffre-fort pour le mois de ${coffre.mois}/${coffre.annee}.`;
+
+    // Envoi de la notification à l’employé
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Nouveau document disponible",
+      description.trim()
+    );
+
     return {
       id: coffre.id,
       idUser: coffre.idUser,
@@ -295,6 +312,16 @@ export class CoffreController {
     }
 
     const coffre = await this.updateCoffreUseCase.execute(id, updateCoffreDto);
+
+    // 🔹 Envoyer une notification à l'utilisateur
+    const user = await this.getUserUseCase.execute(coffre.idUser);
+    const description = `Un document de type ${coffre.typeBulletin} a été mis à jour dans votre coffre-fort${coffre.mois && coffre.annee ? ` pour le mois de ${coffre.mois}/${coffre.annee}` : ""}.`;
+
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Mise à jour d'un document dans votre coffre-fort",
+      description.trim()
+    );
 
     return {
       id: coffre.id,

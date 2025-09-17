@@ -12,6 +12,8 @@ import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { CreateUserUseCase } from "../../application/use-cases/user/create-user.use-case";
 import { UploadFileUseCase } from "../../application/use-cases/file/upload-file.use-case";
 import { CreateUserDto } from "../../application/dtos/user.dto";
+import { NotificationService } from "@/domain/services/notification.service";
+import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
 
 @ApiTags("signup")
 @Controller("signup")
@@ -19,7 +21,9 @@ export class SignupController {
   getFileUrlUseCase: any;
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
-    private readonly uploadFileUseCase: UploadFileUseCase
+    private readonly uploadFileUseCase: UploadFileUseCase,
+    private readonly notificationService: NotificationService,
+    private readonly getAllUsersUseCase: GetAllUsersUseCase
   ) {}
 
   // ADD USER ----------------------------------------------------------------------
@@ -310,6 +314,26 @@ export class SignupController {
       );
 
       const user = await this.createUserUseCase.execute(createUserDto);
+
+      // Récupérer tous les utilisateurs
+      const allUsers = await this.getAllUsersUseCase.execute();
+
+      // Filtrer uniquement ceux qui ont un rôle RH
+      const rhUsers = allUsers.filter((u) =>
+        ["admin", "hr", "assistant", "gestionnaire"].includes(u.role)
+      );
+
+      // Envoyer la notification à tous les RH
+      for (const rhUser of rhUsers) {
+        const description = `Un nouveau salarié a été enregistré : ${user?.nomDeNaissance ?? ""} ${user?.prenom ?? ""} (${user?.emailPersonnel ?? "email non renseigné"}).`;
+
+        await this.notificationService.createCustomNotification(
+          rhUser.id,
+          "Nouveau salarié enregistré",
+          description.trim()
+        );
+      }
+
       return {
         statusCode: HttpStatus.CREATED,
         message:

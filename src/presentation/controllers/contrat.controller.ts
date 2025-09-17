@@ -39,6 +39,9 @@ import { UpdateUserUseCase } from "@/application/use-cases/user/update-user.use-
 import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
+import { NotificationService } from "@/domain/services/notification.service";
+import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
+import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
 
 @ApiTags("contrats")
 @ApiBearerAuth()
@@ -54,7 +57,10 @@ export class ContratController {
     private readonly deleteContratUseCase: DeleteContratUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly uploadSignedContractUseCase: UploadSignedContractUseCase,
-    private readonly updateUserUseCase: UpdateUserUseCase
+    private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly notificationService: NotificationService,
+    private readonly getUserUseCase: GetUserUseCase,
+    private readonly getAllUsersUseCase: GetAllUsersUseCase
   ) {}
 
   // ADD CONTRACT -----------------------------------------------------------
@@ -114,6 +120,19 @@ export class ContratController {
     };
 
     const contrat = await this.createContratUseCase.execute(contratData);
+
+    // Récupérer l'utilisateur qui a fait la demande
+    const user = await this.getUserUseCase.execute(contrat.idUser);
+
+    // Message de notification personnalisé
+    const description = `Votre contrat de travail (${contrat.typeContrat ?? "contrat"}) a été ajouté par le service RH. Veuillez le signer dès que possible.`;
+
+    // Envoi de la notification à l’employé
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Contrat de travail à signer",
+      description.trim()
+    );
 
     return {
       id: contrat.id,
@@ -390,9 +409,28 @@ export class ContratController {
       });
 
       // ✅ Mettre à jour le statut de l'utilisateur
-      await this.updateUserUseCase.execute(userId, {
+      const user = await this.updateUserUseCase.execute(userId, {
         statut: "contract-signed",
       });
+
+      // 🔔 Récupérer tous les utilisateurs
+      const allUsers = await this.getAllUsersUseCase.execute();
+
+      // 🔎 Filtrer uniquement ceux qui ont un rôle RH
+      const rhUsers = allUsers.filter((u) =>
+        ["admin", "hr", "assistant", "gestionnaire"].includes(u.role)
+      );
+
+      // 📢 Envoyer la notification à tous les RH
+      for (const rhUser of rhUsers) {
+        const description = `${user?.nomDeNaissance ?? ""} ${user?.prenom ?? ""} a signé son contrat de travail (${contrat.typeContrat ?? "contrat"}).`;
+
+        await this.notificationService.createCustomNotification(
+          rhUser.id,
+          "Contrat signé",
+          description.trim()
+        );
+      }
 
       return {
         id: contrat.id,

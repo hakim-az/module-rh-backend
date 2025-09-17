@@ -31,6 +31,7 @@ import { UpdateUserDto } from "../../application/dtos/user.dto";
 import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
+import { NotificationService } from "@/domain/services/notification.service";
 
 @ApiTags("users")
 @ApiBearerAuth()
@@ -43,7 +44,8 @@ export class UserController {
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
-    private readonly uploadFileUseCase: UploadFileUseCase
+    private readonly uploadFileUseCase: UploadFileUseCase,
+    private readonly notificationService: NotificationService
   ) {}
 
   // GET ALL USERS ----------------------------------------------------------------------
@@ -499,6 +501,39 @@ export class UserController {
       );
 
       const user = await this.updateUserUseCase.execute(id, updateUserDto);
+
+      // 🔔 Si le statut est "profile-completed", notifier les RH
+      if (user?.statut === "profile-completed") {
+        // Récupérer tous les utilisateurs
+        const allUsers = await this.getAllUsersUseCase.execute();
+
+        // Filtrer uniquement ceux qui ont un rôle RH
+        const rhUsers = allUsers.filter((u) =>
+          ["admin", "hr", "assistant", "gestionnaire"].includes(u.role)
+        );
+
+        // Envoyer la notification à tous les RH
+        for (const rhUser of rhUsers) {
+          const description = `Un nouveau salarié a complété son profil : ${user?.nomDeNaissance ?? ""} ${user?.prenom ?? ""} (${user?.emailPersonnel ?? "email non renseigné"}).`;
+
+          await this.notificationService.createCustomNotification(
+            rhUser.id,
+            "Profil salarié complété",
+            description.trim()
+          );
+        }
+      }
+
+      // 🔔 Si le statut est "user-approuved", notifier le salarié
+      if (user?.statut === "user-approuved") {
+        const description = `Votre profil a été validé par le service RH. Vous avez maintenant accès à votre espace personnel.`;
+
+        await this.notificationService.createCustomNotification(
+          user.id,
+          "Profil approuvé",
+          description.trim()
+        );
+      }
 
       return {
         statusCode: HttpStatus.OK,

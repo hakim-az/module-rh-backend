@@ -37,6 +37,8 @@ import { UpdateRestauUseCase } from "@application/use-cases/restau/update-restau
 import { UploadFileUseCase } from "@application/use-cases/file/upload-file.use-case";
 import { GetAllRestauxUseCase } from "@application/use-cases/restau/get-all-restaux.use-case";
 import { GetRestauUseCase } from "@application/use-cases/restau/get-restau.use-case";
+import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
+import { NotificationService } from "@/domain/services/notification.service";
 
 @ApiTags("restaux")
 @ApiBearerAuth()
@@ -50,7 +52,9 @@ export class RestauController {
     private readonly updateRestauUseCase: UpdateRestauUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly getAllRestauxUseCase: GetAllRestauxUseCase,
-    private readonly getRestauUseCase: GetRestauUseCase
+    private readonly getRestauUseCase: GetRestauUseCase,
+    private readonly getUserUseCase: GetUserUseCase,
+    private readonly notificationService: NotificationService
   ) {}
 
   // GET RESTAU ALL ----------------------------------------------------------------------------------------------
@@ -178,6 +182,16 @@ export class RestauController {
       ...createRestauDto,
       fichierJustificatifPdf,
     });
+
+    // 🔹 Envoyer une notification à l'utilisateur
+    const user = await this.getUserUseCase.execute(restau.idUser);
+    const description = `Le service RH a ajouté un suivi de titre restaurant${restau.mois && restau.annee ? ` pour le mois de ${restau.mois}/${restau.annee}` : ""}${restau.nbrJours ? ` d'une valeur de ${restau.nbrJours} jours` : ""}.`;
+
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Nouveau suivi de titre restaurant",
+      description.trim()
+    );
 
     return {
       id: restau.id,
@@ -307,6 +321,16 @@ export class RestauController {
     }
 
     const restau = await this.updateRestauUseCase.execute(id, updateRestauDto);
+
+    // 🔹 Envoyer une notification à l'utilisateur
+    const user = await this.getUserUseCase.execute(restau.idUser);
+    const description = `Le suivi de votre titre restaurant a été mis à jour${restau.mois && restau.annee ? ` pour le mois de ${restau.mois}/${restau.annee}` : ""}${restau.nbrJours ? ` avec ${restau.nbrJours} jours` : ""}.`;
+
+    await this.notificationService.createCustomNotification(
+      user.id,
+      "Mise à jour du suivi de titre restaurant",
+      description.trim()
+    );
 
     return {
       id: restau.id,
