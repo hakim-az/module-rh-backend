@@ -20,6 +20,7 @@ import { UserInitService } from "@/domain/services/user-init-.service";
 import { LoginController } from "../controllers/login.controller";
 import { NotificationController } from "../controllers/notification.controller";
 import { NotificationModule } from "@/application/modules/notification.module";
+import { SendgridModule } from "@/application/modules/sendgrid.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { NotificationModule } from "@/application/modules/notification.module";
     RestauModule,
     YousignModule,
     NotificationModule,
+    SendgridModule,
   ],
   controllers: [
     UserController,

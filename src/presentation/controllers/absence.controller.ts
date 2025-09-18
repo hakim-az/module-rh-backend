@@ -40,6 +40,7 @@ import { Groups } from "@/application/auth/groups.decorator";
 import { NotificationService } from "@/domain/services/notification.service";
 import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
+import { SendgridService } from "@/domain/services/sendgrid.service";
 
 @ApiTags("absences")
 @ApiBearerAuth()
@@ -56,7 +57,8 @@ export class AbsenceController {
     private readonly getAbsenceUseCase: GetAbsenceUseCase,
     private readonly notificationService: NotificationService,
     private readonly getUserUseCase: GetUserUseCase,
-    private readonly getAllUsersUseCase: GetAllUsersUseCase
+    private readonly getAllUsersUseCase: GetAllUsersUseCase,
+    private readonly sendgridService: SendgridService
   ) {}
 
   // GET ABSENCE ALL ----------------------------------------------------------------------------------------------
@@ -667,6 +669,26 @@ export class AbsenceController {
       );
     }
 
+    // Envoyer l'email à tous les RH via SendGrid
+    for (const rhUser of rhUsers) {
+      await this.sendgridService.sendEmail({
+        to: rhUser.emailProfessionnel,
+        from: process.env.SENDGRID_FROM_EMAIL,
+        templateId: "d-1dd77a5230454366a5ad0ff321056edf",
+        dynamicTemplateData: {
+          prenom: user.prenom,
+          nom: user.nomDeNaissance,
+          typeAbsence: absence.typeAbsence,
+          dateDebut: absence.dateDebut?.toLocaleDateString(),
+          dateFin: absence.dateFin?.toLocaleDateString(),
+          partieDeJour: absence.partieDeJour ?? "Jour entier",
+          note: absence.note ?? "Aucune",
+          actionUrl: `${process.env.APP_URL}/accueil/absences/details/${absence.id}`,
+          currentYear: new Date().getFullYear(),
+        },
+      });
+    }
+
     return {
       id: absence.id,
       idUser: absence.idUser,
@@ -800,6 +822,24 @@ export class AbsenceController {
       description.trim()
     );
 
+    // Envoyer l'email au salarié via SendGrid
+    await this.sendgridService.sendEmail({
+      to: user.emailProfessionnel,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      templateId: "d-c8da3d8bc5f1426faaaede3fae7d4958",
+      dynamicTemplateData: {
+        prenom: user.prenom,
+        nom: user.nomDeNaissance,
+        typeAbsence: absence.typeAbsence,
+        dateDebut: absence.dateDebut?.toLocaleDateString(),
+        dateFin: absence.dateFin?.toLocaleDateString(),
+        partieDeJour: absence.partieDeJour ?? "Jour entier",
+        note: absence.note ?? "Aucune",
+        actionUrl: `${process.env.APP_URL}/accueil/absences/details/${absence.id}`,
+        currentYear: new Date().getFullYear(),
+      },
+    });
+
     return {
       id: absence.id,
       idUser: absence.idUser,
@@ -851,6 +891,26 @@ export class AbsenceController {
       "Demande d'absence refusée",
       description.trim()
     );
+
+    // Envoyer l'email au salarié via SendGrid
+    await this.sendgridService.sendEmail({
+      to: user.emailProfessionnel,
+      // to: "a.azzaz@finanssor.fr",
+      from: process.env.SENDGRID_FROM_EMAIL,
+      templateId: "d-5ae838da0ad04d0dbc3f96f964934089",
+      dynamicTemplateData: {
+        prenom: user.prenom,
+        nom: user.nomDeNaissance,
+        typeAbsence: absence.typeAbsence,
+        dateDebut: absence.dateDebut?.toLocaleDateString(),
+        dateFin: absence.dateFin?.toLocaleDateString(),
+        partieDeJour: absence.partieDeJour ?? "Jour entier",
+        motifRefus: absence.motifDeRefus,
+        note: absence.note ?? "Aucune",
+        actionUrl: `${process.env.APP_URL}/accueil/absences/details/${absence.id}`,
+        currentYear: new Date().getFullYear(),
+      },
+    });
 
     return {
       id: absence.id,
