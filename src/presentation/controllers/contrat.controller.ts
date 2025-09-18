@@ -42,6 +42,7 @@ import { Groups } from "@/application/auth/groups.decorator";
 import { NotificationService } from "@/domain/services/notification.service";
 import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
+import { SendgridService } from "@/domain/services/sendgrid.service";
 
 @ApiTags("contrats")
 @ApiBearerAuth()
@@ -60,7 +61,8 @@ export class ContratController {
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly notificationService: NotificationService,
     private readonly getUserUseCase: GetUserUseCase,
-    private readonly getAllUsersUseCase: GetAllUsersUseCase
+    private readonly getAllUsersUseCase: GetAllUsersUseCase,
+    private readonly sendgridService: SendgridService
   ) {}
 
   // ADD CONTRACT -----------------------------------------------------------
@@ -133,6 +135,30 @@ export class ContratController {
       "Contrat de travail à signer",
       description.trim()
     );
+
+    // Envoi d’un email via SendGrid
+    await this.sendgridService.sendEmail({
+      to: user.emailProfessionnel,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      templateId: "d-68cb24823d8d4e1c8d62ee0e7f78e223",
+      dynamicTemplateData: {
+        prenom: user?.prenom,
+        nom: user?.nomDeNaissance,
+        poste: contrat.poste ?? "Non renseigné",
+        typeContrat: contrat.typeContrat ?? "Contrat",
+        dateDebut: contrat.dateDebut
+          ? new Date(contrat.dateDebut).toLocaleDateString()
+          : "Non renseignée",
+        dateFin: contrat.dateFin
+          ? new Date(contrat.dateFin).toLocaleDateString()
+          : "Non renseignée",
+        salaire: contrat.salaire ? `${contrat.salaire} €` : "Non renseigné",
+        matricule: contrat.matricule ?? "Non renseigné",
+        actionUrl: `${process.env.APP_URL}/accueil`,
+        currentYear: new Date().getFullYear(),
+        subject: "Contrat de travail à signer",
+      },
+    });
 
     return {
       id: contrat.id,
@@ -430,6 +456,31 @@ export class ContratController {
           "Contrat signé",
           description.trim()
         );
+      }
+
+      // Envoi d’un email via SendGrid aux RH
+      for (const rhUser of rhUsers) {
+        await this.sendgridService.sendEmail({
+          to: rhUser.emailProfessionnel,
+          from: process.env.SENDGRID_FROM_EMAIL,
+          templateId: "d-75c5e2cbf8744d46b05bb6f2be39cd8e", // ton ID de template SendGrid
+          dynamicTemplateData: {
+            prenom: user?.prenom,
+            nom: user?.nomDeNaissance,
+            poste: contrat.poste ?? "Non renseigné",
+            typeContrat: contrat.typeContrat ?? "Contrat",
+            dateDebut: contrat.dateDebut
+              ? new Date(contrat.dateDebut).toLocaleDateString()
+              : "Non renseignée",
+            dateFin: contrat.dateFin
+              ? new Date(contrat.dateFin).toLocaleDateString()
+              : "Non renseignée",
+            salaire: contrat.salaire ? `${contrat.salaire} €` : "Non renseigné",
+            matricule: contrat.matricule ?? "Non renseigné",
+            actionUrl: `${process.env.APP_URL}/accueil/salariés/${user.id}`,
+            currentYear: new Date().getFullYear(),
+          },
+        });
       }
 
       return {
