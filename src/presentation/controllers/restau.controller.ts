@@ -39,6 +39,7 @@ import { GetAllRestauxUseCase } from "@application/use-cases/restau/get-all-rest
 import { GetRestauUseCase } from "@application/use-cases/restau/get-restau.use-case";
 import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 import { NotificationService } from "@/domain/services/notification.service";
+import { SendgridService } from "@/domain/services/sendgrid.service";
 
 @ApiTags("restaux")
 @ApiBearerAuth()
@@ -54,7 +55,8 @@ export class RestauController {
     private readonly getAllRestauxUseCase: GetAllRestauxUseCase,
     private readonly getRestauUseCase: GetRestauUseCase,
     private readonly getUserUseCase: GetUserUseCase,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly sendgridService: SendgridService
   ) {}
 
   // GET RESTAU ALL ----------------------------------------------------------------------------------------------
@@ -192,6 +194,24 @@ export class RestauController {
       "Nouveau suivi de titre restaurant",
       description.trim()
     );
+
+    // Send notification email via SendGrid
+    await this.sendgridService.sendEmail({
+      to: user.emailProfessionnel,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      templateId: "d-1994e968583a482cb21629a498cda743",
+      dynamicTemplateData: {
+        prenom: user?.prenom,
+        nom: user?.nomDeNaissance,
+        nbrJours: restau.nbrJours,
+        mois: restau.mois,
+        annee: restau.annee,
+        note: restau.note,
+        actionUrl: `${process.env.APP_URL}/accueil/coffre-fort`,
+        currentYear: new Date().getFullYear(),
+        subject: "Nouveau bulletin disponible dans votre coffre",
+      },
+    });
 
     return {
       id: restau.id,
