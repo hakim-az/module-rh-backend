@@ -37,6 +37,7 @@ import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
 import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 import { NotificationService } from "@/domain/services/notification.service";
+import { SendgridService } from "@/domain/services/sendgrid.service";
 
 @ApiTags("coffres")
 @ApiBearerAuth()
@@ -52,7 +53,8 @@ export class CoffreController {
     private readonly getAllCoffresUseCase: GetAllCoffresUseCase,
     private readonly getCoffreUseCase: GetCoffreUseCase,
     private readonly getUserUseCase: GetUserUseCase,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly sendgridService: SendgridService
   ) {}
 
   // GET COFFRE ALL ----------------------------------------------------------------------------------------------
@@ -196,6 +198,23 @@ export class CoffreController {
       "Nouveau document disponible",
       description.trim()
     );
+
+    // Envoyer l'email au salarié via SendGrid
+    await this.sendgridService.sendEmail({
+      to: user.emailProfessionnel,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      templateId: "d-b0d3ede6102b427db40640a1b94791e5",
+      dynamicTemplateData: {
+        prenom: user?.prenom,
+        nom: user?.nomDeNaissance,
+        typeBulletin: coffre.typeBulletin,
+        mois: coffre.mois,
+        annee: coffre.annee,
+        note: coffre.note ?? "Aucune",
+        actionUrl: `${process.env.APP_URL}/accueil/coffre-fort`,
+        currentYear: new Date().getFullYear(),
+      },
+    });
 
     return {
       id: coffre.id,
