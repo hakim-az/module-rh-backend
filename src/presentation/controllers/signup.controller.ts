@@ -14,6 +14,7 @@ import { UploadFileUseCase } from "../../application/use-cases/file/upload-file.
 import { CreateUserDto } from "../../application/dtos/user.dto";
 import { NotificationService } from "@/domain/services/notification.service";
 import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
+import { SendgridService } from "@/domain/services/sendgrid.service";
 
 @ApiTags("signup")
 @Controller("signup")
@@ -23,7 +24,8 @@ export class SignupController {
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly notificationService: NotificationService,
-    private readonly getAllUsersUseCase: GetAllUsersUseCase
+    private readonly getAllUsersUseCase: GetAllUsersUseCase,
+    private readonly sendgridService: SendgridService
   ) {}
 
   // ADD USER ----------------------------------------------------------------------
@@ -332,6 +334,22 @@ export class SignupController {
           "Nouveau salarié enregistré",
           description.trim()
         );
+      }
+
+      // Send email notifications to RH users via SendGrid
+      for (const rhUser of rhUsers) {
+        await this.sendgridService.sendEmail({
+          to: rhUser.emailProfessionnel,
+          from: process.env.SENDGRID_FROM_EMAIL,
+          templateId: "d-b85f44b66fc44968ba85d362d911abbf",
+          dynamicTemplateData: {
+            prenom: user.prenom,
+            nom: user.nomDeNaissance,
+            email: user.emailPersonnel,
+            actionUrl: `${process.env.APP_URL}/accueil/salariés/details/${user.id}`,
+            currentYear: new Date().getFullYear(),
+          },
+        });
       }
 
       return {
