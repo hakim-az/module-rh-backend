@@ -192,11 +192,20 @@ export class AbsenceController {
   @Get("user/:userId/totals-by-status")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    // prospection
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
     "Prospection-Gestionnaire",
     "Prospection-Manager",
+    // vente
     "Vente-Admin",
     "Vente-Commercial",
     "Vente-Manager"
@@ -313,6 +322,14 @@ export class AbsenceController {
   @Get("holidays-cumulative")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",
@@ -503,6 +520,14 @@ export class AbsenceController {
   @Get(":id")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",
@@ -594,6 +619,14 @@ export class AbsenceController {
   @Post()
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",
@@ -717,6 +750,14 @@ export class AbsenceController {
   @Get("user/:userId")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
@@ -1023,6 +1064,14 @@ export class AbsenceController {
   @Delete(":id")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",

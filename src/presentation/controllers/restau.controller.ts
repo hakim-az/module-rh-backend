@@ -238,6 +238,14 @@ export class RestauController {
   @Get("user/:userId")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",
@@ -290,6 +298,14 @@ export class RestauController {
   @Patch(":id")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",

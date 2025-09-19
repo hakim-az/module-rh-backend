@@ -160,6 +160,14 @@ export class DashboardController {
   @Get(":userId")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",

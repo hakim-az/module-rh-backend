@@ -178,6 +178,14 @@ export class UserController {
   @UseGuards(GroupsGuard)
   @Groups(
     "Users",
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",
@@ -218,6 +226,14 @@ export class UserController {
   @Patch(":id")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "Users",
     "RH-Manager",
     "RH-Admin",
@@ -585,6 +601,14 @@ export class UserController {
   @Put(":id/avatar")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",

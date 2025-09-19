@@ -44,6 +44,14 @@ export class FileController {
   @Post("upload")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",
@@ -111,6 +119,14 @@ export class FileController {
   @Get("download/:fileName")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",
@@ -148,6 +164,14 @@ export class FileController {
   @Get("view/:fileName")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",
@@ -182,6 +206,14 @@ export class FileController {
   @Get("url/:fileName")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Gestionnaire",

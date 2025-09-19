@@ -241,6 +241,14 @@ export class CoffreController {
   @Get("user/:userId")
   @UseGuards(GroupsGuard)
   @Groups(
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "RH-Manager",
     "RH-Admin",
     "RH-Assistant",

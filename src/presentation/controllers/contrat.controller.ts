@@ -380,6 +380,14 @@ export class ContratController {
   @UseGuards(GroupsGuard)
   @Groups(
     "Users",
+    // salariés
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    //------------
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
