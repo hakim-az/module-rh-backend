@@ -32,6 +32,7 @@ import { KeycloakAuthGuard } from "@/application/auth/keycloak-auth.guard";
 import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
 import { NotificationService } from "@/domain/services/notification.service";
+import { SendgridService } from "@/domain/services/sendgrid.service";
 
 @ApiTags("users")
 @ApiBearerAuth()
@@ -45,7 +46,8 @@ export class UserController {
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly uploadFileUseCase: UploadFileUseCase,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly sendgridService: SendgridService
   ) {}
 
   // GET ALL USERS ----------------------------------------------------------------------
@@ -521,6 +523,20 @@ export class UserController {
             "Profil salarié complété",
             description.trim()
           );
+
+          // Envoi email aux RH
+          await this.sendgridService.sendEmail({
+            to: rhUser.emailProfessionnel,
+            from: process.env.SENDGRID_FROM_EMAIL,
+            templateId: "d-4869231de03e4c36804e69ad423c7ba2",
+            dynamicTemplateData: {
+              prenom: user?.prenom,
+              nom: user?.nomDeNaissance,
+              email: user?.emailPersonnel,
+              actionUrl: `${process.env.APP_URL}/accueil/salarié/details/${user.id}`,
+              currentYear: new Date().getFullYear(),
+            },
+          });
         }
       }
 
@@ -533,6 +549,19 @@ export class UserController {
           "Profil approuvé",
           description.trim()
         );
+
+        // Envoi email au salarié
+        await this.sendgridService.sendEmail({
+          to: user.emailProfessionnel,
+          from: process.env.SENDGRID_FROM_EMAIL,
+          templateId: "d-user-647da8e09caa43eca7cc970012c32938",
+          dynamicTemplateData: {
+            prenom: user?.prenom,
+            nom: user?.nomDeNaissance,
+            actionUrl: `${process.env.APP_URL}/accueil`,
+            currentYear: new Date().getFullYear(),
+          },
+        });
       }
 
       return {
