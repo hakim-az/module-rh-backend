@@ -3,10 +3,12 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { S3Service } from "./s3.service";
 import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
+import { nationalitiesData } from "@/application/__mock__/nationalities";
 
 @Injectable()
 export class ContractGeneratorService {
   private readonly templateFR = "templates/template-contart-FR.pdf";
+  private readonly templateAP = "templates/template-contart-AP.pdf";
 
   constructor(
     private readonly s3Service: S3Service,
@@ -30,6 +32,7 @@ export class ContractGeneratorService {
 
     const pdfDoc = await PDFDocument.load(templateBytes);
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     const dateNaissanceFormatted = user.naissance.dateDeNaissance
       ? new Intl.DateTimeFormat("fr-FR", {
@@ -40,14 +43,152 @@ export class ContractGeneratorService {
         }).format(new Date(user.naissance.dateDeNaissance))
       : "";
 
-    // PAGE 1 (index 1)
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
     const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    const page12 = pdfDoc.getPage(11);
+
+    // PAGE 1 (index 1) -- GOOD
     page1.drawText(
-      `Monsieur ${user.nomDeNaissance} ${user.prenom} né le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${user.naissance.paysDeNaissance}, \nimmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \ndemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}`,
+      `Monsieur ${user.nomDeNaissance} ${user.prenom} né le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
       { x: 38, y: 360, size: 11, font, lineHeight: 14 }
     );
+
+    // PAGE 1 (index 2) -- GOOD
+    page1.drawText(`${formatDateFr(contart.dateDebut)}`, {
+      x: 210,
+      y: 95,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 2 (index 1)
+    page2.drawText(`${formatDateFr(contart.dateDebut)}`, {
+      x: 405,
+      y: 452,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 12 (index 1)
+    page12.drawText(`${formatDateFr(new Date())}`, {
+      x: 180,
+      y: 697,
+      size: 11,
+      font: fontBold,
+    });
 
     const pdfBytes = await pdfDoc.save();
     return Buffer.from(pdfBytes);
   }
+
+  async generateActionPrevoyanceContract(contart: any): Promise<Buffer> {
+    let templateBytes: Buffer;
+
+    // Get user who owns the contract
+    const user = await this.getUserUseCase.execute(contart.idUser);
+
+    try {
+      // ✅ Fetch the template from AWS S3 instead of local file
+      templateBytes = await this.s3Service.downloadFile(this.templateAP);
+    } catch {
+      throw new NotFoundException(
+        `Template PDF non trouvé dans S3 : ${this.templateAP}`
+      );
+    }
+
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const dateNaissanceFormatted = user.naissance.dateDeNaissance
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(user.naissance.dateDeNaissance))
+      : "";
+
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    const page11 = pdfDoc.getPage(10);
+
+    // PAGE 1 (index 1) -- GOOD
+    page1.drawText(
+      `Monsieur ${user.nomDeNaissance} ${user.prenom} né le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      { x: 37, y: 460, size: 11, font, lineHeight: 14 }
+    );
+
+    // PAGE 1 (index 2) -- GOOD
+    page1.drawText(`${formatDateFr(contart.dateDebut)}`, {
+      x: 210,
+      y: 170,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 2 (index 1)
+    page2.drawText(`${formatDateFr(contart.dateDebut)}`, {
+      x: 400,
+      y: 463,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 11 (index 1)
+    page11.drawText(`${formatDateFr(new Date())}`, {
+      x: 185,
+      y: 582,
+      size: 11,
+      font: fontBold,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
+  }
+}
+
+export function formatDateFr(date: Date | string | null | undefined): string {
+  if (!date) return "";
+
+  const parsedDate = typeof date === "string" ? new Date(date) : date;
+
+  if (isNaN(parsedDate.getTime())) return ""; // invalid date fallback
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Europe/Paris",
+  }).format(parsedDate);
 }

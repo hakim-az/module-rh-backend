@@ -43,6 +43,8 @@ import { NotificationService } from "@/domain/services/notification.service";
 import { GetUserUseCase } from "@/application/use-cases/user/get-user.use-case";
 import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
 import { SendgridService } from "@/domain/services/sendgrid.service";
+import { ContractGeneratorService } from "@/domain/services/contract-generator.service";
+import { PDFDocument } from "pdf-lib";
 
 @ApiTags("contrats")
 @ApiBearerAuth()
@@ -62,10 +64,11 @@ export class ContratController {
     private readonly notificationService: NotificationService,
     private readonly getUserUseCase: GetUserUseCase,
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
-    private readonly sendgridService: SendgridService
+    private readonly sendgridService: SendgridService,
+    private readonly generator: ContractGeneratorService
   ) {}
 
-  // ADD CONTRACT -----------------------------------------------------------
+  // ADD CONTRACT - Génération automatique -----------------------------------------------------------
   @Post()
   @UseGuards(GroupsGuard)
   @Groups("RH-Manager", "RH-Assistant", "RH-Gestionnaire", "RH-Admin")
@@ -90,22 +93,17 @@ export class ContratController {
     @UploadedFiles() files: Express.Multer.File[] | undefined,
     @Body() createContratDto: CreateContratDto
   ) {
-    let fichierContratNonSignerPdf =
-      createContratDto.fichierContratNonSignerPdf ?? "";
+    // Initialize PDF fields
     let fichierContratSignerPdf =
       createContratDto.fichierContratSignerPdf ?? "";
+    let fichierContratNonSignerPdf =
+      createContratDto.fichierContratNonSignerPdf ?? "";
 
+    // Map uploaded files if any
     if (files && Array.isArray(files)) {
       const fileMap = Object.fromEntries(files.map((f) => [f.fieldname, f]));
 
-      if (fileMap["fichierContratNonSignerPdf"]) {
-        fichierContratNonSignerPdf = await this.uploadFileUseCase.execute(
-          fileMap["fichierContratNonSignerPdf"].buffer,
-          fileMap["fichierContratNonSignerPdf"].originalname,
-          fileMap["fichierContratNonSignerPdf"].mimetype
-        );
-      }
-
+      // Upload signed PDF if provided
       if (fileMap["fichierContratSignerPdf"]) {
         fichierContratSignerPdf = await this.uploadFileUseCase.execute(
           fileMap["fichierContratSignerPdf"].buffer,
@@ -115,28 +113,65 @@ export class ContratController {
       }
     }
 
+    // ... dans ta fonction create
+
+    if (!fichierContratNonSignerPdf) {
+      const pdfBufferNonSignerAP =
+        await this.generator.generateActionPrevoyanceContract(createContratDto);
+      const pdfBufferNonSignerFR =
+        await this.generator.generateFranceTelephoneContract(createContratDto);
+
+      // 🔗 Concaténer les deux PDFs
+      const mergedPdf = await PDFDocument.create();
+
+      const pdfAP = await PDFDocument.load(pdfBufferNonSignerAP);
+      const pdfFR = await PDFDocument.load(pdfBufferNonSignerFR);
+
+      // Copier les pages du premier PDF
+      const pagesAP = await mergedPdf.copyPages(pdfAP, pdfAP.getPageIndices());
+      pagesAP.forEach((page) => mergedPdf.addPage(page));
+
+      // Copier les pages du deuxième PDF
+      const pagesFR = await mergedPdf.copyPages(pdfFR, pdfFR.getPageIndices());
+      pagesFR.forEach((page) => mergedPdf.addPage(page));
+
+      const mergedPdfBytes = await mergedPdf.save();
+
+      // 🔹 Convert Uint8Array -> Buffer
+      const mergedPdfBuffer = Buffer.from(mergedPdfBytes);
+
+      // Upload merged PDF to S3
+      fichierContratNonSignerPdf = await this.uploadFileUseCase.execute(
+        mergedPdfBuffer,
+        `contrat-non-signe-${Date.now()}.pdf`,
+        "application/pdf"
+      );
+    }
+
+    // Prepare contract data
     const contratData = {
       ...createContratDto,
       fichierContratNonSignerPdf,
       fichierContratSignerPdf,
     };
 
+    // Save contract in DB
     const contrat = await this.createContratUseCase.execute(contratData);
 
-    // Récupérer l'utilisateur qui a fait la demande
+    // Get user who owns the contract
     const user = await this.getUserUseCase.execute(contrat.idUser);
 
-    // Message de notification personnalisé
+    // Notification message
     const description = `Votre contrat de travail (${contrat.typeContrat ?? "contrat"}) a été ajouté par le service RH. Veuillez le signer dès que possible.`;
 
-    // Envoi de la notification à l’employé
+    // Send in-app notification
     await this.notificationService.createCustomNotification(
       user.id,
       "Contrat de travail à signer",
       description.trim()
     );
 
-    // Envoi d’un email via SendGrid
+    // Send email via SendGrid
     await this.sendgridService.sendEmail({
       to: user.emailProfessionnel,
       from: process.env.SENDGRID_FROM_EMAIL,
@@ -160,6 +195,7 @@ export class ContratController {
       },
     });
 
+    // Return saved contract
     return {
       id: contrat.id,
       idUser: contrat.idUser,
@@ -380,14 +416,6 @@ export class ContratController {
   @UseGuards(GroupsGuard)
   @Groups(
     "Users",
-    // salariés
-    "Comptabilité",
-    "Formation",
-    "Gestion",
-    "IT",
-    "Marketing-Communication",
-    "Ressources-Humaines",
-    //------------
     "Prospection-Admin",
     "Prospection-Commercial",
     "Prospection-Directeur",
