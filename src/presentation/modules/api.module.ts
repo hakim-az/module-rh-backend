@@ -23,6 +23,9 @@ import { NotificationModule } from "@/application/modules/notification.module";
 import { SendgridModule } from "@/application/modules/sendgrid.module";
 import { ContratCommercialController } from "../controllers/ContractGenerationControllers/commercial.controller";
 import { YousignCommercialController } from "../controllers/ContractSignControllers/sign-commercial.controller";
+import { ContratCdiController } from "../controllers/ContractGenerationControllers/cdi.controllers";
+import { YousignCdiController } from "../controllers/ContractSignControllers/sign-cdi.controller";
+import { ContratNonCdiController } from "../controllers/ContractGenerationControllers/non-cdi.controller";
 
 @Module({
   imports: [
@@ -50,6 +53,9 @@ import { YousignCommercialController } from "../controllers/ContractSignControll
     NotificationController,
     ContratCommercialController,
     YousignCommercialController,
+    ContratCdiController,
+    YousignCdiController,
+    ContratNonCdiController,
   ],
   providers: [UserInitService],
 })
