@@ -570,7 +570,7 @@ export class UserController {
         await this.sendgridService.sendEmail({
           to: user.emailProfessionnel,
           from: process.env.SENDGRID_FROM_EMAIL,
-          templateId: "d-user-647da8e09caa43eca7cc970012c32938",
+          templateId: "d-647da8e09caa43eca7cc970012c32938",
           dynamicTemplateData: {
             prenom: user?.prenom,
             nom: user?.nomDeNaissance,
