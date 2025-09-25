@@ -1,5 +1,5 @@
 import { Controller, Post, Body, HttpStatus, UseGuards } from "@nestjs/common";
-import { UpdateUserUseCase } from "../../application/use-cases/user/update-user.use-case";
+import { UpdateUserUseCase } from "@/application/use-cases/user/update-user.use-case";
 import * as fs from "fs";
 import {
   ApiTags,
@@ -13,11 +13,11 @@ import { GroupsGuard } from "@/application/auth/groups.guard";
 import { Groups } from "@/application/auth/groups.decorator";
 import { YousignServiceCommercial } from "@/application/use-cases/yousign/signature-commercial.use-case";
 
-@ApiTags("Signature")
+@ApiTags("Signature-commercial")
 @ApiBearerAuth()
-@Controller("signature")
+@Controller("signature-commercial")
 @UseGuards(KeycloakAuthGuard)
-export class YousignController {
+export class YousignCommercialController {
   constructor(
     private readonly yousignService: YousignServiceCommercial,
     private readonly updateUserUseCase: UpdateUserUseCase
@@ -87,6 +87,7 @@ export class YousignController {
       { page: 26, x: 400, y: 250 },
       { page: 28, x: 400, y: 700 },
     ];
+
     const directorFields = [
       { page: 11, x: 40, y: 320 },
       { page: 14, x: 40, y: 750 },
@@ -103,9 +104,9 @@ export class YousignController {
         fields: employeeFields,
       },
       {
-        firstName: "Abdelhakim",
-        lastName: "Azzaz",
-        email: "a.azzaz@finanssor.fr",
+        firstName: "Coline",
+        lastName: "DE LOS SANTOS",
+        email: "rh@finanssor.fr",
         fields: directorFields,
       },
     ]);

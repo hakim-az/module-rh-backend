@@ -21,6 +21,8 @@ import { LoginController } from "../controllers/login.controller";
 import { NotificationController } from "../controllers/notification.controller";
 import { NotificationModule } from "@/application/modules/notification.module";
 import { SendgridModule } from "@/application/modules/sendgrid.module";
+import { ContratCommercialController } from "../controllers/ContractGenerationControllers/commercial.controller";
+import { YousignCommercialController } from "../controllers/ContractSignControllers/sign-commercial.controller";
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { SendgridModule } from "@/application/modules/sendgrid.module";
     SignupController,
     LoginController,
     NotificationController,
+    ContratCommercialController,
+    YousignCommercialController,
   ],
   providers: [UserInitService],
 })
