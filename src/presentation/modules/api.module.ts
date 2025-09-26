@@ -26,6 +26,8 @@ import { YousignCommercialController } from "../controllers/ContractSignControll
 import { ContratCdiController } from "../controllers/ContractGenerationControllers/cdi.controllers";
 import { YousignCdiController } from "../controllers/ContractSignControllers/sign-cdi.controller";
 import { ContratNonCdiController } from "../controllers/ContractGenerationControllers/non-cdi.controller";
+import { EmailVerificationController } from "../controllers/email-verification.controller";
+import { EmailVerificationModule } from "@/application/modules/email-verification.module";
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { ContratNonCdiController } from "../controllers/ContractGenerationContro
     YousignModule,
     NotificationModule,
     SendgridModule,
+    EmailVerificationModule,
   ],
   controllers: [
     UserController,
@@ -56,6 +59,7 @@ import { ContratNonCdiController } from "../controllers/ContractGenerationContro
     ContratCdiController,
     YousignCdiController,
     ContratNonCdiController,
+    EmailVerificationController,
   ],
   providers: [UserInitService],
 })
