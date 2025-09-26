@@ -277,10 +277,13 @@ export class ContractGeneratorService {
 
     // ------------------------------------------------PAGE 02 ---------------------------------------------
     // PAGE 2 (index 1)  -- GOOD
-    page2.drawText(
-      ` - Test \n - Test \n - Test \n - Test \n - Test \n - Test `,
-      { x: 37, y: 680, size: 11, font, lineHeight: 15 }
-    );
+    page2.drawText(`${contart.missions}`, {
+      x: 37,
+      y: 680,
+      size: 11,
+      font,
+      lineHeight: 8,
+    });
 
     // PAGE 2 (index 2)  -- GOOD
     page2.drawText(`${user.nomDeNaissance} ${user.prenom}`, {

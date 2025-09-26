@@ -56,6 +56,11 @@ export class CreateContratDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
+  missions?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
   fichierContratNonSignerPdf?: string;
 
   @ApiProperty({ required: false })
