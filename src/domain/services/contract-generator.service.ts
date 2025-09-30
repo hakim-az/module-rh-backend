@@ -413,17 +413,39 @@ export class ContractGeneratorService {
 
     // all pages
     const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
     const page5 = pdfDoc.getPage(4);
 
     // ------------------------------------------------PAGE 01 ---------------------------------------------
-    // PAGE 1 (index 1)
+    // PAGE 1 (index 1) -- GOOD
+    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
+    const ne = user.civilite === "m" ? "né" : "née";
+    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
+
     page1.drawText(
-      `M./Mme ${user.nomDeNaissance} ${user.prenom} né(e) le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      `${civiliteLabel} ${user.nomDeNaissance} ${user.prenom}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality},\n${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
       { x: 42, y: 370, size: 11, font, lineHeight: 14 }
     );
 
+    // PAGE 1 (index 2)
+    page1.drawText(`${dateDebutFormatted}`, {
+      x: 380,
+      y: 90,
+      size: 11,
+      font: fontBold,
+    });
+
+    // ------------------------------------------------PAGE 02 ---------------------------------------------
+    // PAGE 2 (index 1)
+    page2.drawText(`${dateDebutFormatted}`, {
+      x: 405,
+      y: 725,
+      size: 11,
+      font: fontBold,
+    });
+
     // ------------------------------------------------PAGE 05 ---------------------------------------------
-    // PAGE 5 (index 1)
+    // PAGE 5 (index 1) -- GOOD
     page5.drawText(`${formatDateFr(new Date())}`, {
       x: 185,
       y: 115,
