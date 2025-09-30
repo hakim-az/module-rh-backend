@@ -10,6 +10,8 @@ export class ContractGeneratorService {
   private readonly templateFR = "templates/template-contart-FR.pdf";
   private readonly templateAP = "templates/template-contart-AP.pdf";
   private readonly templateCdiWC = "templates/template-contrat-cdi-WC.pdf";
+  private readonly templateCdiTéléconseillerFR =
+    "templates/template-contrat-téléconseiller-FR.pdf";
 
   constructor(
     private readonly s3Service: S3Service,
@@ -346,6 +348,85 @@ export class ContractGeneratorService {
     page5.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
       x: 90,
       y: 225,
+      size: 11,
+      font: fontBold,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
+  }
+
+  async generateFranceTelephoneTéléconseillerCDIContract(
+    contart: any
+  ): Promise<Buffer> {
+    let templateBytes: Buffer;
+
+    // Get user who owns the contract
+    const user = await this.getUserUseCase.execute(contart.idUser);
+
+    try {
+      // ✅ Fetch the template from AWS S3 instead of local file
+      templateBytes = await this.s3Service.downloadFile(
+        this.templateCdiTéléconseillerFR
+      );
+    } catch {
+      throw new NotFoundException(
+        `Template PDF non trouvé dans S3 : ${this.templateCdiTéléconseillerFR}`
+      );
+    }
+
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const dateNaissanceFormatted = user.naissance.dateDeNaissance
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(user.naissance.dateDeNaissance))
+      : "";
+
+    const dateDebutFormatted = contart.dateDebut
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(contart.dateDebut))
+      : "";
+
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
+    const page1 = pdfDoc.getPage(0);
+    const page5 = pdfDoc.getPage(4);
+
+    // ------------------------------------------------PAGE 01 ---------------------------------------------
+    // PAGE 1 (index 1)
+    page1.drawText(
+      `M./Mme ${user.nomDeNaissance} ${user.prenom} né(e) le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      { x: 42, y: 370, size: 11, font, lineHeight: 14 }
+    );
+
+    // ------------------------------------------------PAGE 05 ---------------------------------------------
+    // PAGE 5 (index 1)
+    page5.drawText(`${formatDateFr(new Date())}`, {
+      x: 185,
+      y: 115,
       size: 11,
       font: fontBold,
     });
