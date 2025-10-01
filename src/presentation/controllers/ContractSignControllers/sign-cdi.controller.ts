@@ -295,7 +295,106 @@ export class YousignCdiController {
       {
         firstName: "Coline",
         lastName: "DE LOS SANTOS",
-        email: "a.azzaz@finanssor.fr",
+        email: "rh@finanssor.fr",
+        fields: directorFields,
+      },
+    ]);
+
+    // Activer la signature request
+    await this.yousignService.activateSignatureRequest(signatureRequest.id);
+
+    // Mettre à jour le statut de l'utilisateur
+    await this.updateUserUseCase.execute(idUser, { statut: "email-sent" });
+
+    // Supprimer le fichier temporaire
+    fs.unlink(filePath, () => {});
+
+    return {
+      status: HttpStatus.CREATED,
+      message: "Signature request created and activated",
+      signatureRequestId: signatureRequest.id,
+      documentId: document.id,
+      signerEmail: email,
+      directorEmail: "directeur@example.com",
+      userStatus: "email-sent",
+    };
+  }
+
+  // SIGN CDI ACTION PREVOYANCE
+  @Post("ap")
+  @ApiOperation({ summary: "Create and activate a signature request" })
+  @UseGuards(GroupsGuard)
+  @Groups(
+    "Comptabilité",
+    "Formation",
+    "Gestion",
+    "IT",
+    "Marketing-Communication",
+    "Ressources-Humaines",
+    "Users",
+    "Prospection-Admin",
+    "Prospection-Commercial",
+    "Prospection-Directeur",
+    "Prospection-Gestionnaire",
+    "Prospection-Manager",
+    "Vente-Admin",
+    "Vente-Commercial",
+    "Vente-Manager"
+  )
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        idUser: { type: "string" },
+        firstName: { type: "string" },
+        lastName: { type: "string" },
+        email: { type: "string", format: "email" },
+        pdfUrl: { type: "string", format: "uri" },
+      },
+      required: ["idUser", "firstName", "lastName", "email", "pdfUrl"],
+    },
+  })
+  async createSignaturerAP(
+    @Body()
+    body: {
+      idUser: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      pdfUrl: string;
+    }
+  ) {
+    const { idUser, firstName, lastName, email, pdfUrl } = body;
+
+    // Télécharger le PDF
+    const filePath = await this.yousignService.downloadFile(pdfUrl);
+
+    // Créer la signature request
+    const signatureRequest = await this.yousignService.createSignatureRequest();
+
+    // Upload du document
+    const document = await this.yousignService.uploadDocument(
+      signatureRequest.id,
+      filePath
+    );
+
+    // Définir les pages et les coordonnées X/Y pour chaque signataire
+    const directorFields = [{ page: 5, x: 400, y: 350 }];
+
+    const employeeFields = [{ page: 5, x: 40, y: 350 }];
+
+    // Ajouter les 2 signataires
+    await this.yousignService.addSigners(signatureRequest.id, document.id, [
+      {
+        firstName,
+        lastName,
+        email,
+        fields: employeeFields,
+      },
+      {
+        firstName: "Coline",
+        lastName: "DE LOS SANTOS",
+        email: "rh@finanssor.fr",
         fields: directorFields,
       },
     ]);

@@ -11,6 +11,7 @@ export class ContractGeneratorService {
   private readonly templateAP = "templates/template-contart-AP.pdf";
   private readonly templateCdiWC = "templates/template-contrat-cdi-WC.pdf";
   private readonly templateCdiFT = "templates/template-contrat-cdi-FT.pdf";
+  private readonly templateCdiAP = "templates/template-contrat-cdi-AP.pdf";
   private readonly templateCdiTéléconseillerFR =
     "templates/template-contrat-téléconseiller-FR.pdf";
 
@@ -554,6 +555,203 @@ export class ContractGeneratorService {
     page5.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
       x: 85,
       y: 562,
+      size: 11,
+      font: fontBold,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
+  }
+
+  async generateActionPrevoyancCDIContract(contart: any): Promise<Buffer> {
+    let templateBytes: Buffer;
+
+    // Get user who owns the contract
+    const user = await this.getUserUseCase.execute(contart.idUser);
+
+    try {
+      // ✅ Fetch the template from AWS S3 instead of local file
+      templateBytes = await this.s3Service.downloadFile(this.templateCdiAP);
+    } catch {
+      throw new NotFoundException(
+        `Template PDF non trouvé dans S3 : ${this.templateCdiAP}`
+      );
+    }
+
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const dateNaissanceFormatted = user.naissance.dateDeNaissance
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(user.naissance.dateDeNaissance))
+      : "";
+
+    const dateDebutFormatted = contart.dateDebut
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(contart.dateDebut))
+      : "";
+
+    const dateFinFormatted = contart.dateFin
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(contart.dateDebut))
+      : "";
+
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    const page4 = pdfDoc.getPage(3);
+    const page5 = pdfDoc.getPage(4);
+
+    // ------------------------------------------------ PAGE 01 ---------------------------------------------
+    // PAGE 1 (index 1) -- GOOD
+    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
+    const ne = user.civilite === "m" ? "né" : "née";
+    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
+
+    page1.drawText(
+      `${civiliteLabel} ${user.nomDeNaissance} ${user.prenom}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality},\n${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      { x: 37, y: 490, size: 11, font, lineHeight: 14 }
+    );
+
+    // PAGE 1 (index 2) -- GOOD
+    page1.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 390,
+      y: 337,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 1 (index 3)
+    page1.drawText(`${contart.poste}`, {
+      x: 345,
+      y: 325,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 1 (index 4)
+    page1.drawText(`${dateDebutFormatted}`, {
+      x: 215,
+      y: 286,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 1 (index 5)
+    page1.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 370,
+      y: 286,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 1 (index 6)
+    page1.drawText(`${contart.poste}`, {
+      x: 360,
+      y: 260,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 1 (index 7) GOOD
+    page1.drawText(`${contart.missions}`, {
+      x: 40,
+      y: 190,
+      size: 11,
+      font,
+      lineHeight: 8,
+    });
+
+    // ------------------------------------------------PAGE 02 ---------------------------------------------
+    // PAGE 2 (index 1)
+    page2.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 90,
+      y: 723,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 2 (index 2)
+    page2.drawText(`${dateDebutFormatted}`, {
+      x: 330,
+      y: 723,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 2 (index 3)
+    page2.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 200,
+      y: 698,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 2 (index 4) -- GOOD
+    page2.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 85,
+      y: 132,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 2 (index 5) -- GOOD
+    page2.drawText(`${contart.salaire} €`, {
+      x: 510,
+      y: 132,
+      size: 11,
+      font: fontBold,
+    });
+
+    // ------------------------------------------------PAGE 04 ---------------------------------------------
+    // PAGE 4 (index 1)
+    page4.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 275,
+      y: 494,
+      size: 11,
+      font: fontBold,
+    });
+
+    // ------------------------------------------------PAGE 05 ---------------------------------------------
+    // PAGE 5 (index 1)
+    page5.drawText(`${formatDateFr(new Date())}`, {
+      x: 340,
+      y: 582,
+      size: 11,
+      font: fontBold,
+    });
+
+    // PAGE 5 (index 2)
+    page5.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
+      x: 85,
+      y: 507,
       size: 11,
       font: fontBold,
     });
