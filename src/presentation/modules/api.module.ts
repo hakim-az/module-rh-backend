@@ -13,7 +13,6 @@ import { ContratController } from "../controllers/contrat.controller";
 import { AbsenceController } from "../controllers/absence.controller";
 import { CoffreController } from "../controllers/coffre.controller";
 import { RestauController } from "../controllers/restau.controller";
-import { YousignController } from "../controllers/yousign.controller";
 import { DashboardController } from "../controllers/dashboard.controller";
 import { SignupController } from "../controllers/signup.controller";
 import { UserInitService } from "@/domain/services/user-init-.service";
@@ -22,12 +21,11 @@ import { NotificationController } from "../controllers/notification.controller";
 import { NotificationModule } from "@/application/modules/notification.module";
 import { SendgridModule } from "@/application/modules/sendgrid.module";
 import { ContratCommercialController } from "../controllers/ContractGenerationControllers/commercial.controller";
-import { YousignCommercialController } from "../controllers/ContractSignControllers/sign-commercial.controller";
 import { ContratCdiController } from "../controllers/ContractGenerationControllers/cdi.controllers";
-import { YousignCdiController } from "../controllers/ContractSignControllers/sign-cdi.controller";
 import { ContratNonCdiController } from "../controllers/ContractGenerationControllers/non-cdi.controller";
 import { EmailVerificationController } from "../controllers/email-verification.controller";
 import { EmailVerificationModule } from "@/application/modules/email-verification.module";
+import { YousignIframeController } from "../controllers/ContractSignControllers/yousign-iframe.controller";
 
 @Module({
   imports: [
@@ -49,17 +47,15 @@ import { EmailVerificationModule } from "@/application/modules/email-verificatio
     AbsenceController,
     CoffreController,
     RestauController,
-    YousignController,
     DashboardController,
     SignupController,
     LoginController,
     NotificationController,
     ContratCommercialController,
-    YousignCommercialController,
     ContratCdiController,
-    YousignCdiController,
     ContratNonCdiController,
     EmailVerificationController,
+    YousignIframeController,
   ],
   providers: [UserInitService],
 })
