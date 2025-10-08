@@ -46,10 +46,10 @@ const SIGNATURE_CONFIGS: Record<string, SignatureConfig> = {
   wc: {
     employeePage: 5,
     employeeX: 40,
-    employeeY: 650,
+    employeeY: 500,
     directorPage: 5,
     directorX: 400,
-    directorY: 650,
+    directorY: 500,
   },
   "fr-teleconseiller": {
     employeePage: 6,

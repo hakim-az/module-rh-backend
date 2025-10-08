@@ -9,7 +9,8 @@ import { nationalitiesData } from "@/application/__mock__/nationalities";
 export class ContractGeneratorService {
   private readonly templateFR = "templates/template-contart-FR.pdf";
   private readonly templateAP = "templates/template-contart-AP.pdf";
-  private readonly templateCdiWC = "templates/template-contrat-cdi-WC.pdf";
+  // private readonly templateCdiWC = "templates/template-contrat-cdi-WC.pdf";
+  private readonly templateCdiWC = "templates-v2/template-cdi-wc-v2.pdf";
   private readonly templateCdiFT = "templates/template-contrat-cdi-FT.pdf";
   private readonly templateCdiAP = "templates/template-contrat-cdi-AP.pdf";
   private readonly templateCdiMT = "templates/template-contrat-cdi-MT.pdf";
@@ -343,118 +344,118 @@ export class ContractGeneratorService {
     const page5 = pdfDoc.getPage(4);
 
     // ------------------------------------------------PAGE 01 ---------------------------------------------
-    // PAGE 1 (index 1) -- GOOD
-    page1.drawText(
-      `M./Mme ${user.nomDeNaissance} ${user.prenom} né le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
-      { x: 37, y: 415, size: 11, font, lineHeight: 14 }
+    // PAGE 1 (index 1) -- good
+    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
+    const ne = user.civilite === "m" ? "né" : "née";
+    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
+
+    const description = wrapTextByLength(
+      `${civiliteLabel} ${user.nomDeNaissance.toUpperCase()} ${user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1).toLowerCase()}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, ${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, Demeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      100
     );
 
-    // PAGE 1 (index 2)  -- GOOD
-    page1.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 390,
-      y: 245,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 1 (index 3)  -- GOOD
-    page1.drawText(`${dateDebutFormatted}`, {
-      x: 210,
-      y: 195,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 1 (index 4)  -- GOOD
-    page1.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 360,
-      y: 195,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 1 (index 5)  -- GOOD
-    page1.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 85,
-      y: 105,
-      size: 11,
-      font: fontBold,
-    });
-
-    // ------------------------------------------------PAGE 02 ---------------------------------------------
-    // PAGE 2 (index 1)  -- GOOD
-    page2.drawText(`${contart.missions}`, {
+    page1.drawText(description, {
       x: 37,
-      y: 680,
+      y: 500,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // PAGE 1 (index 2)
+    const engagamentFirst = wrapTextByLength(
+      `Sous réserve des résultats de la visite médicale d'embauche, le salarié est engagé par la société WINVEST CAPITAL , en qualité de ${contart.poste} dans les conditions prévues par les articles L. 7311-1 et suivants du code du travail.`,
+      100
+    );
+
+    const engagamentSecond = wrapTextByLength(
+      `Le présent contrat prendra effet le ${dateDebutFormatted}. Le salarié déclare expressément ce jour ne pas être débiteur d'une obligation de non-concurrence incompatible avec son engagement par la société WINVEST CAPITAL en qualité de ${contart.poste}.`,
+      100
+    );
+
+    page1.drawText(engagamentFirst, {
+      x: 37,
+      y: 350,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    page1.drawText(engagamentSecond, {
+      x: 37,
+      y: 300,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // PAGE 1 (index 3)
+    page1.drawText(contart.missions, {
+      x: 37,
+      y: 190,
       size: 11,
       font,
       lineHeight: 8,
     });
 
-    // PAGE 2 (index 2)  -- GOOD
-    page2.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 90,
-      y: 545,
+    // ------------------------------------------------PAGE 02 ---------------------------------------------
+    // PAGE 2 (index 1)
+    const dureeFirst = `Le salarié est engagé le ${dateDebutFormatted} à durée indéterminée.`;
+
+    const dureeSecond = wrapTextByLength(
+      `Compte tenu du fait que le salarié a précédemment effectué un stage au sein de la société sur des missions identiques à celles prévues dans le cadre du présent contrat, aucune période d'essai ne sera prévue, conformément à la jurisprudence et à l'esprit de l'article L.1221-19 du Code du travail.`,
+      100
+    );
+
+    page2.drawText(dureeFirst, {
+      x: 37,
+      y: 695,
       size: 11,
-      font: fontBold,
+      font,
+      lineHeight: 14,
     });
 
-    // PAGE 2 (index 3)  -- GOOD
-    page2.drawText(`${dateDebutFormatted}`, {
-      x: 340,
-      y: 545,
+    page2.drawText(dureeSecond, {
+      x: 37,
+      y: 675,
       size: 11,
-      font: fontBold,
+      font,
+      lineHeight: 14,
     });
 
-    // PAGE 2 (index 4)  -- GOOD
-    page2.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 210,
-      y: 522,
-      size: 11,
-      font: fontBold,
-    });
-    // ------------------------------------------------PAGE 03 ---------------------------------------------
-    // PAGE 3 (index 1)  -- GOOD
-    page3.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 90,
-      y: 595,
-      size: 11,
-      font: fontBold,
-    });
+    // PAGE 2 (index 2)
+    const remuniration = `Le salarié percevra une rémunération mensuelle brute fixée à ${contart.salaire} €.`;
 
-    // PAGE 3 (index 2)  -- GOOD
-    page3.drawText(`${contart.salaire} Euros`, {
-      x: 510,
-      y: 595,
+    page2.drawText(remuniration, {
+      x: 37,
+      y: 90,
       size: 11,
-      font: fontBold,
-    });
-    // ------------------------------------------------PAGE 04 ---------------------------------------------
-    // PAGE 4 (index 1)  -- GOOD
-    page4.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 275,
-      y: 250,
-      size: 11,
-      font: fontBold,
+      font,
+      lineHeight: 14,
     });
 
     // ------------------------------------------------PAGE 05 ---------------------------------------------
-    // PAGE 5 (index 1)  -- GOOD
-    page5.drawText(`${formatDateFr(new Date())}`, {
-      x: 345,
-      y: 302,
+    // PAGE 5 (index 1)
+    const currentDate = `Fait en deux exemplaires originaux à Fontenay-Sous-Bois, le ${formatDateFr(new Date())}`;
+
+    page5.drawText(currentDate, {
+      x: 37,
+      y: 430,
       size: 11,
-      font: fontBold,
+      font,
+      lineHeight: 14,
     });
 
-    // PAGE 5 (index 2)  -- GOOD
-    page5.drawText(`${user.nomDeNaissance} ${user.prenom}`, {
-      x: 90,
-      y: 225,
-      size: 11,
-      font: fontBold,
-    });
+    page5.drawText(
+      `${user.nomDeNaissance.toUpperCase()} ${user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1).toLowerCase()}`,
+      {
+        x: 37,
+        y: 360,
+        size: 12,
+        font: fontBold,
+        lineHeight: 14,
+      }
+    );
 
     const pdfBytes = await pdfDoc.save();
     return Buffer.from(pdfBytes);
@@ -1073,4 +1074,32 @@ export function formatDateFr(date: Date | string | null | undefined): string {
     year: "numeric",
     timeZone: "Europe/Paris",
   }).format(parsedDate);
+}
+
+export function wrapTextByLength(
+  text: string,
+  maxLength: number = 100
+): string {
+  if (!text) return "";
+  let result = "";
+  let start = 0;
+
+  while (start < text.length) {
+    if (text.length - start <= maxLength) {
+      result += text.slice(start);
+      break;
+    }
+
+    // Cherche le dernier espace avant la limite
+    let end = text.lastIndexOf(" ", start + maxLength);
+    if (end <= start) {
+      // s’il n’y a pas d’espace, coupe simplement à 100
+      end = start + maxLength;
+    }
+
+    result += text.slice(start, end) + "\n";
+    start = end + 1; // saute l’espace
+  }
+
+  return result.trim();
 }
