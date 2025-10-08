@@ -78,10 +78,10 @@ const SIGNATURE_CONFIGS: Record<string, SignatureConfig> = {
   mt: {
     employeePage: 5,
     employeeX: 40,
-    employeeY: 300,
+    employeeY: 350,
     directorPage: 5,
     directorX: 400,
-    directorY: 300,
+    directorY: 350,
   },
   commercial: {
     employeeFields: [

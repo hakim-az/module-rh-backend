@@ -501,28 +501,28 @@ export class ContratCdiController {
     );
 
     // Send email via SendGrid
-    // await this.sendgridService.sendEmail({
-    //   to: user.emailProfessionnel,
-    //   from: process.env.SENDGRID_FROM_EMAIL,
-    //   templateId: "d-68cb24823d8d4e1c8d62ee0e7f78e223",
-    //   dynamicTemplateData: {
-    //     prenom: user?.prenom,
-    //     nom: user?.nomDeNaissance,
-    //     poste: contrat.poste ?? "Non renseigné",
-    //     typeContrat: contrat.typeContrat ?? "Contrat",
-    //     dateDebut: contrat.dateDebut
-    //       ? new Date(contrat.dateDebut).toLocaleDateString()
-    //       : "Non renseignée",
-    //     dateFin: contrat.dateFin
-    //       ? new Date(contrat.dateFin).toLocaleDateString()
-    //       : "Non renseignée",
-    //     salaire: contrat.salaire ? `${contrat.salaire} €` : "Non renseigné",
-    //     matricule: contrat.matricule ?? "Non renseigné",
-    //     actionUrl: `${process.env.APP_URL}/accueil`,
-    //     currentYear: new Date().getFullYear(),
-    //     subject: "Contrat de travail à signer",
-    //   },
-    // });
+    await this.sendgridService.sendEmail({
+      to: user.emailProfessionnel,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      templateId: "d-68cb24823d8d4e1c8d62ee0e7f78e223",
+      dynamicTemplateData: {
+        prenom: user?.prenom,
+        nom: user?.nomDeNaissance,
+        poste: contrat.poste ?? "Non renseigné",
+        typeContrat: contrat.typeContrat ?? "Contrat",
+        dateDebut: contrat.dateDebut
+          ? new Date(contrat.dateDebut).toLocaleDateString()
+          : "Non renseignée",
+        dateFin: contrat.dateFin
+          ? new Date(contrat.dateFin).toLocaleDateString()
+          : "Non renseignée",
+        salaire: contrat.salaire ? `${contrat.salaire} €` : "Non renseigné",
+        matricule: contrat.matricule ?? "Non renseigné",
+        actionUrl: `${process.env.APP_URL}/accueil`,
+        currentYear: new Date().getFullYear(),
+        subject: "Contrat de travail à signer",
+      },
+    });
 
     // Return saved contract
     return {
