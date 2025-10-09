@@ -9,15 +9,14 @@ import { nationalitiesData } from "@/application/__mock__/nationalities";
 export class ContractGeneratorService {
   private readonly templateFR = "templates/template-contart-FR.pdf";
   private readonly templateAP = "templates/template-contart-AP.pdf";
-  // private readonly templateCdiMT = "templates/template-contrat-cdi-MT.pdf";
-  private readonly templateCdiTéléconseillerFR =
-    "templates/template-contrat-téléconseiller-FR.pdf";
 
   // ---------------- v2 templates -------------------------
   private readonly templateCdiWC = "templates-v2/template-cdi-wc-v2.pdf";
   private readonly templateCdiFT = "templates-v2/template-cdi-ft-v2.pdf";
   private readonly templateCdiAP = "templates-v2/template-cdi-ap-v2.pdf";
   private readonly templateCdiMT = "templates-v2/template-cdi-mt-v2.pdf";
+  private readonly templateCdiTéléconseillerFR =
+    "templates-v2/template-cdi-teleconseiller-ft-v2.pdf";
 
   constructor(
     private readonly s3Service: S3Service,
@@ -178,107 +177,6 @@ export class ContractGeneratorService {
     page11.drawText(`${formatDateFr(new Date())}`, {
       x: 185,
       y: 582,
-      size: 11,
-      font: fontBold,
-    });
-
-    const pdfBytes = await pdfDoc.save();
-    return Buffer.from(pdfBytes);
-  }
-
-  async generateFranceTelephoneTéléconseillerCDIContract(
-    contart: any
-  ): Promise<Buffer> {
-    let templateBytes: Buffer;
-
-    // Get user who owns the contract
-    const user = await this.getUserUseCase.execute(contart.idUser);
-
-    try {
-      // ✅ Fetch the template from AWS S3 instead of local file
-      templateBytes = await this.s3Service.downloadFile(
-        this.templateCdiTéléconseillerFR
-      );
-    } catch {
-      throw new NotFoundException(
-        `Template PDF non trouvé dans S3 : ${this.templateCdiTéléconseillerFR}`
-      );
-    }
-
-    const pdfDoc = await PDFDocument.load(templateBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-
-    const dateNaissanceFormatted = user.naissance.dateDeNaissance
-      ? new Intl.DateTimeFormat("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          timeZone: "Europe/Paris",
-        }).format(new Date(user.naissance.dateDeNaissance))
-      : "";
-
-    const dateDebutFormatted = contart.dateDebut
-      ? new Intl.DateTimeFormat("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          timeZone: "Europe/Paris",
-        }).format(new Date(contart.dateDebut))
-      : "";
-
-    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
-    const nationality = nationalitiesData.find(
-      (n) => n.value === String(user.naissance.paysDeNaissance)
-    )
-      ? nationalitiesData
-          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
-          .label.charAt(0)
-          .toUpperCase() +
-        nationalitiesData
-          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
-          .label.slice(1)
-          .toLowerCase()
-      : "";
-
-    // all pages
-    const page1 = pdfDoc.getPage(0);
-    const page2 = pdfDoc.getPage(1);
-    const page5 = pdfDoc.getPage(4);
-
-    // ------------------------------------------------PAGE 01 ---------------------------------------------
-    // PAGE 1 (index 1) -- GOOD
-    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
-    const ne = user.civilite === "m" ? "né" : "née";
-    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
-
-    page1.drawText(
-      `${civiliteLabel} ${user.nomDeNaissance} ${user.prenom}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality},\n${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
-      { x: 42, y: 370, size: 11, font, lineHeight: 14 }
-    );
-
-    // PAGE 1 (index 2)
-    page1.drawText(`${dateDebutFormatted}`, {
-      x: 380,
-      y: 90,
-      size: 11,
-      font: fontBold,
-    });
-
-    // ------------------------------------------------PAGE 02 ---------------------------------------------
-    // PAGE 2 (index 1)
-    page2.drawText(`${dateDebutFormatted}`, {
-      x: 405,
-      y: 725,
-      size: 11,
-      font: fontBold,
-    });
-
-    // ------------------------------------------------PAGE 05 ---------------------------------------------
-    // PAGE 5 (index 1) -- GOOD
-    page5.drawText(`${formatDateFr(new Date())}`, {
-      x: 185,
-      y: 115,
       size: 11,
       font: fontBold,
     });
@@ -1006,6 +904,127 @@ export class ContractGeneratorService {
         lineHeight: 14,
       }
     );
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
+  }
+
+  async generateFranceTelephoneTéléconseillerCDIContract(
+    contart: any
+  ): Promise<Buffer> {
+    let templateBytes: Buffer;
+
+    // Get user who owns the contract
+    const user = await this.getUserUseCase.execute(contart.idUser);
+
+    try {
+      // ✅ Fetch the template from AWS S3 instead of local file
+      templateBytes = await this.s3Service.downloadFile(
+        this.templateCdiTéléconseillerFR
+      );
+    } catch {
+      throw new NotFoundException(
+        `Template PDF non trouvé dans S3 : ${this.templateCdiTéléconseillerFR}`
+      );
+    }
+
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const dateNaissanceFormatted = user.naissance.dateDeNaissance
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(user.naissance.dateDeNaissance))
+      : "";
+
+    const dateDebutFormatted = contart.dateDebut
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(contart.dateDebut))
+      : "";
+
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    const page5 = pdfDoc.getPage(4);
+
+    // ------------------------------------------------PAGE 01 ---------------------------------------------
+    // PAGE 1 (index 1) -- good
+    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
+    const ne = user.civilite === "m" ? "né" : "née";
+    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
+
+    const description = wrapTextByLength(
+      `${civiliteLabel} ${user.nomDeNaissance.toUpperCase()} ${user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1).toLowerCase()}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, ${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, Demeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      100
+    );
+
+    page1.drawText(description, {
+      x: 42,
+      y: 370,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // PAGE 1 (index 2)
+    const engagamentFirst = wrapTextByLength(
+      `La société FRANCE TÉLÉPHONE engage le salarié à compter du ${dateDebutFormatted}, dans le cadre d'un contrat de travail à durée indéterminée (CDI) à temps plein, conformément aux dispositions légales et conventionnelles en vigueur.`,
+      95
+    );
+
+    page1.drawText(engagamentFirst, {
+      x: 42,
+      y: 90,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // ------------------------------------------------PAGE 02 ---------------------------------------------
+    // PAGE 2 (index 1)
+    const dureeFirst = `Le présent contrat est conclu pour une durée indéterminée à compter du ${dateDebutFormatted}.`;
+
+    page2.drawText(dureeFirst, {
+      x: 42,
+      y: 690,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // ------------------------------------------------PAGE 05 ---------------------------------------------
+    // PAGE 5 (index 1)
+    const currentDate = `A Fontenay sous-bois, le ${formatDateFr(new Date())}`;
+
+    page5.drawText(currentDate, {
+      x: 42,
+      y: 60,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
 
     const pdfBytes = await pdfDoc.save();
     return Buffer.from(pdfBytes);
