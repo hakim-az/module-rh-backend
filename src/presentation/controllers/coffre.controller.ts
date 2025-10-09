@@ -203,7 +203,7 @@ export class CoffreController {
     await this.sendgridService.sendEmail({
       to: user.emailProfessionnel,
       from: process.env.SENDGRID_FROM_EMAIL,
-      templateId: "d-b0d3ede6102b427db40640a1b94791e5",
+      templateId: "d-f3b92207fdb148e9aa3ee871e6730e4e",
       dynamicTemplateData: {
         prenom: user?.prenom,
         nom: user?.nomDeNaissance,

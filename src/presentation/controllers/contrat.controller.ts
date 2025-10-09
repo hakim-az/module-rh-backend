@@ -175,7 +175,7 @@ export class ContratController {
     await this.sendgridService.sendEmail({
       to: user.emailProfessionnel,
       from: process.env.SENDGRID_FROM_EMAIL,
-      templateId: "d-68cb24823d8d4e1c8d62ee0e7f78e223",
+      templateId: "d-8df2a27d88ad4a7d93485cc077e62c02",
       dynamicTemplateData: {
         prenom: user?.prenom,
         nom: user?.nomDeNaissance,
@@ -499,7 +499,7 @@ export class ContratController {
         await this.sendgridService.sendEmail({
           to: rhUser.emailProfessionnel,
           from: process.env.SENDGRID_FROM_EMAIL,
-          templateId: "d-75c5e2cbf8744d46b05bb6f2be39cd8e", // ton ID de template SendGrid
+          templateId: "d-b79c4865eed14dfd98d41d3e51dfc8fd",
           dynamicTemplateData: {
             prenom: user?.prenom,
             nom: user?.nomDeNaissance,

@@ -707,7 +707,7 @@ export class AbsenceController {
       await this.sendgridService.sendEmail({
         to: rhUser.emailProfessionnel,
         from: process.env.SENDGRID_FROM_EMAIL,
-        templateId: "d-1dd77a5230454366a5ad0ff321056edf",
+        templateId: "d-935ba50d8a964fcea47f878eaea82437",
         dynamicTemplateData: {
           prenom: user.prenom,
           nom: user.nomDeNaissance,
@@ -867,7 +867,7 @@ export class AbsenceController {
     await this.sendgridService.sendEmail({
       to: user.emailProfessionnel,
       from: process.env.SENDGRID_FROM_EMAIL,
-      templateId: "d-c8da3d8bc5f1426faaaede3fae7d4958",
+      templateId: "d-bb5df140c4f748a3bbd6638b320f8576",
       dynamicTemplateData: {
         prenom: user.prenom,
         nom: user.nomDeNaissance,
@@ -938,7 +938,7 @@ export class AbsenceController {
       to: user.emailProfessionnel,
       // to: "a.azzaz@finanssor.fr",
       from: process.env.SENDGRID_FROM_EMAIL,
-      templateId: "d-5ae838da0ad04d0dbc3f96f964934089",
+      templateId: "d-908fd7d8118342a3888a11581fe053ff",
       dynamicTemplateData: {
         prenom: user.prenom,
         nom: user.nomDeNaissance,

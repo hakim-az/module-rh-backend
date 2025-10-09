@@ -199,7 +199,7 @@ export class RestauController {
     await this.sendgridService.sendEmail({
       to: user.emailProfessionnel,
       from: process.env.SENDGRID_FROM_EMAIL,
-      templateId: "d-1994e968583a482cb21629a498cda743",
+      templateId: "d-c243648e339b47ad909eb83851291702",
       dynamicTemplateData: {
         prenom: user?.prenom,
         nom: user?.nomDeNaissance,

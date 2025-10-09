@@ -341,7 +341,7 @@ export class SignupController {
         await this.sendgridService.sendEmail({
           to: rhUser.emailProfessionnel,
           from: process.env.SENDGRID_FROM_EMAIL,
-          templateId: "d-b85f44b66fc44968ba85d362d911abbf",
+          templateId: "d-0597d6b8f5af43fb9f259caacd866c76",
           dynamicTemplateData: {
             prenom: user.prenom,
             nom: user.nomDeNaissance,
