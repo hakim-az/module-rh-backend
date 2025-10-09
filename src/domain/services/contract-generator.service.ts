@@ -7,9 +7,6 @@ import { nationalitiesData } from "@/application/__mock__/nationalities";
 
 @Injectable()
 export class ContractGeneratorService {
-  private readonly templateFR = "templates/template-contart-FR.pdf";
-  private readonly templateAP = "templates/template-contart-AP.pdf";
-
   // ---------------- v2 templates -------------------------
   private readonly templateCdiWC = "templates-v2/template-cdi-wc-v2.pdf";
   private readonly templateCdiFT = "templates-v2/template-cdi-ft-v2.pdf";
@@ -17,173 +14,15 @@ export class ContractGeneratorService {
   private readonly templateCdiMT = "templates-v2/template-cdi-mt-v2.pdf";
   private readonly templateCdiTéléconseillerFR =
     "templates-v2/template-cdi-teleconseiller-ft-v2.pdf";
+  private readonly templateAP =
+    "templates-v2/template-cdi-commercial-ap-v2.pdf";
+  private readonly templateFR =
+    "templates-v2/template-cdi-commercial-ft-v2.pdf";
 
   constructor(
     private readonly s3Service: S3Service,
     private readonly getUserUseCase: GetUserUseCase
   ) {}
-
-  async generateFranceTelephoneContract(contart: any): Promise<Buffer> {
-    let templateBytes: Buffer;
-
-    // Get user who owns the contract
-    const user = await this.getUserUseCase.execute(contart.idUser);
-
-    try {
-      // ✅ Fetch the template from AWS S3 instead of local file
-      templateBytes = await this.s3Service.downloadFile(this.templateFR);
-    } catch {
-      throw new NotFoundException(
-        `Template PDF non trouvé dans S3 : ${this.templateFR}`
-      );
-    }
-
-    const pdfDoc = await PDFDocument.load(templateBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-
-    const dateNaissanceFormatted = user.naissance.dateDeNaissance
-      ? new Intl.DateTimeFormat("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          timeZone: "Europe/Paris",
-        }).format(new Date(user.naissance.dateDeNaissance))
-      : "";
-
-    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
-    const nationality = nationalitiesData.find(
-      (n) => n.value === String(user.naissance.paysDeNaissance)
-    )
-      ? nationalitiesData
-          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
-          .label.charAt(0)
-          .toUpperCase() +
-        nationalitiesData
-          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
-          .label.slice(1)
-          .toLowerCase()
-      : "";
-
-    // all pages
-    const page1 = pdfDoc.getPage(0);
-    const page2 = pdfDoc.getPage(1);
-    const page12 = pdfDoc.getPage(11);
-
-    // PAGE 1 (index 1) -- GOOD
-    page1.drawText(
-      `M./Mme ${user.nomDeNaissance} ${user.prenom} né le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
-      { x: 38, y: 360, size: 11, font, lineHeight: 14 }
-    );
-
-    // PAGE 1 (index 2) -- GOOD
-    page1.drawText(`${formatDateFr(contart.dateDebut)}`, {
-      x: 210,
-      y: 95,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 2 (index 1)
-    page2.drawText(`${formatDateFr(contart.dateDebut)}`, {
-      x: 405,
-      y: 452,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 12 (index 1)
-    page12.drawText(`${formatDateFr(new Date())}`, {
-      x: 180,
-      y: 697,
-      size: 11,
-      font: fontBold,
-    });
-
-    const pdfBytes = await pdfDoc.save();
-    return Buffer.from(pdfBytes);
-  }
-
-  async generateActionPrevoyanceContract(contart: any): Promise<Buffer> {
-    let templateBytes: Buffer;
-
-    // Get user who owns the contract
-    const user = await this.getUserUseCase.execute(contart.idUser);
-
-    try {
-      // ✅ Fetch the template from AWS S3 instead of local file
-      templateBytes = await this.s3Service.downloadFile(this.templateAP);
-    } catch {
-      throw new NotFoundException(
-        `Template PDF non trouvé dans S3 : ${this.templateAP}`
-      );
-    }
-
-    const pdfDoc = await PDFDocument.load(templateBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-
-    const dateNaissanceFormatted = user.naissance.dateDeNaissance
-      ? new Intl.DateTimeFormat("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          timeZone: "Europe/Paris",
-        }).format(new Date(user.naissance.dateDeNaissance))
-      : "";
-
-    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
-    const nationality = nationalitiesData.find(
-      (n) => n.value === String(user.naissance.paysDeNaissance)
-    )
-      ? nationalitiesData
-          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
-          .label.charAt(0)
-          .toUpperCase() +
-        nationalitiesData
-          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
-          .label.slice(1)
-          .toLowerCase()
-      : "";
-
-    // all pages
-    const page1 = pdfDoc.getPage(0);
-    const page2 = pdfDoc.getPage(1);
-    const page11 = pdfDoc.getPage(10);
-
-    // PAGE 1 (index 1) -- GOOD
-    page1.drawText(
-      `M./Mme ${user.nomDeNaissance} ${user.prenom} né le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, \nImmatriculé à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, \nDemeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
-      { x: 37, y: 460, size: 11, font, lineHeight: 14 }
-    );
-
-    // PAGE 1 (index 2) -- GOOD
-    page1.drawText(`${formatDateFr(contart.dateDebut)}`, {
-      x: 210,
-      y: 170,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 2 (index 1)
-    page2.drawText(`${formatDateFr(contart.dateDebut)}`, {
-      x: 400,
-      y: 463,
-      size: 11,
-      font: fontBold,
-    });
-
-    // PAGE 11 (index 1)
-    page11.drawText(`${formatDateFr(new Date())}`, {
-      x: 185,
-      y: 582,
-      size: 11,
-      font: fontBold,
-    });
-
-    const pdfBytes = await pdfDoc.save();
-    return Buffer.from(pdfBytes);
-  }
 
   // ---------------------------------- templates v2 ------------------------------------------------------------
   async generateWinvestCapitalCDIContract(contart: any): Promise<Buffer> {
@@ -1021,6 +860,240 @@ export class ContractGeneratorService {
     page5.drawText(currentDate, {
       x: 42,
       y: 60,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
+  }
+
+  async generateActionPrevoyanceContract(contart: any): Promise<Buffer> {
+    let templateBytes: Buffer;
+
+    // Get user who owns the contract
+    const user = await this.getUserUseCase.execute(contart.idUser);
+
+    try {
+      // ✅ Fetch the template from AWS S3 instead of local file
+      templateBytes = await this.s3Service.downloadFile(this.templateAP);
+    } catch {
+      throw new NotFoundException(
+        `Template PDF non trouvé dans S3 : ${this.templateAP}`
+      );
+    }
+
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const dateNaissanceFormatted = user.naissance.dateDeNaissance
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(user.naissance.dateDeNaissance))
+      : "";
+
+    const dateDebutFormatted = contart.dateDebut
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(contart.dateDebut))
+      : "";
+
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    const page11 = pdfDoc.getPage(10);
+
+    // ------------------------------------------------PAGE 01 ---------------------------------------------
+    // PAGE 1 (index 1) -- good
+    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
+    const ne = user.civilite === "m" ? "né" : "née";
+    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
+
+    const description = wrapTextByLength(
+      `${civiliteLabel} ${user.nomDeNaissance.toUpperCase()} ${user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1).toLowerCase()}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, ${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, Demeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      100
+    );
+
+    page1.drawText(description, {
+      x: 37,
+      y: 450,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // PAGE 1 (index 2)
+    const engagamentFirst = wrapTextByLength(
+      `Le présent contrat prendra effet le ${dateDebutFormatted} Le VRP déclare expressément ce jour ne pas être débiteur d'une obligation de non-concurrence incompatible avec son engagement par la société ACTION PRÉVOYANCE en qualité de voyageur-représentant-placier-multi carte.`,
+      100
+    );
+
+    page1.drawText(engagamentFirst, {
+      x: 37,
+      y: 170,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // ------------------------------------------------PAGE 02 ---------------------------------------------
+    // PAGE 2 (index 1)
+    const dureeFirst = `Le présent contrat est conclu pour une durée indéterminée à compter ${dateDebutFormatted}.`;
+
+    page2.drawText(dureeFirst, {
+      x: 37,
+      y: 460,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // ------------------------------------------------PAGE 05 ---------------------------------------------
+    // PAGE 5 (index 1)
+    const currentDate = `Fait à Fontenay sous-bois, le ${formatDateFr(new Date())}`;
+
+    page11.drawText(currentDate, {
+      x: 37,
+      y: 490,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
+  }
+
+  async generateFranceTelephoneContract(contart: any): Promise<Buffer> {
+    let templateBytes: Buffer;
+
+    // Get user who owns the contract
+    const user = await this.getUserUseCase.execute(contart.idUser);
+
+    try {
+      // ✅ Fetch the template from AWS S3 instead of local file
+      templateBytes = await this.s3Service.downloadFile(this.templateFR);
+    } catch {
+      throw new NotFoundException(
+        `Template PDF non trouvé dans S3 : ${this.templateFR}`
+      );
+    }
+
+    const pdfDoc = await PDFDocument.load(templateBytes);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const dateNaissanceFormatted = user.naissance.dateDeNaissance
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(user.naissance.dateDeNaissance))
+      : "";
+
+    const dateDebutFormatted = contart.dateDebut
+      ? new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }).format(new Date(contart.dateDebut))
+      : "";
+
+    // 🔎 Trouver la nationalité à partir du code (value) et la mettre en "Capitalized"
+    const nationality = nationalitiesData.find(
+      (n) => n.value === String(user.naissance.paysDeNaissance)
+    )
+      ? nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.charAt(0)
+          .toUpperCase() +
+        nationalitiesData
+          .find((n) => n.value === String(user.naissance.paysDeNaissance))!
+          .label.slice(1)
+          .toLowerCase()
+      : "";
+
+    // all pages
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    const page12 = pdfDoc.getPage(11);
+
+    // ------------------------------------------------PAGE 01 ---------------------------------------------
+    // PAGE 1 (index 1) -- good
+    const civiliteLabel = user.civilite === "m" ? "Monsieur" : "Madame";
+    const ne = user.civilite === "m" ? "né" : "née";
+    const immatricule = user.civilite === "m" ? "Immatriculé" : "Immatriculée";
+
+    const description = wrapTextByLength(
+      `${civiliteLabel} ${user.nomDeNaissance.toUpperCase()} ${user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1).toLowerCase()}, ${ne} le ${dateNaissanceFormatted} à ${user.naissance.communeDeNaissance}, de nationalité ${nationality}, ${immatricule} à la sécurité sociale sous le numéro ${user.numeroSecuriteSociale}, Demeurant au ${user.adresse.adresse} - ${user.adresse.codePostal} ${user.adresse.ville}.`,
+      100
+    );
+
+    page1.drawText(description, {
+      x: 37,
+      y: 350,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // PAGE 1 (index 2)
+    const engagamentFirst = wrapTextByLength(
+      `Le présent contrat prendra effet le ${dateDebutFormatted} Le VRP déclare expressément ce jour ne pas être débiteur d'une obligation de non-concurrence incompatible avec son engagement par la société ACTION PRÉVOYANCE en qualité de voyageur-représentant-placier-multi carte.`,
+      100
+    );
+
+    page1.drawText(engagamentFirst, {
+      x: 37,
+      y: 100,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // ------------------------------------------------PAGE 02 ---------------------------------------------
+    // PAGE 2 (index 1)
+    const dureeFirst = `Le présent contrat est conclu pour une durée indéterminée à compter ${dateDebutFormatted}.`;
+
+    page2.drawText(dureeFirst, {
+      x: 37,
+      y: 440,
+      size: 11,
+      font,
+      lineHeight: 14,
+    });
+
+    // ------------------------------------------------PAGE 05 ---------------------------------------------
+    // PAGE 5 (index 1)
+    const currentDate = `Fait à Fontenay sous-bois, le ${formatDateFr(new Date())}`;
+
+    page12.drawText(currentDate, {
+      x: 37,
+      y: 670,
       size: 11,
       font,
       lineHeight: 14,

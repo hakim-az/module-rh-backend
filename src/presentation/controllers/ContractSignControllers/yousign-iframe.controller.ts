@@ -85,16 +85,16 @@ const SIGNATURE_CONFIGS: Record<string, SignatureConfig> = {
   },
   commercial: {
     employeeFields: [
-      { page: 11, x: 400, y: 320 },
-      { page: 14, x: 400, y: 750 },
-      { page: 26, x: 400, y: 250 },
-      { page: 28, x: 400, y: 700 },
+      { page: 11, x: 400, y: 400 },
+      { page: 15, x: 400, y: 180 },
+      { page: 27, x: 400, y: 250 },
+      { page: 29, x: 400, y: 720 },
     ],
     directorFields: [
-      { page: 11, x: 40, y: 320 },
-      { page: 14, x: 40, y: 750 },
-      { page: 26, x: 40, y: 250 },
-      { page: 28, x: 40, y: 700 },
+      { page: 11, x: 40, y: 400 },
+      { page: 15, x: 40, y: 180 },
+      { page: 27, x: 40, y: 250 },
+      { page: 29, x: 40, y: 720 },
     ],
   },
 };
