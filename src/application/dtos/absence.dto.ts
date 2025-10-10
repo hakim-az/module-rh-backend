@@ -106,6 +106,9 @@ class UserResponse {
   emailProfessionnel: string;
 
   @ApiProperty()
+  emailPersonnel: string;
+
+  @ApiProperty()
   avatar: string;
 }
 

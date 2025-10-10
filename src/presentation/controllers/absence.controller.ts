@@ -134,6 +134,7 @@ export class AbsenceController {
                 nomDeNaissance: absence.user.nomDeNaissance,
                 prenom: absence.user.prenom,
                 emailProfessionnel: absence.user.emailProfessionnel,
+                emailPersonnel: absence.user.emailPersonnel,
                 avatar: absence.user.avatar,
               }
             : undefined,
@@ -605,6 +606,7 @@ export class AbsenceController {
               nomDeNaissance: absence.user.nomDeNaissance,
               prenom: absence.user.prenom,
               emailProfessionnel: absence.user.emailProfessionnel,
+              emailPersonnel: absence.user.emailPersonnel,
               avatar: absence.user.avatar,
             }
           : undefined,
@@ -740,6 +742,7 @@ export class AbsenceController {
             nomDeNaissance: absence.user.nomDeNaissance,
             prenom: absence.user.prenom,
             emailProfessionnel: absence.user.emailProfessionnel,
+            emailPersonnel: absence.user.emailPersonnel,
             avatar: absence.user.avatar,
           }
         : undefined,
@@ -830,6 +833,7 @@ export class AbsenceController {
               nomDeNaissance: absence.user.nomDeNaissance,
               prenom: absence.user.prenom,
               emailProfessionnel: absence.user.emailProfessionnel,
+              emailPersonnel: absence.user.emailPersonnel,
               avatar: absence.user.avatar,
             }
           : undefined,
@@ -899,6 +903,7 @@ export class AbsenceController {
             nomDeNaissance: absence.user.nomDeNaissance,
             prenom: absence.user.prenom,
             emailProfessionnel: absence.user.emailProfessionnel,
+            emailPersonnel: absence.user.emailPersonnel,
             avatar: absence.user.avatar,
           }
         : undefined,
@@ -971,6 +976,7 @@ export class AbsenceController {
             nomDeNaissance: absence.user.nomDeNaissance,
             prenom: absence.user.prenom,
             emailProfessionnel: absence.user.emailProfessionnel,
+            emailPersonnel: absence.user.emailPersonnel,
             avatar: absence.user.avatar,
           }
         : undefined,
@@ -1054,6 +1060,7 @@ export class AbsenceController {
             nomDeNaissance: absence.user.nomDeNaissance,
             prenom: absence.user.prenom,
             emailProfessionnel: absence.user.emailProfessionnel,
+            emailPersonnel: absence.user.emailPersonnel,
             avatar: absence.user.avatar,
           }
         : undefined,

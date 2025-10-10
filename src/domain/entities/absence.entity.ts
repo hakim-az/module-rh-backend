@@ -19,6 +19,7 @@ export class Absence {
       prenom: string;
       nomDeNaissance: string;
       emailProfessionnel: string;
+      emailPersonnel: string;
       avatar: string;
     }
   ) {}
