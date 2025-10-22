@@ -46,7 +46,7 @@ export class YousignIframeService {
           ...headers,
         },
         ...options,
-        timeout: 15000,
+        timeout: 60000,
       });
       return res.data;
     } catch (e: any) {
