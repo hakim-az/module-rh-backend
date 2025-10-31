@@ -18,6 +18,29 @@ export class PrismaUserRepository implements UserRepository {
         paiement: true,
         urgence: true,
         justificatif: true,
+        userEmails: {
+          select: {
+            id: true,
+            userId: true,
+            upn: true,
+            displayName: true,
+            alias: true,
+            isEnabled: true,
+            isDeleted: true,
+            deletedAt: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        acces: {
+          select: {
+            id: true,
+            userId: true,
+            status: true,
+            productCode: true,
+            email: true,
+          },
+        },
       },
     });
 

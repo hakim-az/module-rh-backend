@@ -103,11 +103,11 @@ export class AbsenceController {
               case "apres_midi":
                 total = 0.5;
                 break;
-              case "journee_entiereeee":
+              case "journee_entiere":
                 total = 1.0;
                 break;
               default:
-                total = 5.0; // fallback pour les autres valeurs
+                total = 1.0; // fallback pour les autres valeurs
                 break;
             }
           } else {

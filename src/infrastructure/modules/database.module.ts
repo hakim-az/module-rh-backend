@@ -22,6 +22,10 @@ import { PrismaRestauRepository } from "../database/repositories/prisma-restau.r
 import { RestauRepository } from "@/domain/repositories/restau.repository";
 import { NotificationRepository } from "@/domain/repositories/notification.repository";
 import { PrismaNotificationRepository } from "../database/repositories/prisma-notification.repository";
+import { PrismaUserEmailRepository } from "../database/repositories/prisma-user-email.repository";
+import { UserEmailRepository } from "@/domain/repositories/user-email.repository";
+import { AccesRepository } from "@/domain/repositories/acces.repository";
+import { PrismaAccesRepository } from "../database/repositories/prisma-acces.repository";
 
 @Module({
   providers: [
@@ -70,6 +74,14 @@ import { PrismaNotificationRepository } from "../database/repositories/prisma-no
       provide: NotificationRepository, // ✅ token
       useClass: PrismaNotificationRepository, // ✅ concrete class
     },
+    {
+      provide: UserEmailRepository,
+      useClass: PrismaUserEmailRepository,
+    },
+    {
+      provide: AccesRepository,
+      useClass: PrismaAccesRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -84,6 +96,8 @@ import { PrismaNotificationRepository } from "../database/repositories/prisma-no
     CoffreRepository,
     RestauRepository,
     NotificationRepository,
+    UserEmailRepository,
+    AccesRepository,
   ],
 })
 export class DatabaseModule {}

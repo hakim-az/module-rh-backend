@@ -26,6 +26,10 @@ import { ContratNonCdiController } from "../controllers/ContractGenerationContro
 import { EmailVerificationController } from "../controllers/email-verification.controller";
 import { EmailVerificationModule } from "@/application/modules/email-verification.module";
 import { YousignIframeController } from "../controllers/ContractSignControllers/yousign-iframe.controller";
+import { UserEmailController } from "../controllers/user-email.controller";
+import { UserEmailModule } from "@/application/modules/user-email.module";
+import { AccesModule } from "@/application/modules/acces.module";
+import { AccesController } from "../controllers/acces.controller";
 
 @Module({
   imports: [
@@ -39,6 +43,8 @@ import { YousignIframeController } from "../controllers/ContractSignControllers/
     NotificationModule,
     SendgridModule,
     EmailVerificationModule,
+    UserEmailModule,
+    AccesModule,
   ],
   controllers: [
     UserController,
@@ -56,6 +62,8 @@ import { YousignIframeController } from "../controllers/ContractSignControllers/
     ContratNonCdiController,
     EmailVerificationController,
     YousignIframeController,
+    UserEmailController,
+    AccesController,
   ],
   providers: [UserInitService],
 })

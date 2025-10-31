@@ -23,6 +23,8 @@ export class User {
   public readonly urgence?: any;
   public readonly justificatif?: any;
   public readonly contrat?: any;
+  public readonly userEmails?: any;
+  public readonly acces?: any;
 
   constructor(props: {
     id: string;
@@ -48,6 +50,8 @@ export class User {
     urgence?: any;
     justificatif?: any;
     contrat?: any;
+    userEmails?: any;
+    acces?: any;
   }) {
     this.id = props.id;
     this.role = props.role;
@@ -72,5 +76,7 @@ export class User {
     this.urgence = props.urgence;
     this.justificatif = props.justificatif;
     this.contrat = props.contrat;
+    this.userEmails = props.userEmails;
+    this.acces = props.acces;
   }
 }

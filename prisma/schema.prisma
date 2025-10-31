@@ -34,6 +34,8 @@ model User {
   paiement               Paiement?
   restau                 Restau[]
   urgence                Urgence?
+  userEmails             UserEmail[] 
+  acces                  Acces[] 
 
   @@map("users")
 }
@@ -194,4 +196,46 @@ model Notification {
 
   @@index([userId], map: "notifications_userId_fkey")
   @@map("notifications")
+}
+
+
+model UserEmail {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  upn          String   @unique 
+  password     String   
+  licenseSku   String?  
+  isEnabled    Boolean  @default(true)
+  isDeleted    Boolean  @default(false)
+  deletedAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  displayName  String  
+  alias        String?
+
+  // relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "mail_userId_user")
+
+  @@index([userId], map: "mail_userId_fkey")
+  @@map("user_emails")
+}
+
+
+model Acces {
+  id           String   @id @default(uuid())
+  userId       String   
+  status       String
+  productCode  String
+  password     String?  
+  email        String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "acces_userId_user")
+
+  @@index([userId], map: "acces_userId_fkey")
+  @@map("acces")
 }
